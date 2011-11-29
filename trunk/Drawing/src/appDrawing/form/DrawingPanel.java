@@ -123,7 +123,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 			
 			
 			// Si l'utilisateur est en train de créer une forme
-			if (this.startDragPoint != null && this.currentDragPoint != null)
+			if (!this.moving && !this.panning && this.startDragPoint != null && this.currentDragPoint != null)
 			{
 				java.awt.Rectangle rect = this.makeRect(this.startDragPoint, this.currentDragPoint);
 
