@@ -7,6 +7,7 @@ import java.awt.Graphics2D;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.Point;
+import java.awt.Polygon;
 //import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
@@ -24,6 +25,7 @@ import javax.swing.JPanel;
 
 import appDrawing.model.Circle;
 import appDrawing.model.Ellipse;
+import appDrawing.model.VPolygon;
 import appDrawing.model.Rectangle;
 import appDrawing.model.Shape;
 import appDrawing.model.Square;
@@ -67,10 +69,13 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
     				0.0f);
     
 	// Types de formes pouvant être dessinées
-    private enum ShapeType {ELLIPSE, CIRCLE, RECTANGLE, SQUARE};
+    private enum ShapeType {ELLIPSE, CIRCLE, RECTANGLE, SQUARE, POLYGON};
 	
     // Type de la prochaine forme à être dessinée 
 	private ShapeType currentShapeType = ShapeType.ELLIPSE; 
+	
+	//TRÈS PROBABLEMENT TEMPORAIRE
+	private VPolygon currentPolygon;
 	
 	/**
 	 * Construit un panneau dans lequel il est possible de dessiner.
@@ -117,6 +122,11 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 			{
 				shape.draw(bufferGraphics, this.scalingFactor, this.virtualDeltaX, this.virtualDeltaY);
 			}
+			if(currentPolygon != null)//DESSINE LE POLYGONE COURRANT ATTENTION, JE SAIS QUE CELA MET LE
+				//POLYGONE AU PREMIER PLAN TOUJOURS, C'EST UNE SOLUTION TEMPORAIRE
+			{
+				currentPolygon.draw(bufferGraphics, this.scalingFactor, this.virtualDeltaX, this.virtualDeltaY);
+			}
 
 			// Transfert le buffer sur le graphics du panneau
 			g.drawImage(buffer, 0, 0, null);
@@ -126,16 +136,19 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 			if (!this.moving && !this.panning && this.startDragPoint != null && this.currentDragPoint != null)
 			{
 				java.awt.Rectangle rect = this.makeRect(this.startDragPoint, this.currentDragPoint);
-
-				// Dessine la forme sans l'ajouter dans la liste
 				Graphics2D g2d = (Graphics2D) g;
-				Shape shape = createShape(rect.x, rect.y, rect.width, rect.height);
-				shape.draw(g2d, scalingFactor, this.virtualDeltaX, this.virtualDeltaY);
-
-				// Dessine le rectangle qui englobe la forme
-				g2d.setColor(Color.GRAY);
-				g2d.setStroke(DrawingPanel.DASHED_STROKE);
-				g2d.drawRect(rect.x, rect.y, rect.width, rect.height);
+				
+				if(this.currentShapeType != ShapeType.POLYGON)
+				{
+					// Dessine la forme sans l'ajouter dans la liste
+					Shape shape = createShape(rect.x, rect.y, rect.width, rect.height);
+					shape.draw(g2d, scalingFactor, this.virtualDeltaX, this.virtualDeltaY);
+	
+					// Dessine le rectangle qui englobe la forme
+					g2d.setColor(Color.GRAY);
+					g2d.setStroke(DrawingPanel.DASHED_STROKE);
+					g2d.drawRect(rect.x, rect.y, rect.width, rect.height);
+				}
 			}
 		}
 	}
@@ -201,6 +214,9 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 				break;
 			case CIRCLE:
 				shape = new Circle(virtualX, virtualY, virtualWidth, virtualHeight);
+				break;
+			case POLYGON:
+				shape = new VPolygon(virtualX, virtualY, virtualWidth, virtualHeight);
 				break;
 		}
 		
@@ -289,7 +305,16 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	{
 		if (e.getButton() == MouseEvent.BUTTON1) // Bouton de gauche?
 		{
-			if (this.startDragPoint != null) // Mode création?
+			if(this.currentShapeType == ShapeType.POLYGON)//polygone d'abord car pas de drag pour sa création
+			{
+				if(this.currentPolygon == null)
+				{
+					this.currentPolygon = new VPolygon(e.getX(), e.getY(), 0, 0);
+				}
+				this.currentPolygon.addPoint(e.getX(), e.getY());
+				this.repaint();
+			}
+			else if (this.startDragPoint != null) // Mode création d'une autre forme?
 			{
 				java.awt.Rectangle rect = this.makeRect(this.startDragPoint, e.getPoint());
 
@@ -304,6 +329,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 
 				this.repaint();
 			}
+			
 		}
 		
 		this.startDragPoint = null;
@@ -385,6 +411,10 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 				
 			case KeyEvent.VK_C:
 				this.currentShapeType = ShapeType.CIRCLE;
+				break;
+				
+			case KeyEvent.VK_P:
+				this.currentShapeType = ShapeType.POLYGON;
 				break;
 				
 			case KeyEvent.VK_ADD:
