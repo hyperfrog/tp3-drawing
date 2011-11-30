@@ -2,6 +2,7 @@ package appDrawing.form;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.KeyEventDispatcher;
@@ -36,6 +37,8 @@ import appDrawing.model.Square;
  */
 public class DrawingPanel extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener
 {
+	private static final Mode DEFAULT_MODE = Mode.CREATING;
+	
 	private Board parent = null;
 
 	// Point de départ d'un drag en coordonnées réelles
@@ -43,12 +46,6 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	
 	// Point actuel d'un drag en coordonnées réelles
 	private Point currentDragPoint;
-
-	// Indique si l'utilisateur est en train de déplacer le dessin
-	private boolean panning = false;
-	
-	// Indique si l'utilisateur est en train de déplacer les formes sélectionnées
-	private boolean moving = false;
 
 	// Déplacement permanent du dessin en coordonnées virtuelles
 	private float virtualDeltaX;
@@ -59,7 +56,8 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	
 	private ArrayList<Shape> shapeList;
 	
-    private final static BasicStroke DASHED_STROKE = 
+    // Trait utilisé pour dessiner la boîte autour d'une forme en mode création
+	private final static BasicStroke DASHED_STROKE = 
     		new BasicStroke(
     				2.0f, 
     				BasicStroke.CAP_BUTT, 
@@ -70,6 +68,12 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
     
 	// Types de formes pouvant être dessinées
     private enum ShapeType {ELLIPSE, CIRCLE, RECTANGLE, SQUARE, POLYGON};
+    
+    // Modes exclusifs de fonctionnement
+    private enum Mode {CREATING, PANNING, MOVING, SELECTING, EDITING}
+    
+    // Mode de l'opération en cours
+    private Mode currentMode;
 	
     // Type de la prochaine forme à être dessinée 
 	private ShapeType currentShapeType = ShapeType.ELLIPSE; 
@@ -93,7 +97,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		this.setFocusable(true);
 		this.addMouseWheelListener(this);
 		this.erase();
-		
+		this.setMode(DrawingPanel.DEFAULT_MODE);
 //		KeyEventDispatcher myKeyEventDispatcher = new DefaultFocusManager();
 //		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(myKeyEventDispatcher);
 	}
@@ -133,7 +137,8 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 			
 			
 			// Si l'utilisateur est en train de créer une forme
-			if (!this.moving && !this.panning && this.startDragPoint != null && this.currentDragPoint != null)
+//			if (!this.moving && !this.panning && this.startDragPoint != null && this.currentDragPoint != null)
+			if (this.currentMode == Mode.CREATING && this.startDragPoint != null && this.currentDragPoint != null)
 			{
 				java.awt.Rectangle rect = this.makeRect(this.startDragPoint, this.currentDragPoint);
 				Graphics2D g2d = (Graphics2D) g;
@@ -222,6 +227,30 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		
 		return shape;
 	}
+	
+	private void setMode(Mode newMode)
+	{
+		this.currentMode = newMode;
+		int preDefCursor = Cursor.DEFAULT_CURSOR;
+		
+		switch (newMode)
+		{
+			case CREATING:
+				preDefCursor = Cursor.CROSSHAIR_CURSOR;
+				break;
+			case PANNING:
+				preDefCursor = Cursor.HAND_CURSOR;
+				break;
+			case MOVING:
+				preDefCursor = Cursor.MOVE_CURSOR;
+				break;
+			case SELECTING:
+				preDefCursor = Cursor.DEFAULT_CURSOR;
+				break;
+		}
+		
+		this.setCursor(Cursor.getPredefinedCursor(preDefCursor));
+	}
 
 	@Override
 	public void mouseClicked(MouseEvent e)
@@ -259,10 +288,13 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 				// Annule le «tracking»
 				this.startDragPoint = null;
 				this.currentDragPoint = null;
+				
+//				this.currentMode = Mode.SELECTING;
 
 				Shape shapeToSelect = null;
 				
 				// Trouve la forme la plus proche du dessus dont le rectangle contient le point cliqué
+				// TODO : Parcourir la liste à l'envers avec un itérateur pour trouver plus rapidement la forme la plus proche du dessus 
 				for(Shape shape : shapeList)
 				{
 					java.awt.Rectangle r = shape.getRealRect(this.scalingFactor, this.virtualDeltaX, this.virtualDeltaY);
@@ -287,16 +319,11 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 				}
 				this.repaint();
 			}
-			else if ((e.getModifiers() & ActionEvent.SHIFT_MASK) != 0) // Touche Shift?
-			{
-				// Début du mode moving
-				this.moving = true;
-			}
 		}
 		else if (e.getButton() == MouseEvent.BUTTON3) // Bouton de droite?
 		{
 			// Début du mode panning
-			this.panning = true;
+			this.setMode(Mode.PANNING);
 		}
 	}
 
@@ -305,59 +332,61 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	{
 		if (e.getButton() == MouseEvent.BUTTON1) // Bouton de gauche?
 		{
-			if(this.currentShapeType == ShapeType.POLYGON)//polygone d'abord car pas de drag pour sa création
+			if (this.currentMode == Mode.CREATING)
 			{
-				if(this.currentPolygon == null)
+				if (this.currentShapeType == ShapeType.POLYGON)//polygone d'abord car pas de drag pour sa création
 				{
-					this.currentPolygon = new VPolygon(e.getX(), e.getY(), 0, 0);
+					if(this.currentPolygon == null)
+					{
+						this.currentPolygon = new VPolygon(e.getX(), e.getY(), 0, 0);
+					}
+					this.currentPolygon.addPoint(e.getX(), e.getY());
+					this.repaint();
 				}
-				this.currentPolygon.addPoint(e.getX(), e.getY());
-				this.repaint();
-			}
-			else if (this.startDragPoint != null) // Mode création d'une autre forme?
-			{
-				java.awt.Rectangle rect = this.makeRect(this.startDragPoint, e.getPoint());
-
-				// Si la largeur et la hauteur ne sont pas nulles
-				if (rect.width > 0 && rect.height > 0)
+				else if (this.startDragPoint != null) // Mode création d'une autre forme?
 				{
-					// Crée une forme
-					Shape shape = this.createShape(rect.x, rect.y, rect.width, rect.height);
-					// Ajoute la forme dans la liste de formes du dessin
-					this.shapeList.add(shape);
-				}
+					java.awt.Rectangle rect = this.makeRect(this.startDragPoint, e.getPoint());
 
-				this.repaint();
+					// Si la largeur et la hauteur ne sont pas nulles
+					if (rect.width > 0 && rect.height > 0)
+					{
+						// Crée une forme
+						Shape shape = this.createShape(rect.x, rect.y, rect.width, rect.height);
+						// Ajoute la forme dans la liste de formes du dessin
+						this.shapeList.add(shape);
+					}
+
+					this.repaint();
+				}
 			}
-			
 		}
 		
 		this.startDragPoint = null;
 		this.currentDragPoint = null;
-		this.panning = false;
-		this.moving = false;
+		this.setMode(DrawingPanel.DEFAULT_MODE);
 	}
 	
 	@Override
 	public void mouseDragged(MouseEvent e)
 	{
+		// Si l'opération n'a pas été annulée (en appuyant sur la touche ESC, par exemple)
 		if (this.startDragPoint != null)
 		{
 			this.currentDragPoint = e.getPoint();
 
 			// Si mode panning 
-			if (this.panning)
+			if (this.currentMode == Mode.PANNING)
 			{
-				// Ajuste le déplacement du dessin selon le déplacement de la souris en coordonnées virtuelles
+				// Ajuste le déplacement du dessin selon le déplacement de la souris convertit en déplacement virtuel
 				this.virtualDeltaX += (e.getX() - this.startDragPoint.x) / this.scalingFactor;
 				this.virtualDeltaY += (e.getY() - this.startDragPoint.y) / this.scalingFactor;
 				
 				// Réinitialise le point de départ du déplacement
 				this.startDragPoint = this.currentDragPoint;
 			}
-			else if (this.moving) // Déplacement des formes sélectionnées
+			else if (this.currentMode == Mode.MOVING) // Déplacement des formes sélectionnées
 			{
-				// Convertit le déplacement de la souris en coordonnées virtuelles
+				// Convertit le déplacement de la souris en déplacement virtuel
 				float virtualDeltaX = (e.getX() - this.startDragPoint.x) / this.scalingFactor;
 				float virtualDeltaY = (e.getY() - this.startDragPoint.y) / this.scalingFactor;
 				
@@ -393,28 +422,35 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	@Override
 	public void keyPressed(KeyEvent e)
 	{
-		int keyCode = e.getKeyCode();
-		
-		switch (keyCode)
+		switch (e.getKeyCode())
 		{
 			case KeyEvent.VK_E:
 				this.currentShapeType = ShapeType.ELLIPSE;
+				this.setMode(Mode.CREATING);
 				break;
 				
 			case KeyEvent.VK_S:
 				this.currentShapeType = ShapeType.SQUARE;
+				this.setMode(Mode.CREATING);
 				break;
 				
 			case KeyEvent.VK_R:
 				this.currentShapeType = ShapeType.RECTANGLE;
+				this.setMode(Mode.CREATING);
 				break;
 				
 			case KeyEvent.VK_C:
 				this.currentShapeType = ShapeType.CIRCLE;
+				this.setMode(Mode.CREATING);
 				break;
 				
 			case KeyEvent.VK_P:
+				this.setMode(Mode.CREATING);
 				this.currentShapeType = ShapeType.POLYGON;
+				break;
+				
+			case KeyEvent.VK_L:
+				this.setMode(Mode.SELECTING);
 				break;
 				
 			case KeyEvent.VK_ADD:
@@ -426,6 +462,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 				break;
 				
 			case KeyEvent.VK_ESCAPE:
+				// Annule ou termine une opération impliquant un drag
 				this.startDragPoint = null;
 				this.currentDragPoint = null;
 				this.repaint();
@@ -445,14 +482,22 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 				this.shapeList = newShapeList;
 				this.repaint();
 				break;
+			
+			case KeyEvent.VK_SHIFT:
+				this.setMode(Mode.MOVING);
+				break;
 		}
 	}
 
 	@Override
-	public void keyReleased(KeyEvent arg0)
+	public void keyReleased(KeyEvent e)
 	{
-		// TODO Auto-generated method stub
-		
+		switch (e.getKeyCode())
+		{
+			case KeyEvent.VK_SHIFT:
+				this.setMode(DrawingPanel.DEFAULT_MODE);
+				break;
+		}		
 	}
 
 	@Override
