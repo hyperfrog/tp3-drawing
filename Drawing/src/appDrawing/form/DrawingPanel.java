@@ -136,20 +136,23 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 			g.drawImage(buffer, 0, 0, null);
 			
 			
-			// Si l'utilisateur est en train de créer une forme
-//			if (!this.moving && !this.panning && this.startDragPoint != null && this.currentDragPoint != null)
-			if (this.currentMode == Mode.CREATING && this.startDragPoint != null && this.currentDragPoint != null)
+			// Si drag en cours et mode création ou sélection actif  
+			if ((this.currentMode == Mode.CREATING || this.currentMode == Mode.SELECTING) 
+					&& this.startDragPoint != null 
+					&& this.currentDragPoint != null)
 			{
 				java.awt.Rectangle rect = this.makeRect(this.startDragPoint, this.currentDragPoint);
 				Graphics2D g2d = (Graphics2D) g;
 				
-				if(this.currentShapeType != ShapeType.POLYGON)
+				if (this.currentShapeType != ShapeType.POLYGON)
 				{
-					// Dessine la forme sans l'ajouter dans la liste
-					Shape shape = createShape(rect.x, rect.y, rect.width, rect.height);
-					shape.draw(g2d, scalingFactor, this.virtualDeltaX, this.virtualDeltaY);
-	
-					// Dessine le rectangle qui englobe la forme
+					if (this.currentMode == Mode.CREATING)
+					{
+						// Dessine la forme sans l'ajouter dans la liste
+						Shape shape = createShape(rect.x, rect.y, rect.width, rect.height);
+						shape.draw(g2d, scalingFactor, this.virtualDeltaX, this.virtualDeltaY);
+					}
+					// Dessine le rectangle correspondant aux deux points du drag
 					g2d.setColor(Color.GRAY);
 					g2d.setStroke(DrawingPanel.DASHED_STROKE);
 					g2d.drawRect(rect.x, rect.y, rect.width, rect.height);
@@ -279,48 +282,9 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 //		this.requestFocusInWindow();
 
 		this.startDragPoint = e.getPoint();
-		this.currentDragPoint = this.startDragPoint;
+//		this.currentDragPoint = this.startDragPoint;
 
-		if (e.getButton() == MouseEvent.BUTTON1) // Bouton de gauche?
-		{
-			if ((e.getModifiers() & ActionEvent.CTRL_MASK) != 0) // Touche Ctrl?
-			{
-				// Annule le «tracking»
-				this.startDragPoint = null;
-				this.currentDragPoint = null;
-				
-//				this.currentMode = Mode.SELECTING;
-
-				Shape shapeToSelect = null;
-				
-				// Trouve la forme la plus proche du dessus dont le rectangle contient le point cliqué
-				// TODO : Parcourir la liste à l'envers avec un itérateur pour trouver plus rapidement la forme la plus proche du dessus 
-				for(Shape shape : shapeList)
-				{
-					java.awt.Rectangle r = shape.getRealRect(this.scalingFactor, this.virtualDeltaX, this.virtualDeltaY);
-
-					if (r.contains(e.getPoint()))
-					{
-						shapeToSelect = shape;
-					}
-				}
-				
-				if (shapeToSelect != null) // Forme trouvée?
-				{
-					// Inverse la sélection de cette forme 
-					shapeToSelect.setSelected(!shapeToSelect.isSelected());
-				}
-				else // Non, désélectionne tout
-				{
-					for(Shape shape : shapeList)
-					{
-						shape.setSelected(false);
-					}
-				}
-				this.repaint();
-			}
-		}
-		else if (e.getButton() == MouseEvent.BUTTON3) // Bouton de droite?
+		if (e.getButton() == MouseEvent.BUTTON3) // Bouton de droite?
 		{
 			// Début du mode panning
 			this.setMode(Mode.PANNING);
@@ -359,11 +323,55 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 					this.repaint();
 				}
 			}
+			else if (this.currentMode == Mode.SELECTING)
+			{
+				// Pas de drag
+				if (this.currentDragPoint == null)
+				{
+					Shape shapeToSelect = null;
+					
+					// Trouve la forme la plus proche du dessus dont le rectangle contient le point cliqué
+					// TODO : Parcourir la liste à l'envers avec un itérateur pour trouver plus rapidement la forme la plus proche du dessus 
+					for (Shape shape : shapeList)
+					{
+						java.awt.Rectangle r = shape.getRealRect(this.scalingFactor, this.virtualDeltaX, this.virtualDeltaY);
+	
+						if (r.contains(e.getPoint()))
+						{
+							shapeToSelect = shape;
+						}
+					}
+					
+					if (shapeToSelect != null) // Forme trouvée?
+					{
+						// Inverse la sélection de cette forme 
+						shapeToSelect.setSelected(!shapeToSelect.isSelected());
+					}
+					
+					// Si Ctrl pas enfoncé, désélectionne toutes les formes sauf shapeToSelect 
+					if ((e.getModifiers() & ActionEvent.CTRL_MASK) == 0)
+					{
+						for (Shape shape : shapeList)
+						{
+							if (shape != shapeToSelect)
+							{
+								shape.setSelected(false);
+							}
+						}
+					}
+				}
+
+				this.repaint();
+			}
 		}
 		
 		this.startDragPoint = null;
 		this.currentDragPoint = null;
-		this.setMode(DrawingPanel.DEFAULT_MODE);
+		
+		if (this.currentMode == Mode.PANNING || this.currentMode == Mode.MOVING)
+		{
+			this.setMode(DrawingPanel.DEFAULT_MODE);
+		}
 	}
 	
 	@Override
@@ -400,6 +408,22 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 				}
 				// Réinitialise le point de départ du déplacement
 				this.startDragPoint = this.currentDragPoint;
+			}
+			else if (this.currentMode == Mode.SELECTING)
+			{
+				for(Shape shape : shapeList)
+				{
+					java.awt.Rectangle r = shape.getRealRect(this.scalingFactor, this.virtualDeltaX, this.virtualDeltaY);
+
+					if (this.makeRect(this.startDragPoint, this.currentDragPoint).contains(r))
+					{
+						shape.setSelected(true);
+					}
+					else if ((e.getModifiers() & ActionEvent.CTRL_MASK) == 0) // Si Ctrl pas enfoncé
+					{
+						shape.setSelected(false);
+					}
+				}
 			}
 
 			this.repaint();
