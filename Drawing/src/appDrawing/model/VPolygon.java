@@ -83,15 +83,13 @@ public class VPolygon extends Shape
 	@Override
 	public void draw(Graphics2D g, float drawingScalingFactor, float drawingDeltaX, float drawingDeltaY)
 	{
-		// Obtient les coordonnées réelles du rectangle englobant
-	       
 		int[] xPoints = new int[this.points.size()];
 		int[] yPoints = new int[this.points.size()];
 		
 		for(int i = 0; i < this.points.size(); ++i)
 		{
-			xPoints[i] = (int) Math.round( ( drawingDeltaX + this.points.get(i).getX() ) * drawingScalingFactor * this.scalingFactor);
-			yPoints[i] = (int) Math.round( ( drawingDeltaY + this.points.get(i).getY() ) * drawingScalingFactor * this.scalingFactor);
+			xPoints[i] = (int) Math.round( ( drawingDeltaX + this.points.get(i).getX() ) * drawingScalingFactor );
+			yPoints[i] = (int) Math.round( ( drawingDeltaY + this.points.get(i).getY() ) * drawingScalingFactor );
 		}
 		
 		Polygon model = new Polygon(xPoints, yPoints, this.points.size());
