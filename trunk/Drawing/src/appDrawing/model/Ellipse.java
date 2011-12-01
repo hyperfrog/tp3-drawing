@@ -3,21 +3,29 @@
  */
 package appDrawing.model;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.GradientPaint;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.Ellipse2D;
 
 /**
- * @author Christian
+ * @author Micaël Lemelin
+ * @author Christian Lesage
+ * @author Alexandre Tremblay
+ * @author Pascal Turcot
  *
  */
 public class Ellipse extends Shape
 {
 
-	// Crée une ellipse dans le rectangle englobant spécifié
+	/**
+	 * Construit la plus grande ellipse possible dans le rectangle englobant spécifié.
+	 * 
+	 * @param posX position du rectangle englobant sur l'axe des x
+	 * @param posY position du rectangle englobant sur l'axe des y
+	 * @param width largeur du rectangle englobant; changée pour 0 si négative 
+	 * @param height hauteur du rectangle englobant; changée pour 0 si négative
+	 */
 	public Ellipse(float posX, float posY, float width, float height)
 	{
 		super(posX, posY, width, height);

@@ -10,6 +10,13 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Vector;
 
+/**
+ * @author Micaël Lemelin
+ * @author Christian Lesage
+ * @author Alexandre Tremblay
+ * @author Pascal Turcot
+ *
+ */
 public class VPolygon extends Shape
 {
 	//liste de points du polygone
@@ -30,8 +37,8 @@ public class VPolygon extends Shape
 	/**
 	 * Ajoute au polygone un point spécifié en coordonnées réelles.
 	 * 
-	 * @param realX	Coordonée réelle du point en X (Au clic de la souris)
-	 * @param realY Coordonée réelle du point en Y (Au clic de la souris)
+	 * @param realX	Coordonée réelle du point en X
+	 * @param realY Coordonée réelle du point en Y
 	 * @param scalingFactor scalingFactor du DrawingPanel
 	 * @param virtualDeltaX virtualDeltaX du DrawingPanel
 	 * @param virtualDeltaY virtualDeltaY du DrawingPanel
