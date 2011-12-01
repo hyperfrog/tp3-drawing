@@ -18,6 +18,8 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
@@ -47,7 +49,10 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	// Point actuel d'un drag en coordonnées réelles
 	private Point currentDragPoint;
 
-	// Déplacement permanent du dessin en coordonnées virtuelles
+	// Position actuelle de la souris en coordonnées réelles
+	private Point currentMousePos;
+	
+	// Déplacement actuel du dessin en coordonnées virtuelles
 	private float virtualDeltaX;
 	private float virtualDeltaY;
 
@@ -56,7 +61,8 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	
 	private ArrayList<Shape> shapeList;
 	
-    // Trait utilisé pour dessiner la boîte autour d'une forme en mode création
+    // Trait utilisé pour dessiner une boîte autour d'une forme en mode création
+	// ainsi que la boîte de sélection
 	private final static BasicStroke DASHED_STROKE = 
     		new BasicStroke(
     				2.0f, 
@@ -121,43 +127,57 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 			
 			Graphics2D bufferGraphics = buffer.createGraphics();
 			
-			// Dessine toutes les formes sur le buffer
-			for(Shape shape : this.shapeList)
+			// Dessine toutes les formes de la liste sur le buffer
+			for (Shape shape : this.shapeList)
 			{
 				shape.draw(bufferGraphics, this.scalingFactor, this.virtualDeltaX, this.virtualDeltaY);
 			}
-			if(this.currentPolygon != null)
-			{
-				this.currentPolygon.draw(bufferGraphics, this.scalingFactor, this.virtualDeltaX, this.virtualDeltaY);
-			}
-
-			// Transfert le buffer sur le graphics du panneau
+			
+			// Transfère le buffer sur le graphics du panneau
 			g.drawImage(buffer, 0, 0, null);
 			
-			
-			// Si drag en cours et mode création ou sélection actif  
-			if ((this.currentMode == Mode.CREATING || this.currentMode == Mode.SELECTING) 
-					&& this.startDragPoint != null 
-					&& this.currentDragPoint != null)
+			Graphics2D g2d = (Graphics2D) g;
+
+			if (this.currentMode == Mode.CREATING)
 			{
-				java.awt.Rectangle rect = this.makeRect(this.startDragPoint, this.currentDragPoint);
-				Graphics2D g2d = (Graphics2D) g;
-				
-				if (this.currentShapeType != ShapeType.POLYGON)
+				// Si un nouveau polygone a commencé à être créé
+				if (this.currentShapeType == ShapeType.POLYGON)
 				{
-					if (this.currentMode == Mode.CREATING)
+					if (this.currentPolygon != null)
 					{
-						// Dessine la forme sans l'ajouter dans la liste
-						Shape shape = createShape(rect.x, rect.y, rect.width, rect.height);
-						shape.draw(g2d, scalingFactor, this.virtualDeltaX, this.virtualDeltaY);
+						ArrayList<Point2D> polyPoints = new ArrayList<Point2D>(this.currentPolygon.getPoints()); 
+						polyPoints.add(Shape.getVirtualPoint(this.currentMousePos.x, this.currentMousePos.y, 
+										this.scalingFactor, this.virtualDeltaX, this.virtualDeltaY));
+						
+						VPolygon poly = new VPolygon(0, 0);
+						poly.setPoints(polyPoints);
+						poly.draw(g2d, this.scalingFactor, this.virtualDeltaX, this.virtualDeltaY);
 					}
-					// Dessine le rectangle correspondant aux deux points du drag
-					g2d.setColor(Color.GRAY);
-					g2d.setStroke(DrawingPanel.DASHED_STROKE);
-					g2d.drawRect(rect.x, rect.y, rect.width, rect.height);
+				}
+				// Sinon, si un drag est en cours
+				else if (this.startDragPoint != null && this.currentDragPoint != null)
+				{
+					java.awt.Rectangle rect = this.makeRect(this.startDragPoint, this.currentDragPoint);
+					// Dessine la forme sans l'ajouter dans la liste
+					Shape shape = createShape(rect.x, rect.y, rect.width, rect.height);
+					shape.draw(g2d, this.scalingFactor, this.virtualDeltaX, this.virtualDeltaY);
+					// Dessine un rectangle pointillé autour de la forme
+					this.drawDashedBox(g2d, rect);
 				}
 			}
+			else if (this.currentMode == Mode.SELECTING && this.startDragPoint != null && this.currentDragPoint != null)
+			{
+				this.drawDashedBox(g2d, this.makeRect(this.startDragPoint, this.currentDragPoint));
+			}
 		}
+	}
+	
+	// Dessine un rectangle pointillé 
+	private void drawDashedBox(Graphics2D g2d, java.awt.Rectangle rect)
+	{
+		g2d.setColor(Color.GRAY);
+		g2d.setStroke(DrawingPanel.DASHED_STROKE);
+		g2d.drawRect(rect.x, rect.y, rect.width, rect.height);
 	}
 	
 	// La largeur et la hauteur d'une forme ne peuvent pas être négatives. 
@@ -191,6 +211,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	public void erase()
 	{
 		this.shapeList = new ArrayList<Shape>();
+		this.currentPolygon = null;
 		this.repaint();
 	}
 	
@@ -223,7 +244,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 				shape = new Circle(virtualX, virtualY, virtualWidth, virtualHeight);
 				break;
 			case POLYGON:
-				shape = new VPolygon(virtualX, virtualY, virtualWidth, virtualHeight);
+				shape = new VPolygon(virtualX, virtualY);
 				break;
 		}
 		
@@ -232,14 +253,9 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	
 	private void setMode(Mode newMode)
 	{
-		
-		//si on créé un autre forme ou  que l'on change de mode et qu'un polygone est en cours de dessin,
-		//on ajoute le polygone dans la shapeList et on réinitialise le currentPolygon. Aussi, il serait possible 
-		//d'annuler le polygone en cours, car il n'est pas dans la liste tant que le dessin n'est pas terminé
 		if(this.currentPolygon != null)
 		{
-			this.shapeList.add(this.currentPolygon);
-			this.currentPolygon = null;
+			this.endPolygonCreation();
 		}
 		
 		this.currentMode = newMode;
@@ -264,6 +280,16 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		this.setCursor(Cursor.getPredefinedCursor(preDefCursor));
 	}
 
+	//si on créé un autre forme ou  que l'on change de mode et qu'un polygone est en cours de dessin,
+	//on ajoute le polygone dans la shapeList et on réinitialise le currentPolygon. Aussi, il serait possible 
+	//d'annuler le polygone en cours, car il n'est pas dans la liste tant que le dessin n'est pas terminé
+	private void endPolygonCreation()
+	{
+		this.shapeList.add(this.currentPolygon);
+		this.currentPolygon = null;
+		this.repaint();
+	}
+	
 	@Override
 	public void mouseClicked(MouseEvent e)
 	{
@@ -309,15 +335,15 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 			{
 				if (this.currentShapeType == ShapeType.POLYGON)//polygone d'abord car pas de drag pour sa création
 				{
-					if(this.currentPolygon == null)//Si aucun polygone n'est en cours de création
+					if (this.currentPolygon == null)//Si aucun polygone n'est en cours de création
 					{
 						this.currentPolygon = (VPolygon) this.createShape(e.getX(), e.getY(), 0, 0);
 					}
 					else
 					{
 						//On ajoute le point réel donné (qui sera transformé en point virtuel)
-						this.currentPolygon.addPoint(e.getX(),e.getY(),this.scalingFactor,
-								this.virtualDeltaX,this.virtualDeltaY);
+						this.currentPolygon.addPoint(e.getX(), e.getY(), this.scalingFactor, 
+								this.virtualDeltaX, this.virtualDeltaY);
 					}
 					this.repaint();
 				}
@@ -391,7 +417,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	@Override
 	public void mouseDragged(MouseEvent e)
 	{
-		// Si l'opération n'a pas été annulée (en appuyant sur la touche ESC, par exemple)
+		// Si l'opération n'a pas été annulée (en appuyant sur ESC, par exemple)
 		if (this.startDragPoint != null)
 		{
 			this.currentDragPoint = e.getPoint();
@@ -399,7 +425,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 			// Si mode panning 
 			if (this.currentMode == Mode.PANNING)
 			{
-				// Ajuste le déplacement du dessin selon le déplacement de la souris convertit en déplacement virtuel
+				// Ajuste le déplacement du dessin selon le déplacement de la souris converti en déplacement virtuel
 				this.virtualDeltaX += (e.getX() - this.startDragPoint.x) / this.scalingFactor;
 				this.virtualDeltaY += (e.getY() - this.startDragPoint.y) / this.scalingFactor;
 				
@@ -417,7 +443,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 				{
 					if (shape.isSelected())
 					{
-						shape.setPosition(shape.getPosX() + virtualDeltaX, shape.getPosY() + virtualDeltaY);
+						shape.translate(virtualDeltaX, virtualDeltaY);
 					}
 				}
 				// Réinitialise le point de départ du déplacement
@@ -447,8 +473,11 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	@Override
 	public void mouseMoved(MouseEvent e)
 	{
-		// TODO Auto-generated method stub
-		
+		this.currentMousePos = e.getPoint();
+		if (this.currentPolygon != null)
+		{
+			this.repaint();
+		}
 	}
 
 	@Override
@@ -504,6 +533,11 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 				this.startDragPoint = null;
 				this.currentDragPoint = null;
 				this.repaint();
+				
+				if (this.currentPolygon != null)
+				{
+					this.endPolygonCreation();
+				}
 				break;
 				
 			case KeyEvent.VK_DELETE:

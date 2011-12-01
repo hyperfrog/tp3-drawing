@@ -11,6 +11,7 @@ import java.awt.Paint;
 import java.awt.Rectangle;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 
 
 /**
@@ -64,6 +65,36 @@ public abstract class Shape
 	}
 
 	/**
+	 * Convertit en coordonnées virtuelles un point spécifiée en coordonnées réelles. 
+	 * 
+	 * @param realX	Coordonée réelle du point en X 
+	 * @param realY Coordonée réelle du point en Y 
+	 * @param scalingFactor scalingFactor du dessin
+	 * @param virtualDeltaX virtualDeltaX du dessin
+	 * @param virtualDeltaY virtualDeltaY du dessin
+	 * @return point converti en coordonnées virtuelles
+	 */
+	public static Point2D getVirtualPoint(int realX, int realY, float scalingFactor, float virtualDeltaX, float virtualDeltaY)
+	{
+		// Calcule les coordonnées virtuelles
+		float virtualX = (realX / scalingFactor) - virtualDeltaX;
+		float virtualY = (realY / scalingFactor) - virtualDeltaY;
+
+		return new Point2D.Float(virtualX, virtualY);
+	}
+
+//	public static Rectangle2D getVirtualRect(int realX, int realY, int realWidth, int realHeight, 
+//			float scalingFactor, float virtualDeltaX, float virtualDeltaY)
+//	{
+//		Point2D p = Shape.getVirtualPoint(realX, realY, scalingFactor, virtualDeltaX, virtualDeltaY);
+//		
+//		float virtualWidth = realWidth / scalingFactor;
+//		float virtualHeight = realHeight / scalingFactor;
+//				
+//		return new Rectangle2D.Float((float)p.getX(), (float)p.getY(), virtualWidth, virtualHeight);
+//	}
+	
+	/**
 	 * Indique si la forme est sélectionnée.
 	 * 
 	 * @return vrai si la forme est sélectionnée, faux sinon.
@@ -116,6 +147,18 @@ public abstract class Shape
 	}
 	
 	/**
+	 * Déplace la forme.
+	 * 
+	 * @param deltaX déplacement de la forme sur l'axe des x
+	 * @param deltaY déplacement de la forme sur l'axe des y
+	 */
+	public void translate(float deltaX, float deltaY)
+	{
+		this.posX += deltaX;
+		this.posY += deltaY;
+	}
+	
+	/**
 	 * Dessine la forme dans le graphics spécifié. Toutes les classes dérivées doivent 
 	 * avoir une méthode draw(), qui est appelée quand la forme courante doit être dessinée.
 	 * 
@@ -149,7 +192,7 @@ public abstract class Shape
 	// des propriétés gradPoint1, gradPoint2, gradColor1 et gradColor2 de la forme courante.
 	// Malheureusement, on ne peut pas utiliser des GradientPaints préconstruits parce qu'ils 
 	// ne sont pas faits pour être utilisés avec un système de coordonnées virtuelles. 
-	// En fait, ils sont assez mal foutus... Ils utilisent le point d'oridine du Graphics 
+	// En fait, ils sont assez mal foutus... Ils utilisent le point d'origine du Graphics 
 	// comme référence au lieu de considérer la position de la forme à dessiner.
 	protected Paint getGradientPaint(float drawingScalingFactor, float drawingDeltaX, float drawingDeltaY)
 	{
@@ -168,9 +211,9 @@ public abstract class Shape
 	
 	// Dessine une forme java.awt.Shape passée en paramètre en la remplissant 
 	// avec le GradientPaint de la forme courante et en traçant son contour.
-	// Cette méthode peut-être utilisées par les classes dérivées pour dessiner toute 
-	// forme pouvant être dessinée avec une java.awt.Shape, mais son utilisation
-	// n'est pas obligatoire. De manière typique, la classe dérivée utilise drawShape()
+	// Cette méthode peut-être utilisée par les classes dérivées pour dessiner toute 
+	// forme pouvant être représentée par une java.awt.Shape, mais son utilisation
+	// n'est pas obligatoire. De manière typique, la classe dérivée appelle drawShape()
 	// dans sa méthode draw().
 	protected void drawShape(Graphics2D g, java.awt.Shape shape, float drawingScalingFactor, float drawingDeltaX, float drawingDeltaY)
 	{
