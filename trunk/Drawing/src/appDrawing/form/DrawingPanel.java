@@ -509,7 +509,15 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e)
 	{
-		this.zoom(-e.getWheelRotation());
+		if ((e.getModifiers() & ActionEvent.SHIFT_MASK) == 0) // Shift pas enfoncé
+		{
+			this.zoom(-e.getWheelRotation());
+		}
+		else // Shift enfoncé
+		{
+			// Scaling des formes sélectionnées
+			this.scaleSelectedShapes(-e.getWheelRotation());
+		}
 	}
 
 	@Override
@@ -626,6 +634,22 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		this.virtualDeltaX += (newWidth - originalWidth) / 2;
 		this.virtualDeltaY += (newHeight - originalHeight) / 2;
 
+		this.repaint();
+	}
+	// Agrandit ou réduit les formes sélectionnées 
+	// en multipliant leur scaling factor par 1.1 pour chaque unité de scalingAmount.
+	// Par ex. si 3 est passé, sf = sf * 1.1^3. Si -2 est passé, sf = sf * 1.1^-2. 
+	private void scaleSelectedShapes(int scalingAmount)
+	{
+		for(Shape shape : this.shapeList)
+		{
+			float scalingMultiplier = (float) Math.pow(1.1, scalingAmount);
+
+			if (shape.isSelected())
+			{
+				shape.scale(scalingMultiplier, true);
+			}
+		}
 		this.repaint();
 	}
 }
