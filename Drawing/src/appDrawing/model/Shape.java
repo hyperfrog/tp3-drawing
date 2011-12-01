@@ -21,10 +21,17 @@ import java.awt.geom.Rectangle2D;
  * @author Pascal Turcot
  * 
  */
+/**
+ * @author Christian
+ *
+ */
+/**
+ * @author Christian
+ *
+ */
 public abstract class Shape
 {
 	protected static final Color SELECTION_COLOR = Color.BLUE;
-	protected static final float DEFAULT_SCALING_FACTOR = 1.0f;
 	protected static final float DEFAULT_STROKE_WIDTH = 2.0f;
 	protected static final Color DEFAULT_STROKE_COLOR = Color.BLACK;
 	protected static final Color DEFAULT_GRAD_COLOR1 = Color.RED;
@@ -37,7 +44,6 @@ public abstract class Shape
 	protected float width;
 	protected float height;
 
-	protected float scalingFactor = Shape.DEFAULT_SCALING_FACTOR;
 	protected boolean selected = false;
 	
 	protected Color strokeColor = Shape.DEFAULT_STROKE_COLOR;
@@ -161,6 +167,58 @@ public abstract class Shape
 	}
 	
 	/**
+	 * Agrandit ou réduit la forme par le facteur spécifié.
+	 *   
+	 * @param scalingFactor facteur d'agrandissement/réduction
+	 * @param recenter indique si vrai, la forme est recentrée 
+	 */
+	public void scale(float scalingFactor, boolean recenter)
+	{
+			this.scaleWidth(scalingFactor, recenter);
+			this.scaleHeight(scalingFactor, recenter);
+	}
+	
+	/**
+	 * Agrandit ou réduit la forme en largeur par le facteur spécifié.
+	 *   
+	 * @param scalingFactor facteur d'agrandissement/réduction
+	 * @param recenter indique si vrai, la forme est recentrée 
+	 */
+	public void scaleWidth(float scalingFactor, boolean recenter)
+	{
+		if (scalingFactor > 0)
+		{
+			float originalWidth = this.width;
+			this.width *= scalingFactor;
+			
+			if (recenter)
+			{
+				this.translate((originalWidth - this.width) /2, 0);
+			}
+		}
+	}
+
+	/**
+	 * Agrandit ou réduit la forme en hauteur par le facteur spécifié.
+	 *   
+	 * @param scalingFactor facteur d'agrandissement/réduction
+	 * @param recenter indique si vrai, la forme est recentrée 
+	 */
+	public void scaleHeight(float scalingFactor, boolean recenter)
+	{
+		if (scalingFactor > 0)
+		{
+			float originalHeight = this.height;
+			this.height *= scalingFactor;
+			
+			if (recenter)
+			{
+				this.translate(0, (originalHeight - this.height) /2);
+			}
+		}
+	}
+	
+	/**
 	 * Dessine la forme dans le graphics spécifié. Toutes les classes dérivées doivent 
 	 * avoir une méthode draw(), qui est appelée quand la forme courante doit être dessinée.
 	 * 
@@ -182,8 +240,8 @@ public abstract class Shape
 	 */
 	public Rectangle getRealRect(float drawingScalingFactor, float drawingDeltaX, float drawingDeltaY)
 	{
-		int realWidth = Math.round(this.width * this.scalingFactor * drawingScalingFactor);
-		int realHeight = Math.round(this.height * this.scalingFactor * drawingScalingFactor);
+		int realWidth = Math.round(this.width * drawingScalingFactor);
+		int realHeight = Math.round(this.height * drawingScalingFactor);
 		int realX = Math.round((this.posX + drawingDeltaX) * drawingScalingFactor);
 		int realY = Math.round((this.posY + drawingDeltaY) * drawingScalingFactor);
 		
@@ -223,7 +281,7 @@ public abstract class Shape
 		g.fill(shape);
 		g.setColor(this.strokeColor);
 		g.setStroke(new BasicStroke(
-				this.strokeWidth * drawingScalingFactor * this.scalingFactor, 
+				this.strokeWidth * drawingScalingFactor, 
 				BasicStroke.CAP_ROUND, 
 				BasicStroke.JOIN_ROUND));
 		g.draw(shape);
