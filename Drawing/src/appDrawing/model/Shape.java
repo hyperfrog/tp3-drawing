@@ -15,7 +15,10 @@ import java.awt.geom.Rectangle2D;
 
 
 /**
- * @author Christian
+ * @author Micaël Lemelin
+ * @author Christian Lesage
+ * @author Alexandre Tremblay
+ * @author Pascal Turcot
  * 
  */
 public abstract class Shape
@@ -47,13 +50,12 @@ public abstract class Shape
 	protected Color gradColor2 = Shape.DEFAULT_GRAD_COLOR2;
 	
 	/**
-	 * Construit une forme à la position spécifiée en utilisant la largeur
-	 * et la hauteur spécifiées.
+	 * Construit une forme dans le rectangle englobant spécifié.
 	 * 
-	 * @param posX position de la forme sur l'axe des x
-	 * @param posY position de la forme sur l'axe des y
-	 * @param width largeur de la forme; changée pour 0 si négative 
-	 * @param height hauteur de la forme; changée pour 0 si négative
+	 * @param posX position du rectangle englobant sur l'axe des x
+	 * @param posY position du rectangle englobant sur l'axe des y
+	 * @param width largeur du rectangle englobant; changée pour 0 si négative 
+	 * @param height hauteur du rectangle englobant; changée pour 0 si négative
 	 */
 	public Shape(float posX, float posY, float width, float height)
 	{

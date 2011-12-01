@@ -34,7 +34,10 @@ import appDrawing.model.Shape;
 import appDrawing.model.Square;
 
 /**
- * @author Christian
+ * @author Micaël Lemelin
+ * @author Christian Lesage
+ * @author Alexandre Tremblay
+ * @author Pascal Turcot
  *
  */
 public class DrawingPanel extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener
@@ -51,6 +54,10 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 
 	// Position actuelle de la souris en coordonnées réelles
 	private Point currentMousePos;
+	
+	// Liste des formes déjà sélectionnées
+	// Sert au mode de sélection additive (avec la touche Ctrl)
+	private ArrayList<Shape> alreadySelectedShapes = new ArrayList<Shape>();
 	
 	// Déplacement actuel du dessin en coordonnées virtuelles
 	private float virtualDeltaX;
@@ -79,8 +86,11 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
     private enum Mode {CREATING, PANNING, MOVING, SELECTING, EDITING}
     
     // Mode de l'opération en cours
-    private Mode currentMode;
+    private Mode currentMode = DrawingPanel.DEFAULT_MODE;
 	
+    // Mode de la dernière opération
+    private Mode lastMode = DrawingPanel.DEFAULT_MODE;
+
     // Type de la prochaine forme à être dessinée 
 	private ShapeType currentShapeType = ShapeType.ELLIPSE; 
 	
@@ -104,8 +114,6 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		this.addMouseWheelListener(this);
 		this.erase();
 		this.setMode(DrawingPanel.DEFAULT_MODE);
-//		KeyEventDispatcher myKeyEventDispatcher = new DefaultFocusManager();
-//		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(myKeyEventDispatcher);
 	}
 	
 	/**
@@ -258,7 +266,11 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 			this.endPolygonCreation();
 		}
 		
-		this.currentMode = newMode;
+		if (newMode != this.currentMode)
+		{
+			this.lastMode = this.currentMode;
+			this.currentMode = newMode;
+		}
 		int preDefCursor = Cursor.DEFAULT_CURSOR;
 		
 		switch (newMode)
@@ -314,12 +326,23 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	@Override
 	public void mousePressed(MouseEvent e)
 	{
-//		this.requestFocusInWindow();
-
+		this.alreadySelectedShapes.clear();
+		
 		this.startDragPoint = e.getPoint();
-//		this.currentDragPoint = this.startDragPoint;
 
-		if (e.getButton() == MouseEvent.BUTTON3) // Bouton de droite?
+		// Sinon, si bouton de gauche, mode sélection actif et Ctrl enfoncé
+		if (e.getButton() == MouseEvent.BUTTON1 && this.currentMode == Mode.SELECTING && (e.getModifiers() & ActionEvent.CTRL_MASK) != 0)
+		{
+			// Construit une liste de formes à ne pas désélectionner
+			for (Shape shape : shapeList)
+			{
+				if (shape.isSelected())
+				{
+					this.alreadySelectedShapes.add(shape);
+				}
+			}
+		}
+		else if (e.getButton() == MouseEvent.BUTTON3) // Bouton de droite?
 		{
 			// Début du mode panning
 			this.setMode(Mode.PANNING);
@@ -347,25 +370,21 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 					}
 					this.repaint();
 				}
-				else if (this.startDragPoint != null) // Mode création d'une autre forme?
+				else if (this.currentDragPoint != null) // Mode création d'une autre forme?
 				{
 					java.awt.Rectangle rect = this.makeRect(this.startDragPoint, e.getPoint());
 
-					// Si la largeur et la hauteur ne sont pas nulles
-					if (rect.width > 0 && rect.height > 0)
-					{
-						// Crée une forme
-						Shape shape = this.createShape(rect.x, rect.y, rect.width, rect.height);
-						// Ajoute la forme dans la liste de formes du dessin
-						this.shapeList.add(shape);
-					}
+					// Crée une forme
+					Shape shape = this.createShape(rect.x, rect.y, rect.width, rect.height);
+					// Ajoute la forme dans la liste de formes du dessin
+					this.shapeList.add(shape);
 
 					this.repaint();
 				}
 			}
 			else if (this.currentMode == Mode.SELECTING)
 			{
-				// Pas de drag
+				// Si pas de drag
 				if (this.currentDragPoint == null)
 				{
 					Shape shapeToSelect = null;
@@ -410,7 +429,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		
 		if (this.currentMode == Mode.PANNING || this.currentMode == Mode.MOVING)
 		{
-			this.setMode(DrawingPanel.DEFAULT_MODE);
+			this.setMode(this.lastMode);
 		}
 	}
 	
@@ -421,6 +440,9 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		if (this.startDragPoint != null)
 		{
 			this.currentDragPoint = e.getPoint();
+			
+			// mouseMoved() n'est pas appelé pendant un drag, alors on fait comme si...
+			this.currentMousePos = this.currentDragPoint;
 
 			// Si mode panning 
 			if (this.currentMode == Mode.PANNING)
@@ -451,15 +473,19 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 			}
 			else if (this.currentMode == Mode.SELECTING)
 			{
-				for(Shape shape : shapeList)
+				// Vérifie chacune des formes
+				for (Shape shape : shapeList)
 				{
 					java.awt.Rectangle r = shape.getRealRect(this.scalingFactor, this.virtualDeltaX, this.virtualDeltaY);
 
+					// Forme contenue dans le rectangle de sélection?
 					if (this.makeRect(this.startDragPoint, this.currentDragPoint).contains(r))
 					{
 						shape.setSelected(true);
 					}
-					else if ((e.getModifiers() & ActionEvent.CTRL_MASK) == 0) // Si Ctrl pas enfoncé
+					// Sinon, désélectionne la forme, à moins qu'elle fasse partie 
+					// de la liste des formes à ne pas désélectionner 
+					else if (!this.alreadySelectedShapes.contains(shape))
 					{
 						shape.setSelected(false);
 					}
@@ -567,7 +593,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		switch (e.getKeyCode())
 		{
 			case KeyEvent.VK_SHIFT:
-				this.setMode(DrawingPanel.DEFAULT_MODE);
+				this.setMode(this.lastMode);
 				break;
 		}		
 	}
@@ -579,9 +605,9 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		
 	}
 	
-	// Zoom le dessin en multipliant le scaling factor par 1.1 pour chaque unité de zoomTimes.
+	// Zoom le dessin en multipliant son scaling factor par 1.1 pour chaque unité de zoomAmount.
 	// Par ex. si 3 est passé, sf = sf * 1.1^3. Si -2 est passé, sf = sf * 1.1^-2. 
-	private void zoom(float zoomTimes)
+	private void zoom(float zoomAMount)
 	{
 		// Mesure les dimensions virtuelles de la portion affichée du dessin 
 		// pour pouvoir recentrer celui-ci après l'ajustement du scaling factor  
@@ -590,7 +616,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 
 		// Ajuste le sacling factor en le multipliant par 1.1 pour chaque
 		// «coche» de la roulette
-		this.scalingFactor *= Math.pow(1.1, zoomTimes);
+		this.scalingFactor *= Math.pow(1.1, zoomAMount);
 
 		// Calcule les nouvelles dimensions virtuelles de la portion affichée du dessin
 		float newWidth = this.getWidth() / this.scalingFactor;
