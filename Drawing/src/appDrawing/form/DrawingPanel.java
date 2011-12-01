@@ -126,10 +126,9 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 			{
 				shape.draw(bufferGraphics, this.scalingFactor, this.virtualDeltaX, this.virtualDeltaY);
 			}
-			if(currentPolygon != null)//DESSINE LE POLYGONE COURRANT ATTENTION, JE SAIS QUE CELA MET LE
-				//POLYGONE AU PREMIER PLAN TOUJOURS, C'EST UNE SOLUTION TEMPORAIRE
+			if(this.currentPolygon != null)
 			{
-				currentPolygon.draw(bufferGraphics, this.scalingFactor, this.virtualDeltaX, this.virtualDeltaY);
+				this.currentPolygon.draw(bufferGraphics, this.scalingFactor, this.virtualDeltaX, this.virtualDeltaY);
 			}
 
 			// Transfert le buffer sur le graphics du panneau
@@ -233,6 +232,16 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	
 	private void setMode(Mode newMode)
 	{
+		
+		//si on créé un autre forme ou  que l'on change de mode et qu'un polygone est en cours de dessin,
+		//on ajoute le polygone dans la shapeList et on réinitialise le currentPolygon. Aussi, il serait possible 
+		//d'annuler le polygone en cours, car il n'est pas dans la liste tant que le dessin n'est pas terminé
+		if(this.currentPolygon != null)
+		{
+			this.shapeList.add(this.currentPolygon);
+			this.currentPolygon = null;
+		}
+		
 		this.currentMode = newMode;
 		int preDefCursor = Cursor.DEFAULT_CURSOR;
 		
@@ -300,11 +309,16 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 			{
 				if (this.currentShapeType == ShapeType.POLYGON)//polygone d'abord car pas de drag pour sa création
 				{
-					if(this.currentPolygon == null)
+					if(this.currentPolygon == null)//Si aucun polygone n'est en cours de création
 					{
-						this.currentPolygon = new VPolygon(e.getX(), e.getY(), 0, 0);
+						this.currentPolygon = (VPolygon) this.createShape(e.getX(), e.getY(), 0, 0);
 					}
-					this.currentPolygon.addPoint(e.getX(), e.getY());
+					else
+					{
+						//On ajoute le point réel donné (qui sera transformé en point virtuel)
+						this.currentPolygon.addPoint(e.getX(),e.getY(),this.scalingFactor,
+								this.virtualDeltaX,this.virtualDeltaY);
+					}
 					this.repaint();
 				}
 				else if (this.startDragPoint != null) // Mode création d'une autre forme?
@@ -469,7 +483,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 				break;
 				
 			case KeyEvent.VK_P:
-				this.setMode(Mode.CREATING);
+				this.setMode(Mode.CREATING);				
 				this.currentShapeType = ShapeType.POLYGON;
 				break;
 				
