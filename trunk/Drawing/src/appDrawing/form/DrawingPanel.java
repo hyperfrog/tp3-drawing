@@ -100,10 +100,10 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
     				0.0f);
     
 	// Types de formes pouvant être dessinées
-    private enum ShapeType {ELLIPSE, CIRCLE, RECTANGLE, SQUARE, POLYGON};
+    public enum ShapeType {ELLIPSE, CIRCLE, RECTANGLE, SQUARE, POLYGON};
     
     // Modes exclusifs de fonctionnement
-    private enum Mode {CREATING, PANNING, MOVING, SELECTING, EDITING}
+    public enum Mode {CREATING, PANNING, MOVING, SELECTING, EDITING}
     
     // Mode de l'opération en cours
     private Mode currentMode = DrawingPanel.DEFAULT_MODE;
@@ -300,7 +300,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		return shape;
 	}
 	
-	private void setMode(Mode newMode)
+	public void setMode(Mode newMode)
 	{
 		if(this.currentPolygon != null)
 		{
@@ -332,7 +332,16 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		
 		this.setCursor(Cursor.getPredefinedCursor(preDefCursor));
 	}
-
+	
+	/**
+	 * 
+	 * @param shapeType
+	 */
+	public void setShapeType(ShapeType shapeType)
+	{
+		this.currentShapeType = shapeType;
+	}
+	
 	//si on créé un autre forme ou  que l'on change de mode et qu'un polygone est en cours de dessin,
 	//on ajoute le polygone dans la shapeList et on réinitialise le currentPolygon. Aussi, il serait possible 
 	//d'annuler le polygone en cours, car il n'est pas dans la liste tant que le dessin n'est pas terminé
