@@ -3,13 +3,11 @@ package appDrawing.form;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Cursor;
-import java.awt.DefaultKeyboardFocusManager;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.Point;
-import java.awt.Polygon;
 //import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
@@ -20,11 +18,9 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
-//import javax.swing.DefaultFocusManager;
 import javax.swing.JPanel;
 
 import appDrawing.model.Circle;
@@ -355,21 +351,14 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	@Override
 	public void mousePressed(MouseEvent e)
 	{
-		this.alreadySelectedShapes.clear();
+//		this.currentSelection.clear();
 		
 		this.startDragPoint = e.getPoint();
 
 		// Sinon, si bouton de gauche, mode sélection actif et Ctrl enfoncé
 		if (e.getButton() == MouseEvent.BUTTON1 && this.currentMode == Mode.SELECTING && (e.getModifiers() & ActionEvent.CTRL_MASK) != 0)
 		{
-			// Construit une liste de formes à ne pas désélectionner
-			for (Shape shape : shapeList)
-			{
-				if (shape.isSelected())
-				{
-					this.alreadySelectedShapes.add(shape);
-				}
-			}
+			this.alreadySelectedShapes = this.getCurrentSelection();
 		}
 		else if (e.getButton() == MouseEvent.BUTTON3) // Bouton de droite?
 		{
@@ -436,7 +425,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 						shapeToSelect.setSelected(!shapeToSelect.isSelected());
 					}
 					
-					// Si Ctrl pas enfoncé, désélectionne toutes les formes sauf shapeToSelect 
+					// Si Ctrl pas enfoncé, désélectionne toutes les formes sauf la forme trouvée 
 					if ((e.getModifiers() & ActionEvent.CTRL_MASK) == 0)
 					{
 						for (Shape shape : shapeList)
@@ -490,12 +479,9 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 				float virtualDeltaY = (e.getY() - this.startDragPoint.y) / this.scalingFactor;
 				
 				// Applique le déplacement à chacune des formes sélectionnées 
-				for(Shape shape : this.shapeList)
+				for (Shape shape : this.getCurrentSelection())
 				{
-					if (shape.isSelected())
-					{
-						shape.translate(virtualDeltaX, virtualDeltaY);
-					}
+					shape.translate(virtualDeltaX, virtualDeltaY);
 				}
 				// Réinitialise le point de départ du déplacement
 				this.startDragPoint = this.currentDragPoint;
@@ -505,15 +491,15 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 				// Vérifie chacune des formes
 				for (Shape shape : shapeList)
 				{
-					java.awt.Rectangle r = shape.getRealRect(this.scalingFactor, this.virtualDeltaX, this.virtualDeltaY);
-
+					java.awt.Rectangle shapeRect = shape.getRealRect(this.scalingFactor, this.virtualDeltaX, this.virtualDeltaY);
+					
 					// Forme contenue dans le rectangle de sélection?
-					if (this.makeRect(this.startDragPoint, this.currentDragPoint).contains(r))
+					if (this.makeRect(this.startDragPoint, this.currentDragPoint).contains(shapeRect))
 					{
 						shape.setSelected(true);
 					}
 					// Sinon, désélectionne la forme, à moins qu'elle fasse partie 
-					// de la liste des formes à ne pas désélectionner 
+					// de la sélection précédente 
 					else if (!this.alreadySelectedShapes.contains(shape))
 					{
 						shape.setSelected(false);
@@ -552,56 +538,45 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	@Override
 	public void keyPressed(KeyEvent e)
 	{
+		System.out.println(e.getKeyChar());
+		
 		switch (e.getKeyCode())
 		{
 			case KeyEvent.VK_G:
-				Group group = new Group();
-				
-				for(Shape shape : this.shapeList)
-				{
-					if (shape.isSelected())
-					{
-						group.addShape(shape);
-					}
-				}
-				this.deleteSelectedShapes();
-				this.shapeList.add(group);
-				group.setSelected(true);
+				this.groupSelectedShapes();
+				break;
+
+			case KeyEvent.VK_U:
+				this.ungroupSelectedShape();
 				break;
 
 			case KeyEvent.VK_E:
 				this.currentShapeType = ShapeType.ELLIPSE;
 				this.setMode(Mode.CREATING);
-				System.out.println("e");
 				break;
 				
 			case KeyEvent.VK_S:
 				this.currentShapeType = ShapeType.SQUARE;
 				this.setMode(Mode.CREATING);
-				System.out.println("s");
 				break;
 				
 			case KeyEvent.VK_R:
 				this.currentShapeType = ShapeType.RECTANGLE;
 				this.setMode(Mode.CREATING);
-				System.out.println("r");
 				break;
 				
 			case KeyEvent.VK_C:
 				this.currentShapeType = ShapeType.CIRCLE;
 				this.setMode(Mode.CREATING);
-				System.out.println("c");
 				break;
 				
 			case KeyEvent.VK_P:
 				this.setMode(Mode.CREATING);				
 				this.currentShapeType = ShapeType.POLYGON;
-				System.out.println("p");
 				break;
 				
 			case KeyEvent.VK_L:
 				this.setMode(Mode.SELECTING);
-				System.out.println("l");
 				break;
 				
 			case KeyEvent.VK_ADD:
@@ -614,6 +589,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 				
 			case KeyEvent.VK_ESCAPE:
 				// Annule ou termine une opération impliquant un drag
+				// ou la création d'un polygone
 				this.startDragPoint = null;
 				this.currentDragPoint = null;
 				this.repaint();
@@ -652,23 +628,89 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		
 	}
 	
-	private void deleteSelectedShapes()
+	/*
+	 * Construit et retourne une liste avec les formes sélectionnées.
+	 */
+	private ArrayList<Shape> getCurrentSelection()
 	{
-		// Supprime toutes les formes sélectionnées 
-		ArrayList<Shape> newShapeList = new ArrayList<Shape>();
-
-		for(Shape shape : this.shapeList)
+		ArrayList<Shape> currentSelection = new ArrayList<Shape>();
+		
+		for (Shape shape : shapeList)
 		{
-			if (!shape.isSelected())
+			if (shape.isSelected())
 			{
-				newShapeList.add(shape);
+				currentSelection.add(shape);
 			}
-			else
+		}
+		
+		return currentSelection;
+	}
+	
+	/*
+	 * Groupe les formes sélectionnées.
+	 */
+	private void groupSelectedShapes()
+	{
+		ArrayList<Shape> selection = this.getCurrentSelection();
+		if (selection.size() > 0)
+		{
+			Group group = new Group();
+
+			for (Shape shape : selection)
 			{
 				shape.setSelected(false);
 			}
+
+			group.setShapeList(selection);
+			this.shapeList.removeAll(selection);
+
+			this.shapeList.add(group);
+			group.setSelected(true);
+			this.repaint();
 		}
-		this.shapeList = newShapeList;
+	}
+	
+	/*
+	 * Dégroupe le groupe sélectionné.
+	 * 
+	 * Ne fait rien si la sélection comporte plus d'une forme ou si la forme
+	 * sélectionnée n'est pas un groupe.
+	 */
+	private void ungroupSelectedShape()
+	{
+		ArrayList<Shape> selection = this.getCurrentSelection();
+		
+		if (selection.size() == 1 && selection.get(0) instanceof Group)
+		{
+			Group group = (Group) selection.get(0);
+			
+			// Récupère la liste de formes du groupe
+			ArrayList<Shape> groupShapes = group.getShapeList();
+			
+			// Supprime le groupe
+			this.deleteSelectedShapes();
+			
+			// Ajoute les formes au dessin 
+			this.shapeList.addAll(groupShapes);
+			
+			// Sélectionne les formes
+			for (Shape shape : groupShapes)
+			{
+				shape.setSelected(true);
+			}
+			
+			this.repaint();
+		}
+	}
+
+	/*
+	 * Supprime les formes sélectionnées.
+	 */
+	private void deleteSelectedShapes()
+	{
+		// Supprime toutes les formes sélectionnées 
+		ArrayList<Shape> selection = this.getCurrentSelection();
+		this.shapeList.removeAll(selection);
 		this.repaint();
 	}
 	
@@ -695,19 +737,17 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 
 		this.repaint();
 	}
+	
 	// Agrandit ou réduit les formes sélectionnées 
 	// en multipliant leur scaling factor par 1.1 pour chaque unité de scalingAmount.
 	// Par ex. si 3 est passé, sf = sf * 1.1^3. Si -2 est passé, sf = sf * 1.1^-2. 
 	private void scaleSelectedShapes(int scalingAmount)
 	{
-		for(Shape shape : this.shapeList)
-		{
-			float scalingMultiplier = (float) Math.pow(1.1, scalingAmount);
+		float scalingMultiplier = (float) Math.pow(1.1, scalingAmount);
 
-			if (shape.isSelected())
-			{
-				shape.scale(scalingMultiplier, true);
-			}
+		for (Shape shape : this.getCurrentSelection())
+		{
+			shape.scale(scalingMultiplier, true);
 		}
 		this.repaint();
 	}
@@ -729,7 +769,11 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	 */
 	public void setShapeList(ArrayList<Shape> shapeList)
 	{
-		this.shapeList = shapeList;
+		if (shapeList != null)
+		{
+			this.shapeList = shapeList;
+			this.repaint();
+		}
 	}
 	
 }
