@@ -14,6 +14,8 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 
+import appDrawing.model.Handle.handleType;
+
 
 /**
  * @author Micaël Lemelin
@@ -24,6 +26,7 @@ import java.io.Serializable;
  */
 public abstract class Shape implements Serializable
 {
+	protected static final int NUM_OF_HANDLES = 8;
 	protected static final Color SELECTION_COLOR = Color.BLUE;
 	protected static final float DEFAULT_STROKE_WIDTH = 2.0f;
 	protected static final Color DEFAULT_STROKE_COLOR = Color.BLACK;
@@ -47,6 +50,8 @@ public abstract class Shape implements Serializable
 	protected Point2D.Float gradPoint2 = Shape.DEFAULT_GRAD_POINT2;
 	protected Color gradColor1 = Shape.DEFAULT_GRAD_COLOR1;
 	protected Color gradColor2 = Shape.DEFAULT_GRAD_COLOR2;
+	
+	protected Handle[] handles = null;
 	
 	/**
 	 * Construit une forme dans le rectangle englobant spécifié.
@@ -95,6 +100,27 @@ public abstract class Shape implements Serializable
 //		return new Rectangle2D.Float((float)p.getX(), (float)p.getY(), virtualWidth, virtualHeight);
 //	}
 	
+	/**
+	 * Renvoi la poignée sur laquelle le Point2D point est. Renvoi null si 
+	 * aucune poignée ne contient le point.
+	 * @param point Le Point2D à tester
+	 * @return Si le Point2D se trouve dans une poignée
+	 */
+	public Handle pointOnHandle(Point2D point,float drawingScalingFactor,float drawingDeltaX, float drawingDeltaY)
+	{
+		Handle result = null;
+		
+		for(Handle shapeHandle : handles)
+		{
+			if(shapeHandle.getRealRect(drawingScalingFactor, drawingDeltaX, drawingDeltaY).contains(point))
+			{
+				result = shapeHandle;
+				break;
+			}
+		}
+		
+		return result;
+	}
 	/**
 	 * Indique si la forme est sélectionnée.
 	 * 
@@ -287,20 +313,27 @@ public abstract class Shape implements Serializable
 
 	// Dessine 8 points autour de la forme pour indiquer qu'elle est sélectionnée.
 	protected void drawSelection(Graphics2D g, float drawingScalingFactor, float drawingDeltaX, float drawingDeltaY)
-	{
-		Rectangle r = this.getRealRect(drawingScalingFactor, drawingDeltaX, drawingDeltaY);
-
-		g.setColor(Shape.SELECTION_COLOR);
-		g.setStroke(new BasicStroke(6));
+	{	
+		//Si les poignées n'existent pas
+		if(handles == null)
+		{
+			handles = new Handle[NUM_OF_HANDLES];
+		}
 		
-		this.drawPoint(g, r.x, r.y);
-		this.drawPoint(g, r.x + r.width / 2, r.y);
-		this.drawPoint(g, r.x + r.width, r.y);
-		this.drawPoint(g, r.x + r.width, r.y + r.height / 2);
-		this.drawPoint(g, r.x + r.width, r.y + r.height);
-		this.drawPoint(g, r.x + r.width / 2, r.y + r.height);
-		this.drawPoint(g, r.x, r.y + r.height);
-		this.drawPoint(g, r.x, r.y + r.height / 2);
+		//On assigne les poignées à leurs positions
+		this.handles[0] = new Handle(handleType.TOP_LEFT, posX, posY, width, height);
+		this.handles[1] = new Handle(handleType.TOP_MIDDLE, posX, posY, width, height);
+		this.handles[2] = new Handle(handleType.TOP_RIGHT, posX, posY, width, height);
+		this.handles[3] = new Handle(handleType.MIDDLE_LEFT, posX, posY, width, height);
+		this.handles[4] = new Handle(handleType.MIDDLE_RIGHT, posX, posY, width, height);
+		this.handles[5] = new Handle(handleType.BOTTOM_LEFT, posX, posY, width, height);
+		this.handles[6] = new Handle(handleType.BOTTOM_MIDDLE, posX, posY, width, height);
+		this.handles[7] = new Handle(handleType.BOTTOM_RIGHT, posX, posY, width, height);
+		
+		for(int i = 0; i < Shape.NUM_OF_HANDLES; ++i )
+		{
+			handles[i].draw(g, drawingScalingFactor, drawingDeltaX, drawingDeltaY);
+		}
 	}
 	
 	// Dessine un point. Étrangement, il ne semble pas y avoir pas de méthode pour faire ça dans l'API.
