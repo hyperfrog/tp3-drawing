@@ -9,6 +9,10 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import javax.swing.JPanel;
 
+import java.io.ObjectOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 /**
  * La classe Board implémente l'interface de ...
  * Elle gère la plupart des évènements de l'interface utilisateur.
@@ -46,6 +50,22 @@ public class Board extends JPanel implements ActionListener, MouseListener
 		this.add(this.drawingPanel, BorderLayout.CENTER);
 	}
 	
+	/*
+	 * Sauve le dessin
+	 */
+	private void saveDrawing()
+	{
+		
+	}
+	
+	/*
+	 * Charge le dessin
+	 */
+	private void loadDrawing()
+	{
+		
+	}
+	
 	/**
 	 * Reçoit et traite les événements relatifs à ...
 	 * Cette méthode doit être publique mais ne devrait pas être appelée directement.
@@ -59,6 +79,16 @@ public class Board extends JPanel implements ActionListener, MouseListener
 		if (evt.getActionCommand().equals("NEW_DRAWING"))
 		{
 			this.drawingPanel.erase();
+		}
+		
+		if (evt.getActionCommand().equals("SAUVER"))
+		{
+			this.saveDrawing();
+		}
+		
+		if (evt.getActionCommand().equals("CHARGER"))
+		{
+			this.loadDrawing();
 		}
 	}
 	

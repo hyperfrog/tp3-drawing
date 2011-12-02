@@ -37,6 +37,12 @@ public class AppMenu extends JMenuBar implements ActionListener, ItemListener
 	// Élément «Aide»
 	private JMenuItem helpItem;
 	
+	// Élément << Sauver >>
+	private JMenuItem saveItem;
+	
+	// Élément << Charger >>
+	private JMenuItem loadItem;
+	
 	// Objet parent
 	private AppFrame parent = null;
 	
@@ -57,6 +63,8 @@ public class AppMenu extends JMenuBar implements ActionListener, ItemListener
 		this.newDrawingItem = new JMenuItem();
 		this.aboutItem = new JMenuItem();
 		this.helpItem = new JMenuItem();
+		this.saveItem = new JMenuItem();
+		this.loadItem = new JMenuItem();
 		
 		this.fileMenu.setText("Fichier");
 		this.infoMenu.setText("?");
@@ -71,7 +79,15 @@ public class AppMenu extends JMenuBar implements ActionListener, ItemListener
 		this.helpItem.setText("Aide");
 		this.helpItem.setActionCommand("HELP");
 		
+		this.saveItem.setText("Sauvegarder");
+		this.saveItem.setActionCommand("SAUVER");
+		
+		this.loadItem.setText("Charger");
+		this.loadItem.setActionCommand("CARGER");
+		
 		this.fileMenu.add(this.newDrawingItem);
+		this.fileMenu.add(this.saveItem);
+		this.fileMenu.add(this.loadItem);
 		
 		this.infoMenu.add(this.aboutItem);
 		this.infoMenu.add(this.helpItem);
@@ -83,6 +99,8 @@ public class AppMenu extends JMenuBar implements ActionListener, ItemListener
 		this.newDrawingItem.addActionListener(this);
 		this.aboutItem.addActionListener(this);
 		this.helpItem.addActionListener(this);
+		this.saveItem.addActionListener(this);
+		this.loadItem.addActionListener(this);
 	}
 	
 	/*
@@ -141,11 +159,20 @@ public class AppMenu extends JMenuBar implements ActionListener, ItemListener
 			// Affiche la boîte «À propos»
 			this.showAboutDialog();
 		}
-		
 		else if (evt.getActionCommand().equals("HELP"))
 		{
 			// Affiche la boîte «Aide»
 			this.showHelpDialog();
+		}
+		else if (evt.getActionCommand().equals("SAUVER"))
+		{
+			// Demande au Board de sauvergarder
+			this.parent.getBoard().actionPerformed(evt);
+		}
+		else if (evt.getActionCommand().equals("CHARGER"))
+		{
+			// Demande au board de charger
+			this.parent.getBoard().actionPerformed(evt);
 		}
 	}
 }
