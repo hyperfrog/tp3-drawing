@@ -43,6 +43,22 @@ import java.io.Serializable;
  */
 public class DrawingPanel extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener, Serializable
 {
+	/**
+	 * @return the shapeList
+	 */
+	public ArrayList<Shape> getShapeList()
+	{
+		return shapeList;
+	}
+	
+	/**
+	 * @param shapeList the shapeList to set
+	 */
+	public void setShapeList(ArrayList<Shape> shapeList)
+	{
+		this.shapeList = shapeList;
+	}
+
 	private static final Mode DEFAULT_MODE = Mode.CREATING;
 	
 	private Board parent = null;

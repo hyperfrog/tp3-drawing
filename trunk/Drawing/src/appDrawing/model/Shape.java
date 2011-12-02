@@ -22,14 +22,6 @@ import java.io.Serializable;
  * @author Pascal Turcot
  * 
  */
-/**
- * @author Christian
- *
- */
-/**
- * @author Christian
- *
- */
 public abstract class Shape implements Serializable
 {
 	protected static final Color SELECTION_COLOR = Color.BLUE;
@@ -171,7 +163,7 @@ public abstract class Shape implements Serializable
 	 * Agrandit ou réduit la forme par le facteur spécifié.
 	 *   
 	 * @param scalingFactor facteur d'agrandissement/réduction
-	 * @param recenter indique si vrai, la forme est recentrée 
+	 * @param recenter si vrai, la forme est recentrée 
 	 */
 	public void scale(float scalingFactor, boolean recenter)
 	{
@@ -183,7 +175,7 @@ public abstract class Shape implements Serializable
 	 * Agrandit ou réduit la forme en largeur par le facteur spécifié.
 	 *   
 	 * @param scalingFactor facteur d'agrandissement/réduction
-	 * @param recenter indique si vrai, la forme est recentrée 
+	 * @param recenter si vrai, la forme est recentrée 
 	 */
 	public void scaleWidth(float scalingFactor, boolean recenter)
 	{
