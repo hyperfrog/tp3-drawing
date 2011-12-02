@@ -33,6 +33,7 @@ import appDrawing.model.Rectangle;
 import appDrawing.model.Shape;
 import appDrawing.model.Square;
 
+import java.io.Serializable;
 /**
  * @author Micaël Lemelin
  * @author Christian Lesage
@@ -40,7 +41,7 @@ import appDrawing.model.Square;
  * @author Pascal Turcot
  *
  */
-public class DrawingPanel extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener
+public class DrawingPanel extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener, Serializable
 {
 	private static final Mode DEFAULT_MODE = Mode.CREATING;
 	
