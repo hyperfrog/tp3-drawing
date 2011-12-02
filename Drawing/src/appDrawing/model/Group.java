@@ -39,6 +39,26 @@ public class Group extends Shape
 		this.computeDimensions();
 	}
 
+	/**
+	 * @return the shapeList
+	 */
+	public ArrayList<Shape> getShapeList()
+	{
+		return shapeList;
+	}
+
+	/**
+	 * @param shapeList the shapeList to set
+	 */
+	public void setShapeList(ArrayList<Shape> shapeList)
+	{
+		if (shapeList != null)
+		{
+			this.shapeList = shapeList;
+			this.computeDimensions();
+		}
+	}
+
 	protected void computeDimensions()
 	{
 		// Détermine la hauteur et la largeur de la forme

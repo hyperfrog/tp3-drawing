@@ -2,8 +2,10 @@ package appDrawing.form;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.Date;
 
 import javax.imageio.ImageIO;
 import javax.swing.ButtonGroup;
@@ -215,6 +217,8 @@ public class AppToolBar extends JToolBar implements ActionListener
 		}
 		else if (evt.getActionCommand().equals("SELECTING"))
 		{
+//			this.drawingPanel.dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_L, 'l'));
+
 			this.drawingPanel.setMode(DrawingPanel.Mode.SELECTING);
 			this.hideCreationMode();
 		}
