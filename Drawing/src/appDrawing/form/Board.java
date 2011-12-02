@@ -7,12 +7,19 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import appDrawing.model.Shape;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.FileOutputStream;
@@ -64,13 +71,16 @@ public class Board extends JPanel implements ActionListener, MouseListener
 	 */
 	private void saveDrawing()
 	{
+		String response = JOptionPane.showInputDialog(null, "name the file to save", "Save", JOptionPane.QUESTION_MESSAGE);
 		
-	    List list = this.drawingPanel.getShapeList();
+		
+		
+		List list = this.drawingPanel.getShapeList();
 
 	    FileOutputStream fos;
 		try
 		{
-			fos = new FileOutputStream("drawing.ser");
+			fos = new FileOutputStream(response + ".ser");
 		    ObjectOutputStream oos = new ObjectOutputStream(fos);
 		    oos.writeObject(list);
 		    oos.close();
@@ -85,9 +95,6 @@ public class Board extends JPanel implements ActionListener, MouseListener
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		System.out.println("saved");
-		
 	}
 	
 	/*
@@ -95,16 +102,26 @@ public class Board extends JPanel implements ActionListener, MouseListener
 	 */
 	private void loadDrawing()
 	{
+		String test = "";
+		JFileChooser fileopen = new JFileChooser();
+	    FileFilter filter = new FileNameExtensionFilter(".ser files", "ser");
+	    fileopen.addChoosableFileFilter(filter);
 
+	    int ret = fileopen.showDialog(null, "Open file");
 
+	    if (ret == JFileChooser.APPROVE_OPTION) 
+	    {
+	      File file = fileopen.getSelectedFile();
+	      test = file.getAbsolutePath();
+	    }
+		
+		
 		try
 		{
-		    FileInputStream fis = new FileInputStream("drawing.ser");
+		    FileInputStream fis = new FileInputStream(test);
 		    ObjectInputStream ois = new ObjectInputStream(fis);
 		    List anotherList = (List) ois.readObject();
 		    ois.close();
-
-		    System.out.println(anotherList);
 		    
 		    this.drawingPanel.setShapeList((ArrayList<Shape>) anotherList);
 		    
@@ -112,6 +129,7 @@ public class Board extends JPanel implements ActionListener, MouseListener
 		catch (FileNotFoundException e)
 		{
 			// TODO Auto-generated catch block
+			JOptionPane.showMessageDialog(this, "Ce fichier n'existe pas.");
 			e.printStackTrace();
 		}
 		catch (IOException e)
@@ -126,8 +144,6 @@ public class Board extends JPanel implements ActionListener, MouseListener
 		}
 		
 		this.repaint();
-		
-		System.out.println("loaded");
 	}
 	
 	/**
