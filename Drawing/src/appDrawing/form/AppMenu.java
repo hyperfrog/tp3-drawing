@@ -25,11 +25,17 @@ public class AppMenu extends JMenuBar implements ActionListener, ItemListener
 	// Menu «Fichier»
 	private JMenu fileMenu;
 	
+	// Menu «Affichage»
+	private JMenu windowMenu;
+	
 	// Menu «?»
 	private JMenu infoMenu;
 	
 	// Élément «Nouveau dessin»
 	private JMenuItem newDrawingItem;
+	
+	// Élément «Barre d'outils»
+	private JCheckBoxMenuItem toolbarItem;
 	
 	// Élément «À propos»
 	private JMenuItem aboutItem;
@@ -37,10 +43,10 @@ public class AppMenu extends JMenuBar implements ActionListener, ItemListener
 	// Élément «Aide»
 	private JMenuItem helpItem;
 	
-	// Élément << Sauver >>
+	// Élément «Sauver»
 	private JMenuItem saveItem;
 	
-	// Élément << Charger >>
+	// Élément «Charger»
 	private JMenuItem loadItem;
 	
 	// Objet parent
@@ -60,18 +66,24 @@ public class AppMenu extends JMenuBar implements ActionListener, ItemListener
 		// Initialise les composants
 		this.fileMenu = new JMenu();
 		this.infoMenu = new JMenu();
+		this.windowMenu = new JMenu();
 		this.newDrawingItem = new JMenuItem();
+		this.toolbarItem = new JCheckBoxMenuItem();
 		this.aboutItem = new JMenuItem();
 		this.helpItem = new JMenuItem();
 		this.saveItem = new JMenuItem();
 		this.loadItem = new JMenuItem();
 		
 		this.fileMenu.setText("Fichier");
+		this.windowMenu.setText("Affichage");
 		this.infoMenu.setText("?");
 		
 		this.newDrawingItem.setText("Nouveau dessin");
 		this.newDrawingItem.setActionCommand("NEW_DRAWING");
 		this.newDrawingItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0));
+		
+		this.toolbarItem.setText("Barre d'outils");
+		this.toolbarItem.setSelected(true);
 		
 		this.aboutItem.setText("À propos...");
 		this.aboutItem.setActionCommand("ABOUT");
@@ -80,23 +92,27 @@ public class AppMenu extends JMenuBar implements ActionListener, ItemListener
 		this.helpItem.setActionCommand("HELP");
 		
 		this.saveItem.setText("Sauvegarder");
-		this.saveItem.setActionCommand("SAUVER");
+		this.saveItem.setActionCommand("SAVE");
 		
 		this.loadItem.setText("Charger");
-		this.loadItem.setActionCommand("CHARGER");
+		this.loadItem.setActionCommand("LOAD");
 		
 		this.fileMenu.add(this.newDrawingItem);
 		this.fileMenu.add(this.saveItem);
 		this.fileMenu.add(this.loadItem);
 		
+		this.windowMenu.add(this.toolbarItem);
+		
 		this.infoMenu.add(this.aboutItem);
 		this.infoMenu.add(this.helpItem);
 		
 		this.add(this.fileMenu);
+		this.add(this.windowMenu);
 		this.add(this.infoMenu);
 		
 		// Spécifie les écouteurs pour les menus
 		this.newDrawingItem.addActionListener(this);
+		this.toolbarItem.addItemListener(this);
 		this.aboutItem.addActionListener(this);
 		this.helpItem.addActionListener(this);
 		this.saveItem.addActionListener(this);
@@ -136,6 +152,8 @@ public class AppMenu extends JMenuBar implements ActionListener, ItemListener
 	{
 		JMenuItem e = (JMenuItem) evt.getItem();
 		
+		// Affiche ou cache la barre d'outils
+		this.parent.getBoard().getToolBar().setVisible(e.isSelected());
 	}
 	
 	/**
@@ -164,12 +182,12 @@ public class AppMenu extends JMenuBar implements ActionListener, ItemListener
 			// Affiche la boîte «Aide»
 			this.showHelpDialog();
 		}
-		else if (evt.getActionCommand().equals("SAUVER"))
+		else if (evt.getActionCommand().equals("SAVE"))
 		{
 			// Demande au Board de sauvergarder
 			this.parent.getBoard().actionPerformed(evt);
 		}
-		else if (evt.getActionCommand().equals("CHARGER"))
+		else if (evt.getActionCommand().equals("LOAD"))
 		{
 			// Demande au board de charger
 			this.parent.getBoard().actionPerformed(evt);

@@ -275,7 +275,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		return shape;
 	}
 	
-	public void setMode(Mode newMode)
+	private void setMode(Mode newMode)
 	{
 		if(this.currentPolygon != null)
 		{
@@ -306,15 +306,6 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		}
 		
 		this.setCursor(Cursor.getPredefinedCursor(preDefCursor));
-	}
-	
-	/**
-	 * 
-	 * @param shapeType
-	 */
-	public void setShapeType(ShapeType shapeType)
-	{
-		this.currentShapeType = shapeType;
 	}
 	
 	//si on créé un autre forme ou  que l'on change de mode et qu'un polygone est en cours de dessin,
@@ -553,30 +544,41 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 			case KeyEvent.VK_E:
 				this.currentShapeType = ShapeType.ELLIPSE;
 				this.setMode(Mode.CREATING);
+				this.parent.getToolBar().toggleMode(Mode.CREATING);
+				System.out.println("e");
 				break;
 				
 			case KeyEvent.VK_S:
 				this.currentShapeType = ShapeType.SQUARE;
 				this.setMode(Mode.CREATING);
+				this.parent.getToolBar().toggleMode(Mode.CREATING);
+				System.out.println("s");
 				break;
 				
 			case KeyEvent.VK_R:
 				this.currentShapeType = ShapeType.RECTANGLE;
 				this.setMode(Mode.CREATING);
+				this.parent.getToolBar().toggleMode(Mode.CREATING);
+				System.out.println("r");
 				break;
 				
 			case KeyEvent.VK_C:
 				this.currentShapeType = ShapeType.CIRCLE;
 				this.setMode(Mode.CREATING);
+				this.parent.getToolBar().toggleMode(Mode.CREATING);
+				System.out.println("c");
 				break;
 				
 			case KeyEvent.VK_P:
-				this.setMode(Mode.CREATING);				
+				this.setMode(Mode.CREATING);
+				this.parent.getToolBar().toggleMode(Mode.CREATING);
 				this.currentShapeType = ShapeType.POLYGON;
 				break;
 				
 			case KeyEvent.VK_L:
 				this.setMode(Mode.SELECTING);
+				this.parent.getToolBar().toggleMode(Mode.SELECTING);
+				System.out.println("l");
 				break;
 				
 			case KeyEvent.VK_ADD:
@@ -604,8 +606,15 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 				this.deleteSelectedShapes();
 				break;
 			
+			case KeyEvent.VK_M:
 			case KeyEvent.VK_SHIFT:
 				this.setMode(Mode.MOVING);
+				this.parent.getToolBar().toggleMode(Mode.MOVING);
+				break;
+				
+			case KeyEvent.VK_I:
+				this.setMode(Mode.EDITING);
+				this.parent.getToolBar().toggleMode(Mode.EDITING);
 				break;
 		}
 	}
