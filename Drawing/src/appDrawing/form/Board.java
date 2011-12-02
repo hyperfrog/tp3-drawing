@@ -44,6 +44,9 @@ public class Board extends JPanel implements ActionListener, MouseListener
 	// Panneau dans lequel la partie est dessinée
 	private DrawingPanel drawingPanel;
 	
+	// Barre d'outils
+	private AppToolBar appToolBar;
+	
 	/**
 	 * Construit un plateau.
 	 * 
@@ -60,10 +63,12 @@ public class Board extends JPanel implements ActionListener, MouseListener
 		this.drawingPanel = new DrawingPanel(this);
 		this.drawingPanel.setBackground(Color.WHITE);
 		
+		this.appToolBar = new AppToolBar(this.drawingPanel);
+		
 		this.setLayout(new BorderLayout());
 		
 		this.add(this.drawingPanel, BorderLayout.CENTER);
-		
+		this.add(this.appToolBar, BorderLayout.NORTH);
 	}
 	
 	/*
