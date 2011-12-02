@@ -78,9 +78,7 @@ public class Board extends JPanel implements ActionListener, MouseListener
 	{
 		String response = JOptionPane.showInputDialog(null, "name the file to save", "Save", JOptionPane.QUESTION_MESSAGE);
 		
-		
-		
-		List list = this.drawingPanel.getShapeList();
+		ArrayList<Shape> list = this.drawingPanel.getShapeList();
 
 	    FileOutputStream fos;
 		try
@@ -125,7 +123,8 @@ public class Board extends JPanel implements ActionListener, MouseListener
 		{
 		    FileInputStream fis = new FileInputStream(test);
 		    ObjectInputStream ois = new ObjectInputStream(fis);
-		    List anotherList = (List) ois.readObject();
+		    @SuppressWarnings("unchecked")
+			ArrayList<Shape> anotherList = (ArrayList<Shape>) ois.readObject();
 		    ois.close();
 		    
 		    this.drawingPanel.setShapeList((ArrayList<Shape>) anotherList);

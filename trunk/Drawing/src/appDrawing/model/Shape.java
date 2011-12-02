@@ -35,10 +35,10 @@ public abstract class Shape implements Serializable
 	protected static final Point2D.Float DEFAULT_GRAD_POINT1 = new Point2D.Float(0, 0);
 	protected static final Point2D.Float DEFAULT_GRAD_POINT2 = new Point2D.Float(1, 1);
 
-	protected float posX;
-	protected float posY;
-	protected float width;
-	protected float height;
+	protected float posX = 0;
+	protected float posY = 0;
+	protected float width = 0;
+	protected float height = 0;
 
 	protected boolean selected = false;
 	
@@ -50,6 +50,11 @@ public abstract class Shape implements Serializable
 	protected Point2D.Float gradPoint2 = Shape.DEFAULT_GRAD_POINT2;
 	protected Color gradColor1 = Shape.DEFAULT_GRAD_COLOR1;
 	protected Color gradColor2 = Shape.DEFAULT_GRAD_COLOR2;
+	
+	public Shape()
+	{
+//		super();
+	}
 	
 	protected Handle[] handles = null;
 	
@@ -89,16 +94,16 @@ public abstract class Shape implements Serializable
 		return new Point2D.Float(virtualX, virtualY);
 	}
 
-//	public static Rectangle2D getVirtualRect(int realX, int realY, int realWidth, int realHeight, 
-//			float scalingFactor, float virtualDeltaX, float virtualDeltaY)
-//	{
-//		Point2D p = Shape.getVirtualPoint(realX, realY, scalingFactor, virtualDeltaX, virtualDeltaY);
-//		
-//		float virtualWidth = realWidth / scalingFactor;
-//		float virtualHeight = realHeight / scalingFactor;
-//				
-//		return new Rectangle2D.Float((float)p.getX(), (float)p.getY(), virtualWidth, virtualHeight);
-//	}
+	public static Rectangle2D getVirtualRect(int realX, int realY, int realWidth, int realHeight, 
+			float scalingFactor, float virtualDeltaX, float virtualDeltaY)
+	{
+		Point2D p = Shape.getVirtualPoint(realX, realY, scalingFactor, virtualDeltaX, virtualDeltaY);
+		
+		float virtualWidth = realWidth / scalingFactor;
+		float virtualHeight = realHeight / scalingFactor;
+				
+		return new Rectangle2D.Float((float)p.getX(), (float)p.getY(), virtualWidth, virtualHeight);
+	}
 	
 	/**
 	 * Renvoi la poignée sur laquelle le Point2D point est. Renvoi null si 

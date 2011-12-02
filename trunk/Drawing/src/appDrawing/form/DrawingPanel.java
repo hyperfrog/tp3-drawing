@@ -3,6 +3,7 @@ package appDrawing.form;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.DefaultKeyboardFocusManager;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.KeyEventDispatcher;
@@ -23,11 +24,12 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
-import javax.swing.DefaultFocusManager;
+//import javax.swing.DefaultFocusManager;
 import javax.swing.JPanel;
 
 import appDrawing.model.Circle;
 import appDrawing.model.Ellipse;
+import appDrawing.model.Group;
 import appDrawing.model.VPolygon;
 import appDrawing.model.Rectangle;
 import appDrawing.model.Shape;
@@ -43,22 +45,6 @@ import java.io.Serializable;
  */
 public class DrawingPanel extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener, Serializable
 {
-	/**
-	 * @return the shapeList
-	 */
-	public ArrayList<Shape> getShapeList()
-	{
-		return shapeList;
-	}
-	
-	/**
-	 * @param shapeList the shapeList to set
-	 */
-	public void setShapeList(ArrayList<Shape> shapeList)
-	{
-		this.shapeList = shapeList;
-	}
-
 	private static final Mode DEFAULT_MODE = Mode.CREATING;
 	
 	private Board parent = null;
@@ -75,9 +61,6 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	// Liste des formes déjà sélectionnées
 	// Sert au mode de sélection additive (avec la touche Ctrl)
 	private ArrayList<Shape> alreadySelectedShapes = new ArrayList<Shape>();
-	
-	//tableau pour la sérialisation
-	private Shape[] serArrayList;
 	
 	// Déplacement actuel du dessin en coordonnées virtuelles
 	private float virtualDeltaX;
@@ -100,7 +83,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
     				0.0f);
     
 	// Types de formes pouvant être dessinées
-    public enum ShapeType {ELLIPSE, CIRCLE, RECTANGLE, SQUARE, POLYGON};
+    public enum ShapeType {ELLIPSE, CIRCLE, RECTANGLE, SQUARE, POLYGON, GROUP};
     
     // Modes exclusifs de fonctionnement
     public enum Mode {CREATING, PANNING, MOVING, SELECTING, EDITING}
@@ -134,6 +117,23 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		this.addMouseWheelListener(this);
 		this.erase();
 		this.setMode(DrawingPanel.DEFAULT_MODE);
+		
+		// Passe-passe pour envoyer les évènements du clavier au DrawingPanel 
+		// même quand le focus est sur une autre composante.
+		// Peut-être temporaire... En attendant de trouver mieux.
+		this.setFocusable(false);
+		final DrawingPanel dp = this;
+
+		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(
+			    new KeyEventDispatcher() {
+			        public boolean dispatchKeyEvent(KeyEvent e) {
+			        	KeyboardFocusManager.getCurrentKeyboardFocusManager().redispatchEvent(dp, e);
+
+			        	// return false -> évènement aussi envoyé à la composante qui a le focus
+			            return false;  
+			        }
+			    });
+		
 	}
 	
 	/**
@@ -241,27 +241,6 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		this.shapeList = new ArrayList<Shape>();
 		this.currentPolygon = null;
 		this.repaint();
-	}
-	
-	public void setSerArray()
-	{
-		serArrayList = new Shape[this.shapeList.size()];
-		System.out.println(serArrayList.length);
-		System.out.println(shapeList.size());
-		for (int i = 0; i < serArrayList.length; i++)
-		{
-			serArrayList[i] = this.shapeList.get(i);
-		}
-	}
-	
-	public void setOldArray()
-	{
-		System.out.println(serArrayList.length);
-		System.out.println(shapeList.size());
-		for (int i = 0; i < serArrayList.length; i++)
-		{
-			this.shapeList.set(i, serArrayList[i]);
-		}
 	}
 	
 	// Construit et retourne une nouvelle forme en fonction des coordonnées
@@ -575,6 +554,21 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	{
 		switch (e.getKeyCode())
 		{
+			case KeyEvent.VK_G:
+				Group group = new Group();
+				
+				for(Shape shape : this.shapeList)
+				{
+					if (shape.isSelected())
+					{
+						group.addShape(shape);
+					}
+				}
+				this.deleteSelectedShapes();
+				this.shapeList.add(group);
+				group.setSelected(true);
+				break;
+
 			case KeyEvent.VK_E:
 				this.currentShapeType = ShapeType.ELLIPSE;
 				this.setMode(Mode.CREATING);
@@ -631,18 +625,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 				break;
 				
 			case KeyEvent.VK_DELETE:
-				// Supprime toutes les formes sélectionnées 
-				ArrayList<Shape> newShapeList = new ArrayList<Shape>();
-
-				for(Shape shape : this.shapeList)
-				{
-					if (!shape.isSelected())
-					{
-						newShapeList.add(shape);
-					}
-				}
-				this.shapeList = newShapeList;
-				this.repaint();
+				this.deleteSelectedShapes();
 				break;
 			
 			case KeyEvent.VK_SHIFT:
@@ -667,6 +650,26 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	{
 		// TODO Auto-generated method stub
 		
+	}
+	
+	private void deleteSelectedShapes()
+	{
+		// Supprime toutes les formes sélectionnées 
+		ArrayList<Shape> newShapeList = new ArrayList<Shape>();
+
+		for(Shape shape : this.shapeList)
+		{
+			if (!shape.isSelected())
+			{
+				newShapeList.add(shape);
+			}
+			else
+			{
+				shape.setSelected(false);
+			}
+		}
+		this.shapeList = newShapeList;
+		this.repaint();
 	}
 	
 	// Zoom le dessin en multipliant son scaling factor par 1.1 pour chaque unité de zoomAmount.
@@ -708,4 +711,25 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		}
 		this.repaint();
 	}
+	
+	/**
+	 * Retourne la liste de formes du dessin.
+	 * 
+	 * @return la liste de formes du dessin
+	 */
+	public ArrayList<Shape> getShapeList()
+	{
+		return shapeList;
+	}
+	
+	/**
+	 * Affecte une nouvelle liste de formes au dessin.
+	 * 
+	 * @return nouvelle liste de formes du dessin
+	 */
+	public void setShapeList(ArrayList<Shape> shapeList)
+	{
+		this.shapeList = shapeList;
+	}
+	
 }
