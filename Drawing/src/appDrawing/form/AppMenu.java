@@ -83,7 +83,7 @@ public class AppMenu extends JMenuBar implements ActionListener, ItemListener
 		this.saveItem.setActionCommand("SAUVER");
 		
 		this.loadItem.setText("Charger");
-		this.loadItem.setActionCommand("CARGER");
+		this.loadItem.setActionCommand("CHARGER");
 		
 		this.fileMenu.add(this.newDrawingItem);
 		this.fileMenu.add(this.saveItem);

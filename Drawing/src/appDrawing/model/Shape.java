@@ -12,6 +12,7 @@ import java.awt.Rectangle;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.io.Serializable;
 
 
 /**
@@ -29,7 +30,7 @@ import java.awt.geom.Rectangle2D;
  * @author Christian
  *
  */
-public abstract class Shape
+public abstract class Shape implements Serializable
 {
 	protected static final Color SELECTION_COLOR = Color.BLUE;
 	protected static final float DEFAULT_STROKE_WIDTH = 2.0f;

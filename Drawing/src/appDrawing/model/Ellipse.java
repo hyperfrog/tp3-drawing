@@ -7,6 +7,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.Ellipse2D;
+import java.io.Serializable;
 
 /**
  * @author Micaël Lemelin
@@ -15,7 +16,7 @@ import java.awt.geom.Ellipse2D;
  * @author Pascal Turcot
  *
  */
-public class Ellipse extends Shape
+public class Ellipse extends Shape implements Serializable
 {
 
 	/**

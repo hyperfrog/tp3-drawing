@@ -9,6 +9,9 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import javax.swing.JPanel;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -55,7 +58,22 @@ public class Board extends JPanel implements ActionListener, MouseListener
 	 */
 	private void saveDrawing()
 	{
-		
+		String fileName = "drawing.ser";
+		DrawingPanel savedDrawing = new DrawingPanel(this);
+		FileOutputStream fos = null;
+		ObjectOutputStream out = null;
+		try
+		     {
+		       fos = new FileOutputStream(fileName);
+		       out = new ObjectOutputStream(fos);
+		       out.writeObject(savedDrawing);
+		       out.close();
+		     }
+		     catch(IOException ex)
+		     {
+		       ex.printStackTrace();
+		     }
+		 System.out.println("save");
 	}
 	
 	/*
@@ -63,7 +81,31 @@ public class Board extends JPanel implements ActionListener, MouseListener
 	 */
 	private void loadDrawing()
 	{
+		String fileName = "drawing.ser";
+		DrawingPanel savedDrawing = null;
+		FileInputStream fis = null;
+		ObjectInputStream in = null;
+		try
+		{
+			fis = new FileInputStream(fileName);
+			in = new ObjectInputStream(fis);
+			savedDrawing = (DrawingPanel)in.readObject();
+		}
+		catch (ClassNotFoundException e) 
+		{
+			e.printStackTrace();
+		} catch (FileNotFoundException e) 
+		{
+			e.printStackTrace();
+		} catch (IOException e) 
+		{
+			e.printStackTrace();
+		}
 		
+		this.drawingPanel = null;
+		this.drawingPanel = savedDrawing;
+		
+		System.out.println("load");
 	}
 	
 	/**
