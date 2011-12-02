@@ -76,6 +76,9 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	// Sert au mode de sélection additive (avec la touche Ctrl)
 	private ArrayList<Shape> alreadySelectedShapes = new ArrayList<Shape>();
 	
+	//tableau pour la sérialisation
+	private Shape[] serArrayList;
+	
 	// Déplacement actuel du dessin en coordonnées virtuelles
 	private float virtualDeltaX;
 	private float virtualDeltaY;
@@ -238,6 +241,27 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		this.shapeList = new ArrayList<Shape>();
 		this.currentPolygon = null;
 		this.repaint();
+	}
+	
+	public void setSerArray()
+	{
+		serArrayList = new Shape[this.shapeList.size()];
+		System.out.println(serArrayList.length);
+		System.out.println(shapeList.size());
+		for (int i = 0; i < serArrayList.length; i++)
+		{
+			serArrayList[i] = this.shapeList.get(i);
+		}
+	}
+	
+	public void setOldArray()
+	{
+		System.out.println(serArrayList.length);
+		System.out.println(shapeList.size());
+		for (int i = 0; i < serArrayList.length; i++)
+		{
+			this.shapeList.set(i, serArrayList[i]);
+		}
 	}
 	
 	// Construit et retourne une nouvelle forme en fonction des coordonnées
@@ -545,30 +569,36 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 			case KeyEvent.VK_E:
 				this.currentShapeType = ShapeType.ELLIPSE;
 				this.setMode(Mode.CREATING);
+				System.out.println("e");
 				break;
 				
 			case KeyEvent.VK_S:
 				this.currentShapeType = ShapeType.SQUARE;
 				this.setMode(Mode.CREATING);
+				System.out.println("s");
 				break;
 				
 			case KeyEvent.VK_R:
 				this.currentShapeType = ShapeType.RECTANGLE;
 				this.setMode(Mode.CREATING);
+				System.out.println("r");
 				break;
 				
 			case KeyEvent.VK_C:
 				this.currentShapeType = ShapeType.CIRCLE;
 				this.setMode(Mode.CREATING);
+				System.out.println("c");
 				break;
 				
 			case KeyEvent.VK_P:
 				this.setMode(Mode.CREATING);				
 				this.currentShapeType = ShapeType.POLYGON;
+				System.out.println("p");
 				break;
 				
 			case KeyEvent.VK_L:
 				this.setMode(Mode.SELECTING);
+				System.out.println("l");
 				break;
 				
 			case KeyEvent.VK_ADD:
