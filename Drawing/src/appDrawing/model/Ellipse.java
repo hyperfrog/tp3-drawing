@@ -16,7 +16,7 @@ import java.io.Serializable;
  * @author Pascal Turcot
  *
  */
-public class Ellipse extends Shape implements Serializable
+public class Ellipse extends Shape
 {
 
 	/**

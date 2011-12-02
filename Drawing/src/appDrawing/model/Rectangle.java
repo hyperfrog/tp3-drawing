@@ -5,6 +5,7 @@ package appDrawing.model;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.io.Serializable;
 
 /**
  * @author Micaël Lemelin

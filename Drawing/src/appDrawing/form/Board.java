@@ -9,12 +9,17 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import javax.swing.JPanel;
 
+import appDrawing.model.Shape;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * La classe Board implémente l'interface de ...
@@ -51,6 +56,7 @@ public class Board extends JPanel implements ActionListener, MouseListener
 		this.setLayout(new BorderLayout());
 		
 		this.add(this.drawingPanel, BorderLayout.CENTER);
+		
 	}
 	
 	/*
@@ -58,22 +64,30 @@ public class Board extends JPanel implements ActionListener, MouseListener
 	 */
 	private void saveDrawing()
 	{
-		String fileName = "drawing.ser";
-		DrawingPanel savedDrawing = new DrawingPanel(this);
-		FileOutputStream fos = null;
-		ObjectOutputStream out = null;
+		
+	    List list = this.drawingPanel.getShapeList();
+
+	    FileOutputStream fos;
 		try
-		     {
-		       fos = new FileOutputStream(fileName);
-		       out = new ObjectOutputStream(fos);
-		       out.writeObject(savedDrawing);
-		       out.close();
-		     }
-		     catch(IOException ex)
-		     {
-		       ex.printStackTrace();
-		     }
-		 System.out.println("save");
+		{
+			fos = new FileOutputStream("drawing.ser");
+		    ObjectOutputStream oos = new ObjectOutputStream(fos);
+		    oos.writeObject(list);
+		    oos.close();
+		}
+		catch (FileNotFoundException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		System.out.println("saved");
+		
 	}
 	
 	/*
@@ -81,31 +95,39 @@ public class Board extends JPanel implements ActionListener, MouseListener
 	 */
 	private void loadDrawing()
 	{
-		String fileName = "drawing.ser";
-		DrawingPanel savedDrawing = null;
-		FileInputStream fis = null;
-		ObjectInputStream in = null;
+
+
 		try
 		{
-			fis = new FileInputStream(fileName);
-			in = new ObjectInputStream(fis);
-			savedDrawing = (DrawingPanel)in.readObject();
+		    FileInputStream fis = new FileInputStream("drawing.ser");
+		    ObjectInputStream ois = new ObjectInputStream(fis);
+		    List anotherList = (List) ois.readObject();
+		    ois.close();
+
+		    System.out.println(anotherList);
+		    
+		    this.drawingPanel.setShapeList((ArrayList<Shape>) anotherList);
+		    
 		}
-		catch (ClassNotFoundException e) 
+		catch (FileNotFoundException e)
 		{
+			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (FileNotFoundException e) 
+		}
+		catch (IOException e)
 		{
+			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (IOException e) 
+		}
+		catch (ClassNotFoundException e)
 		{
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-		this.drawingPanel = null;
-		this.drawingPanel = savedDrawing;
+		this.repaint();
 		
-		System.out.println("load");
+		System.out.println("loaded");
 	}
 	
 	/**
