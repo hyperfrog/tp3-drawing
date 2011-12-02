@@ -63,7 +63,7 @@ public class Board extends JPanel implements ActionListener, MouseListener
 		this.drawingPanel = new DrawingPanel(this);
 		this.drawingPanel.setBackground(Color.WHITE);
 		
-		this.appToolBar = new AppToolBar(this.drawingPanel);
+		this.appToolBar = new AppToolBar(this);
 		
 		this.setLayout(new BorderLayout());
 		
@@ -77,7 +77,7 @@ public class Board extends JPanel implements ActionListener, MouseListener
 	private void saveDrawing()
 	{
 		String response = JOptionPane.showInputDialog(null, "name the file to save", "Save", JOptionPane.QUESTION_MESSAGE);
-		
+
 		ArrayList<Shape> list = this.drawingPanel.getShapeList();
 
 	    FileOutputStream fos;
@@ -90,12 +90,10 @@ public class Board extends JPanel implements ActionListener, MouseListener
 		}
 		catch (FileNotFoundException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		catch (IOException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -118,7 +116,6 @@ public class Board extends JPanel implements ActionListener, MouseListener
 	      test = file.getAbsolutePath();
 	    }
 		
-		
 		try
 		{
 		    FileInputStream fis = new FileInputStream(test);
@@ -132,22 +129,37 @@ public class Board extends JPanel implements ActionListener, MouseListener
 		}
 		catch (FileNotFoundException e)
 		{
-			// TODO Auto-generated catch block
 			JOptionPane.showMessageDialog(this, "Ce fichier n'existe pas.");
 			e.printStackTrace();
 		}
 		catch (IOException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		catch (ClassNotFoundException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
 		this.repaint();
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public AppToolBar getToolBar()
+	{
+		return this.appToolBar;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public DrawingPanel getDrawingPanel()
+	{
+		return this.drawingPanel;
 	}
 	
 	/**
@@ -165,12 +177,12 @@ public class Board extends JPanel implements ActionListener, MouseListener
 			this.drawingPanel.erase();
 		}
 		
-		if (evt.getActionCommand().equals("SAUVER"))
+		if (evt.getActionCommand().equals("SAVE"))
 		{
 			this.saveDrawing();
 		}
 		
-		if (evt.getActionCommand().equals("CHARGER"))
+		if (evt.getActionCommand().equals("LOAD"))
 		{
 			this.loadDrawing();
 		}
