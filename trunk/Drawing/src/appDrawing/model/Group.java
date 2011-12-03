@@ -8,30 +8,32 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
 /**
- * @author Christian
- *
+ * @author Micaël Lemelin
+ * @author Christian Lesage
+ * @author Alexandre Tremblay
+ * @author Pascal Turcot
+ * 
  */
 public class Group extends Shape
 {
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 5306986414553087239L;
 	
+	// Liste de formes du groupe
 	private ArrayList<Shape> shapeList = new ArrayList<Shape>();
 	
 	/**
-	 * @param posX
-	 * @param posY
-	 * @param width
-	 * @param height
+	 * Construit un groupe.
 	 */
 	public Group()
 	{
 		super();
 	}
 	
+	/**
+	 * Ajoute une forme au groupe.
+	 * 
+	 * @param shape forme à ajouter au groupe
+	 */
 	public void addShape(Shape shape)
 	{
 		this.shapeList.add(shape);
@@ -39,7 +41,9 @@ public class Group extends Shape
 	}
 
 	/**
-	 * @return the shapeList
+	 * Retourne la liste des formes du groupe.
+	 * 
+	 * @return liste des formes du groupe
 	 */
 	public ArrayList<Shape> getShapeList()
 	{
@@ -47,7 +51,9 @@ public class Group extends Shape
 	}
 
 	/**
-	 * @param shapeList the shapeList to set
+	 * Affecte une nouvelle liste de formes au groupe.
+	 * 
+	 * @param shapeList nouvelle liste de formes du groupe
 	 */
 	public void setShapeList(ArrayList<Shape> shapeList)
 	{
@@ -58,6 +64,9 @@ public class Group extends Shape
 		}
 	}
 
+	/*
+	 * Recalcule les dimensions du groupe. 
+	 */
 	protected void computeDimensions()
 	{
 		// Détermine la hauteur et la largeur de la forme

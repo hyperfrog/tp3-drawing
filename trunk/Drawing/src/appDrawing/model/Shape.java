@@ -8,6 +8,7 @@ import java.awt.Color;
 import java.awt.GradientPaint;
 import java.awt.Graphics2D;
 import java.awt.Paint;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
@@ -15,7 +16,6 @@ import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 
 import appDrawing.model.Handle.HandleType;
-
 
 /**
  * @author Micaël Lemelin
@@ -27,7 +27,6 @@ import appDrawing.model.Handle.HandleType;
 public abstract class Shape implements Serializable
 {
 	protected static final int NUM_OF_HANDLES = 8;
-	protected static final Color SELECTION_COLOR = Color.BLUE;
 	protected static final float DEFAULT_STROKE_WIDTH = 2.0f;
 	protected static final Color DEFAULT_STROKE_COLOR = Color.BLACK;
 	protected static final Color DEFAULT_GRAD_COLOR1 = Color.RED;
@@ -93,6 +92,18 @@ public abstract class Shape implements Serializable
 		return new Point2D.Float(virtualX, virtualY);
 	}
 
+	/**
+	 * Convertit en coordonnées virtuelles un rectangle spécifié en coordonnées réelles. 
+	 * 
+	 * @param realX	Coordonée réelle du rectangle en X 
+	 * @param realY Coordonée réelle du rectangle en Y 
+	 * @param realWidth	Largeur réelle du rectangle  
+	 * @param realHeight Hauteur réelle du rectangle  
+	 * @param scalingFactor scalingFactor du dessin
+	 * @param virtualDeltaX virtualDeltaX du dessin
+	 * @param virtualDeltaY virtualDeltaY du dessin
+	 * @return rectangle converti en coordonnées virtuelles
+	 */
 	public static Rectangle2D getVirtualRect(int realX, int realY, int realWidth, int realHeight, 
 			float scalingFactor, float virtualDeltaX, float virtualDeltaY)
 	{
@@ -105,21 +116,24 @@ public abstract class Shape implements Serializable
 	}
 	
 	/**
-	 * Renvoi la poignée sur laquelle le Point2D point est. Renvoi null si 
-	 * aucune poignée ne contient le point.
-	 * @param point Le Point2D à tester
-	 * @return Si le Point2D se trouve dans une poignée
+	 * Renvoie la poignée qui contient le point ou null si aucune poignée ne le contient.
+	 * 
+	 * @param point Le point à tester
+	 * @return poignée qui contient le point ou null si aucune poignée ne le contient
 	 */
-	public Handle pointOnHandle(Point2D point,float drawingScalingFactor,float drawingDeltaX, float drawingDeltaY)
+	public Handle getContainingHandle(Point point, float drawingScalingFactor, float drawingDeltaX, float drawingDeltaY)
 	{
 		Handle result = null;
 		
-		for(Handle shapeHandle : handles)
+		if (this.handles != null)
 		{
-			if(shapeHandle.getRealRect(drawingScalingFactor, drawingDeltaX, drawingDeltaY).contains(point))
+			for(Handle shapeHandle : this.handles)
 			{
-				result = shapeHandle;
-				break;
+				if(shapeHandle.getRealRect(drawingScalingFactor, drawingDeltaX, drawingDeltaY).contains(point))
+				{
+					result = shapeHandle;
+					break;
+				}
 			}
 		}
 		
@@ -314,11 +328,15 @@ public abstract class Shape implements Serializable
 		g.setPaint(this.getGradientPaint(drawingScalingFactor, drawingDeltaX, drawingDeltaY));
 		g.fill(shape);
 		g.setColor(this.strokeColor);
-		g.setStroke(new BasicStroke(
-				this.strokeWidth * drawingScalingFactor, 
-				BasicStroke.CAP_ROUND, 
-				BasicStroke.JOIN_ROUND));
-		g.draw(shape);
+		
+		if (this.strokeWidth > 0)
+		{
+			g.setStroke(new BasicStroke(
+					this.strokeWidth * drawingScalingFactor, 
+					BasicStroke.CAP_ROUND, 
+					BasicStroke.JOIN_ROUND));
+			g.draw(shape);
+		}
 		
 		if (this.selected)
 		{

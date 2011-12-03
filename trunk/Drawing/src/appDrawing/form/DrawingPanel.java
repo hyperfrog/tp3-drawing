@@ -26,6 +26,7 @@ import javax.swing.JPanel;
 import appDrawing.model.Circle;
 import appDrawing.model.Ellipse;
 import appDrawing.model.Group;
+import appDrawing.model.Handle;
 import appDrawing.model.VPolygon;
 import appDrawing.model.Rectangle;
 import appDrawing.model.Shape;
@@ -395,19 +396,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 				// Si pas de drag
 				if (this.currentDragPoint == null)
 				{
-					Shape shapeToSelect = null;
-					
-					// Trouve la forme la plus proche du dessus dont le rectangle contient le point cliqué
-					// TODO : Parcourir la liste à l'envers avec un itérateur pour trouver plus rapidement la forme la plus proche du dessus 
-					for (Shape shape : shapeList)
-					{
-						java.awt.Rectangle r = shape.getRealRect(this.scalingFactor, this.virtualDeltaX, this.virtualDeltaY);
-	
-						if (r.contains(e.getPoint()))
-						{
-							shapeToSelect = shape;
-						}
-					}
+					Shape shapeToSelect = this.getContainingShape(e.getPoint());
 					
 					if (shapeToSelect != null) // Forme trouvée?
 					{
@@ -450,7 +439,8 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 			this.currentDragPoint = e.getPoint();
 			
 			// mouseMoved() n'est pas appelé pendant un drag, alors on fait comme si...
-			this.currentMousePos = this.currentDragPoint;
+			this.currentMousePos = e.getPoint();
+			System.out.println(this.currentMousePos);
 
 			// Si mode panning 
 			if (this.currentMode == Mode.PANNING)
@@ -505,6 +495,8 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	public void mouseMoved(MouseEvent e)
 	{
 		this.currentMousePos = e.getPoint();
+		System.out.println(this.currentMousePos);
+		
 		if (this.currentPolygon != null)
 		{
 			this.repaint();
@@ -520,15 +512,50 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		}
 		else // Shift enfoncé
 		{
-			// Scaling des formes sélectionnées
-			this.scaleSelectedShapes(-e.getWheelRotation());
+			Shape shape = this.getContainingShape(this.currentMousePos);
+			
+			if (shape != null)
+			{
+				Handle handle = shape.getContainingHandle(this.currentMousePos, this.scalingFactor, this.virtualDeltaX, this.virtualDeltaY);
+				
+				if (handle != null)
+				{
+					float scalingMultiplier = (float) Math.pow(1.1, -e.getWheelRotation());
+					
+					switch (handle.getType())
+					{
+						case BOTTOM_LEFT:
+						case BOTTOM_RIGHT:
+						case TOP_LEFT:
+						case TOP_RIGHT:
+							shape.scale(scalingMultiplier, handle.getPosX(), handle.getPosY());
+							break;
+							
+						case BOTTOM_MIDDLE:
+						case TOP_MIDDLE:
+							shape.scaleHeight(scalingMultiplier, handle.getPosY());
+							break;
+							
+						case MIDDLE_LEFT:
+						case MIDDLE_RIGHT:
+							shape.scaleWidth(scalingMultiplier, handle.getPosX());
+							break;
+					}
+					this.repaint();
+				}
+			}
+//			else
+//			{
+//				// Scaling des formes sélectionnées
+//				this.scaleSelectedShapes(-e.getWheelRotation());
+//			}
 		}
 	}
 
 	@Override
 	public void keyPressed(KeyEvent e)
 	{
-		System.out.println(e.getKeyChar());
+//		System.out.println(e.getKeyChar());
 		
 		switch (e.getKeyCode())
 		{
@@ -634,6 +661,24 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	{
 		// TODO Auto-generated method stub
 		
+	}
+	
+	private Shape getContainingShape(Point point)
+	{
+		Shape containingShape = null;
+		
+		// Trouve la forme la plus proche du dessus dont le rectangle contient le point
+		// TODO : Parcourir la liste à l'envers avec un itérateur pour trouver plus rapidement la forme la plus proche du dessus 
+		for (Shape shape : shapeList)
+		{
+			java.awt.Rectangle r = shape.getRealRect(this.scalingFactor, this.virtualDeltaX, this.virtualDeltaY);
+
+			if (r.contains(point))
+			{
+				containingShape = shape;
+			}
+		}
+		return containingShape;
 	}
 	
 	/*
