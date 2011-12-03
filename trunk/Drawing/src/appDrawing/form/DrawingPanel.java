@@ -79,7 +79,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
     				0.0f);
     
 	// Types de formes pouvant être dessinées
-    public enum ShapeType {ELLIPSE, CIRCLE, RECTANGLE, SQUARE, POLYGON, GROUP};
+    public enum ShapeType {ELLIPSE, CIRCLE, RECTANGLE, SQUARE, POLYGON};
     
     // Modes exclusifs de fonctionnement
     public enum Mode {CREATING, PANNING, MOVING, SELECTING, EDITING}
@@ -129,7 +129,6 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 			            return false;  
 			        }
 			    });
-		
 	}
 	
 	/**

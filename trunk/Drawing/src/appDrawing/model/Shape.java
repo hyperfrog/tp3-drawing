@@ -14,7 +14,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 
-import appDrawing.model.Handle.handleType;
+import appDrawing.model.Handle.HandleType;
 
 
 /**
@@ -44,19 +44,18 @@ public abstract class Shape implements Serializable
 	
 	protected Color strokeColor = Shape.DEFAULT_STROKE_COLOR;
 	protected float strokeWidth = Shape.DEFAULT_STROKE_WIDTH;
-	
 
 	protected Point2D.Float gradPoint1 = Shape.DEFAULT_GRAD_POINT1;
 	protected Point2D.Float gradPoint2 = Shape.DEFAULT_GRAD_POINT2;
 	protected Color gradColor1 = Shape.DEFAULT_GRAD_COLOR1;
 	protected Color gradColor2 = Shape.DEFAULT_GRAD_COLOR2;
 	
+	protected Handle[] handles = null;
+	
 	public Shape()
 	{
-//		super();
+		super();
 	}
-	
-	protected Handle[] handles = null;
 	
 	/**
 	 * Construit une forme dans le rectangle englobant spécifié.
@@ -76,7 +75,7 @@ public abstract class Shape implements Serializable
 	}
 
 	/**
-	 * Convertit en coordonnées virtuelles un point spécifiée en coordonnées réelles. 
+	 * Convertit en coordonnées virtuelles un point spécifié en coordonnées réelles. 
 	 * 
 	 * @param realX	Coordonée réelle du point en X 
 	 * @param realY Coordonée réelle du point en Y 
@@ -331,24 +330,24 @@ public abstract class Shape implements Serializable
 	protected void drawSelection(Graphics2D g, float drawingScalingFactor, float drawingDeltaX, float drawingDeltaY)
 	{	
 		//Si les poignées n'existent pas
-		if(handles == null)
+		if (this.handles == null)
 		{
-			handles = new Handle[NUM_OF_HANDLES];
+			this.handles = new Handle[NUM_OF_HANDLES];
+			
+			//On assigne les poignées à leurs positions
+			this.handles[0] = new Handle(HandleType.TOP_LEFT, this);
+			this.handles[1] = new Handle(HandleType.TOP_MIDDLE, this);
+			this.handles[2] = new Handle(HandleType.TOP_RIGHT, this);
+			this.handles[3] = new Handle(HandleType.MIDDLE_LEFT, this);
+			this.handles[4] = new Handle(HandleType.MIDDLE_RIGHT, this);
+			this.handles[5] = new Handle(HandleType.BOTTOM_LEFT, this);
+			this.handles[6] = new Handle(HandleType.BOTTOM_MIDDLE, this);
+			this.handles[7] = new Handle(HandleType.BOTTOM_RIGHT, this);
 		}
 		
-		//On assigne les poignées à leurs positions
-		this.handles[0] = new Handle(handleType.TOP_LEFT, posX, posY, width, height);
-		this.handles[1] = new Handle(handleType.TOP_MIDDLE, posX, posY, width, height);
-		this.handles[2] = new Handle(handleType.TOP_RIGHT, posX, posY, width, height);
-		this.handles[3] = new Handle(handleType.MIDDLE_LEFT, posX, posY, width, height);
-		this.handles[4] = new Handle(handleType.MIDDLE_RIGHT, posX, posY, width, height);
-		this.handles[5] = new Handle(handleType.BOTTOM_LEFT, posX, posY, width, height);
-		this.handles[6] = new Handle(handleType.BOTTOM_MIDDLE, posX, posY, width, height);
-		this.handles[7] = new Handle(handleType.BOTTOM_RIGHT, posX, posY, width, height);
-		
-		for(int i = 0; i < Shape.NUM_OF_HANDLES; ++i )
+		for (int i = 0; i < Shape.NUM_OF_HANDLES; ++i )
 		{
-			handles[i].draw(g, drawingScalingFactor, drawingDeltaX, drawingDeltaY);
+			this.handles[i].draw(g, drawingScalingFactor, drawingDeltaX, drawingDeltaY);
 		}
 	}
 	
