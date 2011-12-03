@@ -374,7 +374,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 					else
 					{
 						//On ajoute le point réel donné (qui sera transformé en point virtuel)
-						this.currentPolygon.addPoint(e.getX(), e.getY(), this.scalingFactor, 
+						this.currentPolygon.addRealPoint(e.getX(), e.getY(), this.scalingFactor, 
 								this.virtualDeltaX, this.virtualDeltaY);
 					}
 					this.repaint();
