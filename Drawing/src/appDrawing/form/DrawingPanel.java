@@ -756,7 +756,9 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 
 		for (Shape shape : this.getCurrentSelection())
 		{
-			shape.scale(scalingMultiplier, true);
+//			shape.scale(scalingMultiplier, shape.getPosX() + shape.getWidth() / 2, shape.getPosY() + shape.getHeight() / 2);
+			shape.scale(scalingMultiplier, shape.getPosX() + shape.getWidth(), shape.getPosY() + shape.getHeight());
+//			shape.scale(scalingMultiplier, shape.getPosX(), shape.getPosY());
 		}
 		this.repaint();
 	}

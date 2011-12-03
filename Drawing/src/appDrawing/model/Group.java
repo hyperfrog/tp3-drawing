@@ -34,7 +34,6 @@ public class Group extends Shape
 	
 	public void addShape(Shape shape)
 	{
-//		shape.setSelected(false);
 		this.shapeList.add(shape);
 		this.computeDimensions();
 	}
@@ -104,12 +103,42 @@ public class Group extends Shape
 	@Override
 	public void translate(float deltaX, float deltaY)
 	{
-		this.posX += deltaX;
-		this.posY += deltaY;
-		
 		for (Shape shape : this.shapeList)
 		{
 			shape.translate(deltaX, deltaY);
+		}
+		super.translate(deltaX, deltaY);
+	}
+	
+	/* (non-Javadoc)
+	 * @see appDrawing.model.Shape#scaleWidth(float)
+	 */
+	@Override
+	public void scaleWidth(float scalingFactor, float refX)
+	{
+		if (scalingFactor > 0)
+		{
+			for (Shape shape : this.shapeList)
+			{
+				shape.scaleWidth(scalingFactor, refX);
+			}
+			super.scaleWidth(scalingFactor, refX);
+		}
+	}
+	
+	/* (non-Javadoc)
+	 * @see appDrawing.model.Shape#scaleWidth(float)
+	 */
+	@Override
+	public void scaleHeight(float scalingFactor, float refY)
+	{
+		if (scalingFactor > 0)
+		{
+			for (Shape shape : this.shapeList)
+			{
+				shape.scaleHeight(scalingFactor, refY);
+			}
+			super.scaleHeight(scalingFactor, refY);
 		}
 	}
 	

@@ -167,6 +167,22 @@ public abstract class Shape implements Serializable
 	}
 
 	/**
+	 * @return the width
+	 */
+	public float getWidth()
+	{
+		return width;
+	}
+
+	/**
+	 * @return the height
+	 */
+	public float getHeight()
+	{
+		return height;
+	}
+
+	/**
 	 * Change la position de la forme.
 	 * 
 	 * @param posX nouvelle position de la forme sur l'axe des x
@@ -191,56 +207,51 @@ public abstract class Shape implements Serializable
 	}
 	
 	/**
-	 * Agrandit ou réduit la forme par le facteur spécifié.
+	 * Agrandit ou réduit la forme par le facteur spécifié
+	 * par rapport à un point de référence, qui demeure fixe.
 	 *   
 	 * @param scalingFactor facteur d'agrandissement/réduction
-	 * @param recenter si vrai, la forme est recentrée 
+	 * @param refX point fixe sur l'axe des x  
+	 * @param refY point fixe sur l'axe des y  
 	 */
-	public void scale(float scalingFactor, boolean recenter)
+	public void scale(float scalingFactor, float refX, float refY)
 	{
-			this.scaleWidth(scalingFactor, recenter);
-			this.scaleHeight(scalingFactor, recenter);
+			this.scaleWidth(scalingFactor, refX);
+			this.scaleHeight(scalingFactor, refY);
 	}
-	
+
 	/**
-	 * Agrandit ou réduit la forme en largeur par le facteur spécifié.
+	 * Agrandit ou réduit la forme en largeur par le facteur spécifié 
+	 * par rapport à une coordonnée x de référence qui demeure fixe.
 	 *   
 	 * @param scalingFactor facteur d'agrandissement/réduction
-	 * @param recenter si vrai, la forme est recentrée 
+	 * @param refX point fixe sur l'axe des x  
 	 */
-	public void scaleWidth(float scalingFactor, boolean recenter)
+	public void scaleWidth(float scalingFactor, float refX)
 	{
 		if (scalingFactor > 0)
 		{
-			float originalWidth = this.width;
 			this.width *= scalingFactor;
-			
-			if (recenter)
-			{
-				this.translate((originalWidth - this.width) /2, 0);
-			}
+			this.posX = refX + scalingFactor * (this.posX - refX);
 		}
 	}
 
 	/**
-	 * Agrandit ou réduit la forme en hauteur par le facteur spécifié.
+	 * Agrandit ou réduit la forme en hauteur par le facteur spécifié 
+	 * par rapport à une coordonnée y de référence qui demeure fixe.
 	 *   
 	 * @param scalingFactor facteur d'agrandissement/réduction
-	 * @param recenter indique si vrai, la forme est recentrée 
+	 * @param refY point fixe sur l'axe des y  
 	 */
-	public void scaleHeight(float scalingFactor, boolean recenter)
+	public void scaleHeight(float scalingFactor, float refY)
 	{
 		if (scalingFactor > 0)
 		{
-			float originalHeight = this.height;
 			this.height *= scalingFactor;
-			
-			if (recenter)
-			{
-				this.translate(0, (originalHeight - this.height) /2);
-			}
+			this.posY = refY + scalingFactor * (this.posY - refY);
 		}
 	}
+
 	
 	/**
 	 * Dessine la forme dans le graphics spécifié. Toutes les classes dérivées doivent 

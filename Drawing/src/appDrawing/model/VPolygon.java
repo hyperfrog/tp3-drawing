@@ -143,7 +143,7 @@ public class VPolygon extends Shape
 	 * @see appDrawing.model.Shape#scaleWidth(float)
 	 */
 	@Override
-	public void scaleWidth(float scalingFactor, boolean recenter)
+	public void scaleWidth(float scalingFactor, float refX)
 	{
 		if (scalingFactor > 0)
 		{
@@ -152,22 +152,21 @@ public class VPolygon extends Shape
 			// Transforme chacun des points 
 			for (Point2D p : this.points)
 			{
-				float deltaX = (float) (p.getX() - this.posX);
+				float deltaX = (float) (p.getX() - refX);
 				float newDeltaX = deltaX * scalingFactor;
-				newPoints.add(new Point2D.Float(this.posX + newDeltaX, (float) p.getY()));
+				newPoints.add(new Point2D.Float(refX + newDeltaX, (float) p.getY()));
 			}
 			
 			this.points = newPoints;
-			
-			super.scaleWidth(scalingFactor, recenter);
+			super.scaleWidth(scalingFactor, refX);
 		}
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see appDrawing.model.Shape#scaleHeight(float)
 	 */
 	@Override
-	public void scaleHeight(float scalingFactor, boolean recenter)
+	public void scaleHeight(float scalingFactor, float refY)
 	{
 		if (scalingFactor > 0)
 		{
@@ -176,17 +175,16 @@ public class VPolygon extends Shape
 			// Transforme chacun des points 
 			for (Point2D p : this.points)
 			{
-				float deltaY = (float) (p.getY() - this.posY);
+				float deltaY = (float) (p.getY() - refY);
 				float newDeltaY = deltaY * scalingFactor;
-				newPoints.add(new Point2D.Float((float) p.getX(), this.posY + newDeltaY));
+				newPoints.add(new Point2D.Float((float) p.getX(), refY + newDeltaY));
 			}
 			
 			this.points = newPoints;
-			
-			super.scaleHeight(scalingFactor, recenter);
+			super.scaleHeight(scalingFactor, refY);
 		}
 	}
-
+	
 	/**
 	 * Obtient la liste des points du polygone.
 	 * 
