@@ -1,13 +1,16 @@
 package appDrawing.model;
 
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.geom.Point2D;
 
 public class Handle extends Shape
 {
-	private static final int HANDLE_SIZE = 6;//6 pixels de large
-	
+	private static final int HANDLE_SIZE = 10; // En pixels
+	protected static final Color SELECTION_COLOR = Color.BLUE;
+
 	public static enum HandleType
 	{
 		TOP_LEFT		(0,   0   ),//point d'origine gauche
@@ -34,11 +37,17 @@ public class Handle extends Shape
 	
 	public Handle(HandleType type, Shape shape)
 	{	
-		super(shape.getPosX(), shape.getPosY(), Handle.HANDLE_SIZE, Handle.HANDLE_SIZE);
+		super(shape.getPosX(), shape.getPosY(), 0, 0);
 		this.type = type;
 		this.parent = shape;
+		this.gradColor1 = Handle.SELECTION_COLOR;
+		this.gradColor2 = Handle.SELECTION_COLOR;
+		this.strokeWidth = 0;
 	}
 
+	/* (non-Javadoc)
+	 * @see appDrawing.model.Shape#draw(java.awt.Graphics2D, float, float, float)
+	 */
 	@Override
 	public void draw(Graphics2D g, float drawingScalingFactor, float drawingDeltaX, float drawingDeltaY) 
 	{
@@ -48,11 +57,27 @@ public class Handle extends Shape
 
 		java.awt.Rectangle r = this.getRealRect(drawingScalingFactor, drawingDeltaX, drawingDeltaY);
 		
-		g.setColor(Shape.SELECTION_COLOR);
-		g.setStroke(new BasicStroke(this.width));
-		
-		this.drawPoint(g, r.x, r.y);
-		
+		this.drawShape(g, r, drawingScalingFactor, drawingDeltaX, drawingDeltaY);
 	}
-
+	
+	/* (non-Javadoc)
+	 * @see appDrawing.model.Shape#getRealRect(float, float, float)
+	 */
+	@Override
+	public Rectangle getRealRect(float drawingScalingFactor, float drawingDeltaX, float drawingDeltaY)
+	{
+		Rectangle r = super.getRealRect(drawingScalingFactor, drawingDeltaX, drawingDeltaY);
+		
+		// Décale le rectangle vers la gauche et vers le haut pour le centrer par rapport à la position de la poignée
+		// La largeur et la hauteur ne dépendent pas du scaling du dessin, donc pas de conversion
+		return new Rectangle(r.x - Handle.HANDLE_SIZE / 2, r.y - Handle.HANDLE_SIZE / 2, Handle.HANDLE_SIZE, Handle.HANDLE_SIZE);
+	}
+	
+	/**
+	 * @return
+	 */
+	public HandleType getType()
+	{
+		return this.type;
+	}
 }
