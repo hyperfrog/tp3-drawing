@@ -31,7 +31,7 @@ public class Circle extends Ellipse
 		float size = Math.min(this.width, this.height);
 		this.width = size;
 		this.height = size;
-
+		this.createHandles();
 		this.gradColor2 = Color.DARK_GRAY;
 	}
 

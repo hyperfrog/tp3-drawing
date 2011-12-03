@@ -44,10 +44,9 @@ public class VPolygon extends Shape
 	 * @param virtualDeltaX virtualDeltaX du DrawingPanel
 	 * @param virtualDeltaY virtualDeltaY du DrawingPanel
 	 */
-	public void addPoint(int realX, int realY, float scalingFactor, float virtualDeltaX, float virtualDeltaY)
+	public void addRealPoint(int realX, int realY, float scalingFactor, float virtualDeltaX, float virtualDeltaY)
 	{
 		this.points.add(Shape.getVirtualPoint(realX, realY, scalingFactor, virtualDeltaX, virtualDeltaY));
-		
 		this.computeDimensions();
 	}
 
@@ -85,6 +84,7 @@ public class VPolygon extends Shape
 			this.width = 0;
 			this.height = 0;
 		}
+		this.createHandles();
 	}
 	
 	/* (non-Javadoc)
@@ -108,27 +108,11 @@ public class VPolygon extends Shape
 	}
 	
 	/* (non-Javadoc)
-	 * @see appDrawing.model.Shape#setPosition(float, float)
-	 */
-	@Override
-	public void setPosition(float posX, float posY)
-	{
-		// Calcule le déplacement de la forme
-		float deltaX = posX - this.posX; 
-		float deltaY = posY - this.posY; 
-		
-		this.translate(deltaX, deltaY);
-	}
-	
-	/* (non-Javadoc)
 	 * @see appDrawing.model.Shape#move(float, float)
 	 */
 	@Override
 	public void translate(float deltaX, float deltaY)
 	{
-		this.posX += deltaX;
-		this.posY += deltaY;
-		
 		// Déplace chacun des points de la forme
 		ArrayList<Point2D> newPoints = new ArrayList<Point2D>();
 		
@@ -136,7 +120,9 @@ public class VPolygon extends Shape
 		{
 			newPoints.add(new Point2D.Float((float) p.getX() + deltaX, (float) p.getY() + deltaY));
 		}
+		
 		this.points = newPoints;
+		super.translate(deltaX, deltaY);
 	}
 	
 	/* (non-Javadoc)

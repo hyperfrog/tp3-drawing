@@ -14,6 +14,7 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
+import java.util.Arrays;
 
 import appDrawing.model.Handle.HandleType;
 
@@ -54,6 +55,7 @@ public abstract class Shape implements Serializable
 	public Shape()
 	{
 		super();
+		this.createHandles();
 	}
 	
 	/**
@@ -66,13 +68,32 @@ public abstract class Shape implements Serializable
 	 */
 	public Shape(float posX, float posY, float width, float height)
 	{
-	    super();
+		super();
 		this.posX = posX;
 		this.posY = posY;
 		this.width = Math.max(0, width);
 		this.height = Math.max(0, height);
+		this.createHandles();
 	}
 
+	protected void createHandles()
+	{
+		if (!(this instanceof Handle))
+		{
+			this.handles = new Handle[NUM_OF_HANDLES];
+
+			//On assigne les poignées à leurs positions
+			this.handles[0] = new Handle(HandleType.TOP_LEFT, this);
+			this.handles[1] = new Handle(HandleType.TOP_MIDDLE, this);
+			this.handles[2] = new Handle(HandleType.TOP_RIGHT, this);
+			this.handles[3] = new Handle(HandleType.MIDDLE_LEFT, this);
+			this.handles[4] = new Handle(HandleType.MIDDLE_RIGHT, this);
+			this.handles[5] = new Handle(HandleType.BOTTOM_LEFT, this);
+			this.handles[6] = new Handle(HandleType.BOTTOM_MIDDLE, this);
+			this.handles[7] = new Handle(HandleType.BOTTOM_RIGHT, this);
+		}
+	}
+	
 	/**
 	 * Convertit en coordonnées virtuelles un point spécifié en coordonnées réelles. 
 	 * 
@@ -203,8 +224,11 @@ public abstract class Shape implements Serializable
 	 */
 	public void setPosition(float posX, float posY)
 	{
-		this.posX = posX;
-		this.posY = posY;
+		// Calcule le déplacement de la forme
+		float deltaX = posX - this.posX; 
+		float deltaY = posY - this.posY; 
+		
+		this.translate(deltaX, deltaY);
 	}
 	
 	/**
@@ -217,6 +241,14 @@ public abstract class Shape implements Serializable
 	{
 		this.posX += deltaX;
 		this.posY += deltaY;
+		
+		if (this.handles != null)
+		{
+			for (Handle handle : this.handles)
+			{
+				handle.translate(deltaX, deltaY);
+			}
+		}
 	}
 	
 	/**
@@ -246,6 +278,14 @@ public abstract class Shape implements Serializable
 		{
 			this.width *= scalingFactor;
 			this.posX = refX + scalingFactor * (this.posX - refX);
+
+			if (this.handles != null)
+			{
+				for (Handle handle : this.handles)
+				{
+					handle.scaleWidth(scalingFactor, refX);
+				}
+			}
 		}
 	}
 
@@ -262,6 +302,14 @@ public abstract class Shape implements Serializable
 		{
 			this.height *= scalingFactor;
 			this.posY = refY + scalingFactor * (this.posY - refY);
+
+			if (this.handles != null)
+			{
+				for (Handle handle : this.handles)
+				{
+					handle.scaleHeight(scalingFactor, refY);
+				}
+			}
 		}
 	}
 
@@ -344,25 +392,9 @@ public abstract class Shape implements Serializable
 		}
 	}	
 
-	// Dessine 8 points autour de la forme pour indiquer qu'elle est sélectionnée.
+	// Dessine 8 poignées autour de la forme pour indiquer qu'elle est sélectionnée.
 	protected void drawSelection(Graphics2D g, float drawingScalingFactor, float drawingDeltaX, float drawingDeltaY)
 	{	
-		//Si les poignées n'existent pas
-		if (this.handles == null)
-		{
-			this.handles = new Handle[NUM_OF_HANDLES];
-			
-			//On assigne les poignées à leurs positions
-			this.handles[0] = new Handle(HandleType.TOP_LEFT, this);
-			this.handles[1] = new Handle(HandleType.TOP_MIDDLE, this);
-			this.handles[2] = new Handle(HandleType.TOP_RIGHT, this);
-			this.handles[3] = new Handle(HandleType.MIDDLE_LEFT, this);
-			this.handles[4] = new Handle(HandleType.MIDDLE_RIGHT, this);
-			this.handles[5] = new Handle(HandleType.BOTTOM_LEFT, this);
-			this.handles[6] = new Handle(HandleType.BOTTOM_MIDDLE, this);
-			this.handles[7] = new Handle(HandleType.BOTTOM_RIGHT, this);
-		}
-		
 		for (int i = 0; i < Shape.NUM_OF_HANDLES; ++i )
 		{
 			this.handles[i].draw(g, drawingScalingFactor, drawingDeltaX, drawingDeltaY);

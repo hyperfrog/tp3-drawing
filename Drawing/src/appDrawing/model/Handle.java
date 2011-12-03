@@ -13,14 +13,14 @@ public class Handle extends Shape
 
 	public static enum HandleType
 	{
-		TOP_LEFT		(0,   0   ),//point d'origine gauche
-		TOP_MIDDLE		(0.5f,0   ),//^
-		TOP_RIGHT		(1,   0   ),//|
-		MIDDLE_LEFT		(0,   0.5f),//|
-		MIDDLE_RIGHT	(1,   0.5f),//|
-		BOTTOM_LEFT		(0,   1   ),//|
-		BOTTOM_MIDDLE	(0.5f,1   ),//v
-		BOTTOM_RIGHT	(1,   1   );//point en bas à droite
+		TOP_LEFT		(0,    0   ),//point d'origine gauche
+		TOP_MIDDLE		(0.5f, 0   ),//^
+		TOP_RIGHT		(1,    0   ),//|
+		MIDDLE_LEFT		(0,    0.5f),//|
+		MIDDLE_RIGHT	(1,    0.5f),//|
+		BOTTOM_LEFT		(0,    1   ),//|
+		BOTTOM_MIDDLE	(0.5f, 1   ),//v
+		BOTTOM_RIGHT	(1,    1   );//point en bas à droite
 		
 		public final float xModifier;
 		public final float yModifier;
@@ -37,12 +37,17 @@ public class Handle extends Shape
 	
 	public Handle(HandleType type, Shape shape)
 	{	
-		super(shape.getPosX(), shape.getPosY(), 0, 0);
+		super();
 		this.type = type;
 		this.parent = shape;
 		this.gradColor1 = Handle.SELECTION_COLOR;
 		this.gradColor2 = Handle.SELECTION_COLOR;
 		this.strokeWidth = 0;
+		
+		this.setPosition(
+				shape.getPosX() + (type.xModifier * shape.getWidth()), 
+				shape.getPosY() + (type.yModifier * shape.getHeight()));
+		
 	}
 
 	/* (non-Javadoc)
@@ -51,10 +56,6 @@ public class Handle extends Shape
 	@Override
 	public void draw(Graphics2D g, float drawingScalingFactor, float drawingDeltaX, float drawingDeltaY) 
 	{
-		this.setPosition(
-				this.parent.getPosX() + (this.type.xModifier * this.parent.getWidth()), 
-				this.parent.getPosY() + (this.type.yModifier * this.parent.getHeight()));
-
 		java.awt.Rectangle r = this.getRealRect(drawingScalingFactor, drawingDeltaX, drawingDeltaY);
 		
 		this.drawShape(g, r, drawingScalingFactor, drawingDeltaX, drawingDeltaY);
@@ -79,5 +80,11 @@ public class Handle extends Shape
 	public HandleType getType()
 	{
 		return this.type;
+	}
+	
+	// Par sécurité, on empêche la sélection d'une poignée
+	@Override
+	public void setSelected(boolean selected)
+	{
 	}
 }

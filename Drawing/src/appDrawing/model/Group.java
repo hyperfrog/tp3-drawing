@@ -91,20 +91,22 @@ public class Group extends Shape
 		// On définit comme point de depart le point en haut à gauche (comme dans un rectangle)
 		this.posX = (float) minX;
 		this.posY = (float) minY;
+		
+		this.createHandles();
 	}
 	
-	/* (non-Javadoc)
-	 * @see appDrawing.model.Shape#setPosition(float, float)
-	 */
-	@Override
-	public void setPosition(float posX, float posY)
-	{
-		// Calcule le déplacement de la forme
-		float deltaX = posX - this.posX; 
-		float deltaY = posY - this.posY; 
-		
-		this.translate(deltaX, deltaY);
-	}
+//	/* (non-Javadoc)
+//	 * @see appDrawing.model.Shape#setPosition(float, float)
+//	 */
+//	@Override
+//	public void setPosition(float posX, float posY)
+//	{
+//		// Calcule le déplacement de la forme
+//		float deltaX = posX - this.posX; 
+//		float deltaY = posY - this.posY; 
+//		
+//		this.translate(deltaX, deltaY);
+//	}
 
 	/* (non-Javadoc)
 	 * @see appDrawing.model.Shape#move(float, float)
