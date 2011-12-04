@@ -14,6 +14,8 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import appDrawing.model.Handle.HandleType;
 
@@ -85,11 +87,11 @@ public abstract class Shape implements Serializable
 			this.handles[0] = new Handle(HandleType.TOP_LEFT, this);
 			this.handles[1] = new Handle(HandleType.TOP_MIDDLE, this);
 			this.handles[2] = new Handle(HandleType.TOP_RIGHT, this);
-			this.handles[3] = new Handle(HandleType.MIDDLE_LEFT, this);
-			this.handles[4] = new Handle(HandleType.MIDDLE_RIGHT, this);
-			this.handles[5] = new Handle(HandleType.BOTTOM_LEFT, this);
-			this.handles[6] = new Handle(HandleType.BOTTOM_MIDDLE, this);
-			this.handles[7] = new Handle(HandleType.BOTTOM_RIGHT, this);
+			this.handles[3] = new Handle(HandleType.MIDDLE_RIGHT, this);
+			this.handles[4] = new Handle(HandleType.BOTTOM_RIGHT, this);
+			this.handles[5] = new Handle(HandleType.BOTTOM_MIDDLE, this);
+			this.handles[6] = new Handle(HandleType.BOTTOM_LEFT, this);
+			this.handles[7] = new Handle(HandleType.MIDDLE_LEFT, this);
 		}
 	}
 	
@@ -159,6 +161,15 @@ public abstract class Shape implements Serializable
 		
 		return result;
 	}
+	
+	/**
+	 * @return
+	 */
+	public ArrayList<Handle> getHandles()
+	{
+		return new ArrayList<Handle>(Arrays.asList(this.handles));
+	}
+	
 	/**
 	 * Indique si la forme est sélectionnée.
 	 * 

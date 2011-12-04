@@ -82,13 +82,26 @@ public class Handle extends Shape
 	}
 	
 	/**
-	 * @return
+	 * Retourne le type de la poignée.
+	 * 
+	 * @return type de la poignée
 	 */
 	public HandleType getType()
 	{
 		return this.type;
 	}
 	
+	
+	/**
+	 * Retourne la forme à qui appartient la poignée.
+	 * 
+	 * @return forme à qui appartient la poignée
+	 */
+	public Shape getParent()
+	{
+		return parent;
+	}
+
 	// Par sécurité, on empêche la sélection d'une poignée
 	@Override
 	public void setSelected(boolean selected)
