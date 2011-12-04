@@ -43,10 +43,13 @@ public class AppMenu extends JMenuBar implements ActionListener, ItemListener
 	// Élément «Aide»
 	private JMenuItem helpItem;
 	
-	// Élément «Sauver»
+	// Élément «Enregistrer sous»
+	private JMenuItem saveAsItem;
+	
+	// Élément «Enregistrer»
 	private JMenuItem saveItem;
 	
-	// Élément «Charger»
+	// Élément «Ouvrir»
 	private JMenuItem loadItem;
 	
 	// Objet parent
@@ -71,6 +74,7 @@ public class AppMenu extends JMenuBar implements ActionListener, ItemListener
 		this.toolbarItem = new JCheckBoxMenuItem();
 		this.aboutItem = new JMenuItem();
 		this.helpItem = new JMenuItem();
+		this.saveAsItem = new JMenuItem();
 		this.saveItem = new JMenuItem();
 		this.loadItem = new JMenuItem();
 		
@@ -88,18 +92,22 @@ public class AppMenu extends JMenuBar implements ActionListener, ItemListener
 		this.aboutItem.setText("À propos...");
 		this.aboutItem.setActionCommand("ABOUT");
 		
-		this.helpItem.setText("Aide");
+		this.helpItem.setText("Aide...");
 		this.helpItem.setActionCommand("HELP");
 		
-		this.saveItem.setText("Sauvegarder");
+		this.saveAsItem.setText("Enregistrer sous...");
+		this.saveAsItem.setActionCommand("SAVE_AS");
+		
+		this.saveItem.setText("Enregistrer");
 		this.saveItem.setActionCommand("SAVE");
 		
-		this.loadItem.setText("Charger");
+		this.loadItem.setText("Ouvrir...");
 		this.loadItem.setActionCommand("LOAD");
 		
 		this.fileMenu.add(this.newDrawingItem);
-		this.fileMenu.add(this.saveItem);
 		this.fileMenu.add(this.loadItem);
+		this.fileMenu.add(this.saveAsItem);
+		this.fileMenu.add(this.saveItem);
 		
 		this.windowMenu.add(this.toolbarItem);
 		
@@ -115,6 +123,7 @@ public class AppMenu extends JMenuBar implements ActionListener, ItemListener
 		this.toolbarItem.addItemListener(this);
 		this.aboutItem.addActionListener(this);
 		this.helpItem.addActionListener(this);
+		this.saveAsItem.addActionListener(this);
 		this.saveItem.addActionListener(this);
 		this.loadItem.addActionListener(this);
 	}
@@ -181,6 +190,11 @@ public class AppMenu extends JMenuBar implements ActionListener, ItemListener
 		{
 			// Affiche la boîte «Aide»
 			this.showHelpDialog();
+		}
+		else if (evt.getActionCommand().equals("SAVE_AS"))
+		{
+			// Demande au Board de sauvergarder
+			this.parent.getBoard().actionPerformed(evt);
 		}
 		else if (evt.getActionCommand().equals("SAVE"))
 		{

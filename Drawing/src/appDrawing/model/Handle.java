@@ -6,6 +6,13 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.Point2D;
 
+/**
+ * @author Micaël Lemelin
+ * @author Christian Lesage
+ * @author Alexandre Tremblay
+ * @author Pascal Turcot
+ *
+ */
 public class Handle extends Shape
 {
 	private static final int HANDLE_SIZE = 10; // En pixels
