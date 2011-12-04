@@ -2,6 +2,8 @@ package appDrawing.form;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -41,6 +43,9 @@ public class AppToolBar extends JToolBar implements ActionListener
     private static BufferedImage rectangleImage = null;
     private static BufferedImage squareImage = null;
     private static BufferedImage polygonImage = null;
+    // Images utilisées par la classe pour les groupes
+    private static BufferedImage groupImage = null;
+    private static BufferedImage ungroupImage = null;
     
     // Initialisation des images
     static
@@ -62,6 +67,9 @@ public class AppToolBar extends JToolBar implements ActionListener
             	AppToolBar.rectangleImage = ImageIO.read(AppToolBar.class.getResource("../../res/rectangle.png"));
             	AppToolBar.squareImage = ImageIO.read(AppToolBar.class.getResource("../../res/square.png"));
             	AppToolBar.polygonImage = ImageIO.read(AppToolBar.class.getResource("../../res/polygon.png"));
+            	
+            	AppToolBar.groupImage = ImageIO.read(AppToolBar.class.getResource("../../res/group.png"));
+            	AppToolBar.ungroupImage = ImageIO.read(AppToolBar.class.getResource("../../res/ungroup.png"));
             }
             catch (IOException e)
             {
@@ -121,6 +129,12 @@ public class AppToolBar extends JToolBar implements ActionListener
 	//
 	private ButtonGroup shapesGroup;
 	
+	// 
+	private JButton groupButton;
+	
+	// 
+	private JButton ungroupButton;
+	
 	/**
 	 * 
 	 * @param drawingPanel
@@ -156,6 +170,9 @@ public class AppToolBar extends JToolBar implements ActionListener
 		this.squareButton = new JToggleButton();
 		this.polygonButton = new JToggleButton();
 		this.shapesGroup = new ButtonGroup();
+		// Mode selection
+		this.groupButton = new JButton();
+		this.ungroupButton = new JButton();
 		
 		this.newDrawingButton.setText(null);
 		this.newDrawingButton.setToolTipText("Nouveau dessin");
@@ -235,6 +252,16 @@ public class AppToolBar extends JToolBar implements ActionListener
 		this.shapesGroup.add(this.squareButton);
 		this.shapesGroup.add(this.polygonButton);
 		
+		this.groupButton.setText(null);
+		this.groupButton.setToolTipText("Grouper");
+		this.groupButton.setActionCommand("GROUP");
+		this.groupButton.setIcon(AppToolBar.groupImage != null ? new ImageIcon(AppToolBar.groupImage) : null);
+		
+		this.ungroupButton.setText(null);
+		this.ungroupButton.setToolTipText("Dégrouper");
+		this.ungroupButton.setActionCommand("UNGROUP");
+		this.ungroupButton.setIcon(AppToolBar.ungroupImage != null ? new ImageIcon(AppToolBar.ungroupImage) : null);
+		
 		this.add(this.newDrawingButton);
 		this.add(this.loadDrawingButton);
 		this.add(this.saveDrawingButton);
@@ -250,6 +277,8 @@ public class AppToolBar extends JToolBar implements ActionListener
 		this.add(this.rectangleButton);
 		this.add(this.squareButton);
 		this.add(this.polygonButton);
+		this.add(this.groupButton);
+		this.add(this.ungroupButton);
 		
 		this.newDrawingButton.addActionListener(this);
 		this.saveDrawingButton.addActionListener(this);
@@ -264,6 +293,11 @@ public class AppToolBar extends JToolBar implements ActionListener
 		this.rectangleButton.addActionListener(this);
 		this.squareButton.addActionListener(this);
 		this.polygonButton.addActionListener(this);
+		this.groupButton.addActionListener(this);
+		this.ungroupButton.addActionListener(this);
+		
+		this.hideCreationMode();
+		this.hideSelectionMode();
 	}
 	
 	/**
@@ -341,6 +375,20 @@ public class AppToolBar extends JToolBar implements ActionListener
 		this.polygonButton.setVisible(false);
 	}
 	
+	//
+	private void showSelectionMode()
+	{
+		this.groupButton.setVisible(true);
+		this.ungroupButton.setVisible(true);
+	}
+	
+	//
+	private void hideSelectionMode()
+	{
+		this.groupButton.setVisible(false);
+		this.ungroupButton.setVisible(false);
+	}
+	
 	@Override
 	/**
 	 * 
@@ -359,36 +407,39 @@ public class AppToolBar extends JToolBar implements ActionListener
 		}
 		else if (evt.getActionCommand().equals("SAVE_AS"))
 		{
-			// Ouvre la boîte de dialogue «Sauvegarder»
+			// Ouvre la boîte de dialogue «Sauvegarder sous...»
 			this.parent.actionPerformed(evt);
 		}
 		else if (evt.getActionCommand().equals("LOAD"))
 		{
-			// Ouvre la boîte de dialogue «Charger»
+			// Ouvre la boîte de dialogue «Ouvrir...»
 			this.parent.actionPerformed(evt);
 		}
 		else if (evt.getActionCommand().equals("CREATING"))
 		{
 			this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_E, 'e'));
 			this.showCreationMode();
+			this.hideSelectionMode();
 		}
 		else if (evt.getActionCommand().equals("MOVING"))
 		{
 			this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_M, 'm'));
 			this.hideCreationMode();
+			this.hideSelectionMode();
 		}
 		else if (evt.getActionCommand().equals("SELECTING"))
 		{
 			this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_L, 'l'));
 			this.hideCreationMode();
+			this.showSelectionMode();
 		}
 		else if (evt.getActionCommand().equals("EDITING"))
 		{
 			this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_I, 'i'));
 			this.hideCreationMode();
+			this.hideSelectionMode();
 		}
 		
-		// Si l'utilisateur est en mode création
 		if (this.creatingTool.isSelected())
 		{
 			if (evt.getActionCommand().equals("CIRCLE"))
@@ -410,6 +461,17 @@ public class AppToolBar extends JToolBar implements ActionListener
 			else if (evt.getActionCommand().equals("POLYGON"))
 			{
 				this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_P, 'p'));
+			}
+		}
+		else if (this.selectingTool.isSelected())
+		{
+			if (evt.getActionCommand().equals("GROUP"))
+			{
+				this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_G, 'g'));
+			}
+			else if (evt.getActionCommand().equals("UNGROUP"))
+			{
+				this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_U, 'u'));
 			}
 		}
 	}
