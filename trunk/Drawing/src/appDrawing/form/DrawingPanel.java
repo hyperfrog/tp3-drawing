@@ -27,6 +27,7 @@ import appDrawing.model.Circle;
 import appDrawing.model.Ellipse;
 import appDrawing.model.Group;
 import appDrawing.model.Handle;
+import appDrawing.model.Handle.HandleType;
 import appDrawing.model.VPolygon;
 import appDrawing.model.Rectangle;
 import appDrawing.model.Shape;
@@ -83,7 +84,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
     public enum ShapeType {ELLIPSE, CIRCLE, RECTANGLE, SQUARE, POLYGON};
     
     // Modes exclusifs de fonctionnement
-    public enum Mode {CREATING, PANNING, MOVING, SELECTING, EDITING}
+    public enum Mode {CREATING, PANNING, MOVING, SELECTING, EDITING, RESIZING}
     
     // Mode de l'opération en cours
     private Mode currentMode = DrawingPanel.DEFAULT_MODE;
@@ -239,6 +240,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		this.shapeList = new ArrayList<Shape>();
 		this.alreadySelectedShapes = new ArrayList<Shape>();
 		this.currentPolygon = null;
+		this.resizingHandle = null;
 		this.repaint();
 	}
 	
@@ -280,7 +282,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	
 	private void setMode(Mode newMode)
 	{
-		if(this.currentPolygon != null)
+		if (newMode != Mode.CREATING || this.currentShapeType != ShapeType.POLYGON)
 		{
 			this.endPolygonCreation();
 		}
@@ -289,29 +291,36 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		{
 			this.lastMode = this.currentMode;
 			this.currentMode = newMode;
+			
+			this.parent.getToolBar().toggleMode(newMode);
+			
+			this.setCursorForMode(newMode);
 		}
-
-		this.parent.getToolBar().toggleMode(newMode);
-		
+	}
+	
+	private void setCursorForMode(Mode mode)
+	{
 		int preDefCursor = Cursor.DEFAULT_CURSOR;
-		
-		switch (newMode)
+
+		switch (mode)
 		{
 			case CREATING:
 				preDefCursor = Cursor.CROSSHAIR_CURSOR;
+				this.setCursor(Cursor.getPredefinedCursor(preDefCursor));
 				break;
 			case PANNING:
 				preDefCursor = Cursor.HAND_CURSOR;
+				this.setCursor(Cursor.getPredefinedCursor(preDefCursor));
 				break;
 			case MOVING:
 				preDefCursor = Cursor.MOVE_CURSOR;
+				this.setCursor(Cursor.getPredefinedCursor(preDefCursor));
 				break;
 			case SELECTING:
 				preDefCursor = Cursor.DEFAULT_CURSOR;
+				this.setCursor(Cursor.getPredefinedCursor(preDefCursor));
 				break;
 		}
-		
-		this.setCursor(Cursor.getPredefinedCursor(preDefCursor));
 	}
 	
 	private void setShapeType(ShapeType newShapeType)
@@ -345,9 +354,12 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	//d'annuler le polygone en cours, car il n'est pas dans la liste tant que le dessin n'est pas terminé
 	private void endPolygonCreation()
 	{
-		this.shapeList.add(this.currentPolygon);
-		this.currentPolygon = null;
-		this.repaint();
+		if (this.currentPolygon != null)
+		{
+			this.shapeList.add(this.currentPolygon);
+			this.currentPolygon = null;
+			this.repaint();
+		}
 	}
 	
 	@Override
@@ -374,14 +386,26 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	@Override
 	public void mousePressed(MouseEvent e)
 	{
-//		this.currentSelection.clear();
-		
 		this.startDragPoint = e.getPoint();
 
-		// Sinon, si bouton de gauche, mode sélection actif et Ctrl enfoncé
-		if (e.getButton() == MouseEvent.BUTTON1 && this.currentMode == Mode.SELECTING && (e.getModifiers() & ActionEvent.CTRL_MASK) != 0)
+		// Si bouton de gauche et mode sélection actif
+		if (e.getButton() == MouseEvent.BUTTON1 && this.currentMode == Mode.SELECTING)
 		{
-			this.alreadySelectedShapes = this.getCurrentSelection();
+			// Si Ctrl enfoncé
+			if ((e.getModifiers() & ActionEvent.CTRL_MASK) != 0)
+			{
+				this.alreadySelectedShapes = this.getCurrentSelection();
+			}
+			else 
+			{
+				Handle handle = this.getContainingHandle(this.currentMousePos, this.getCurrentSelection());
+
+				if (handle != null)
+				{
+					this.setMode(Mode.RESIZING);
+					this.resizingHandle = handle;
+				}
+			}
 		}
 		else if (e.getButton() == MouseEvent.BUTTON3) // Bouton de droite?
 		{
@@ -389,6 +413,8 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 			this.setMode(Mode.PANNING);
 		}
 	}
+	
+	private Handle resizingHandle = null;
 
 	@Override
 	public void mouseReleased(MouseEvent e)
@@ -457,7 +483,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		this.currentDragPoint = null;
 		this.alreadySelectedShapes.clear();
 		
-		if (this.currentMode == Mode.PANNING || this.currentMode == Mode.MOVING)
+		if (this.currentMode == Mode.PANNING  || this.currentMode == Mode.MOVING || this.currentMode == Mode.RESIZING)
 		{
 			this.setMode(this.lastMode);
 		}
@@ -473,7 +499,6 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 			
 			// mouseMoved() n'est pas appelé pendant un drag, alors on fait comme si...
 			this.currentMousePos = e.getPoint();
-//			System.out.println(this.currentMousePos);
 
 			// Si mode panning 
 			if (this.currentMode == Mode.PANNING)
@@ -502,7 +527,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 			else if (this.currentMode == Mode.SELECTING)
 			{
 				// Vérifie chacune des formes
-				for (Shape shape : shapeList)
+				for (Shape shape : this.shapeList)
 				{
 					java.awt.Rectangle shapeRect = shape.getRealRect(this.scalingFactor, this.virtualDeltaX, this.virtualDeltaY);
 					
@@ -519,7 +544,10 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 					}
 				}
 			}
-
+			else if (this.currentMode == Mode.RESIZING)
+			{
+				this.doResize();
+			}
 			this.repaint();
 		}
 	}
@@ -528,60 +556,68 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	public void mouseMoved(MouseEvent e)
 	{
 		this.currentMousePos = e.getPoint();
-//		System.out.println(this.currentMousePos);
 		
 		if (this.currentPolygon != null)
 		{
 			this.repaint();
 		}
+		
+		Handle handle = this.getContainingHandle(this.currentMousePos, this.getCurrentSelection());
+
+		if (handle != null)
+		{
+			int preDefCursor = 0;
+
+			switch (handle.getType())
+			{
+				case BOTTOM_LEFT:
+					preDefCursor = Cursor.SW_RESIZE_CURSOR;
+					break;
+
+				case BOTTOM_RIGHT:
+					preDefCursor = Cursor.SE_RESIZE_CURSOR;
+					break;
+
+				case TOP_LEFT:
+					preDefCursor = Cursor.NW_RESIZE_CURSOR;
+					break;
+
+				case TOP_RIGHT:
+					preDefCursor = Cursor.NE_RESIZE_CURSOR;
+					break;
+
+				case BOTTOM_MIDDLE:
+					preDefCursor = Cursor.N_RESIZE_CURSOR;
+					break;
+
+				case TOP_MIDDLE:
+					preDefCursor = Cursor.S_RESIZE_CURSOR;
+					break;
+
+				case MIDDLE_LEFT:
+					preDefCursor = Cursor.W_RESIZE_CURSOR;
+					break;
+
+				case MIDDLE_RIGHT:
+					preDefCursor = Cursor.E_RESIZE_CURSOR;
+					break;
+			}
+
+			this.setCursor(Cursor.getPredefinedCursor(preDefCursor));
+		}
+		else
+		{
+			this.setCursorForMode(this.currentMode);
+		}
+		
 	}
 
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e)
 	{
-		if ((e.getModifiers() & ActionEvent.SHIFT_MASK) == 0) // Shift pas enfoncé
+//		if ((e.getModifiers() & ActionEvent.SHIFT_MASK) == 0) // Shift pas enfoncé
 		{
 			this.zoom(-e.getWheelRotation());
-		}
-		else // Shift enfoncé
-		{
-			Shape shape = this.getContainingShape(this.currentMousePos);
-			
-			if (shape != null)
-			{
-				Handle handle = shape.getContainingHandle(this.currentMousePos, this.scalingFactor, this.virtualDeltaX, this.virtualDeltaY);
-				
-				if (handle != null)
-				{
-					float scalingMultiplier = (float) Math.pow(1.1, -e.getWheelRotation());
-					
-					switch (handle.getType())
-					{
-						case BOTTOM_LEFT:
-						case BOTTOM_RIGHT:
-						case TOP_LEFT:
-						case TOP_RIGHT:
-							shape.scale(scalingMultiplier, handle.getPosX(), handle.getPosY());
-							break;
-							
-						case BOTTOM_MIDDLE:
-						case TOP_MIDDLE:
-							shape.scaleHeight(scalingMultiplier, handle.getPosY());
-							break;
-							
-						case MIDDLE_LEFT:
-						case MIDDLE_RIGHT:
-							shape.scaleWidth(scalingMultiplier, handle.getPosX());
-							break;
-					}
-					this.repaint();
-				}
-			}
-//			else
-//			{
-//				// Scaling des formes sélectionnées
-//				this.scaleSelectedShapes(-e.getWheelRotation());
-//			}
 		}
 	}
 
@@ -643,11 +679,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 				this.startDragPoint = null;
 				this.currentDragPoint = null;
 				this.repaint();
-				
-				if (this.currentPolygon != null)
-				{
-					this.endPolygonCreation();
-				}
+				this.endPolygonCreation();
 				break;
 				
 			case KeyEvent.VK_DELETE:
@@ -708,7 +740,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	{
 		ArrayList<Shape> currentSelection = new ArrayList<Shape>();
 		
-		for (Shape shape : shapeList)
+		for (Shape shape : this.shapeList)
 		{
 			if (shape.isSelected())
 			{
@@ -775,7 +807,88 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 			this.repaint();
 		}
 	}
+	
+	private Handle getContainingHandle(Point p, ArrayList<Shape> fromShapes)
+	{
+		Handle h = null;
+		
+		// TODO : Parcourir la lise à l'envers pour optimiser
+		for (Shape shape : fromShapes)
+		{
+			Handle tempHandle = shape.getContainingHandle(p, this.scalingFactor, this.virtualDeltaX, this.virtualDeltaY);
+			if (tempHandle != null)
+			{
+				h = tempHandle;
+			}
+		}
+			
+		return h;
+	}
 
+	private void doResize()
+	{
+		if (this.resizingHandle != null)
+		{
+			Shape shape = this.resizingHandle.getParent();
+			
+			// Temporaire : petite passe-passe pour obtenir la poignée opposée
+			int i = shape.getHandles().indexOf(this.resizingHandle);
+			Handle oppositeHandle = shape.getHandles().get((i + 4) % 8);
+			
+			float refX = oppositeHandle.getPosX();
+			float refY = oppositeHandle.getPosY();
+			
+			// Convertit les points de départ et d'arrivée du drag en coordonnées virtuelles 
+			Point2D vStartDragPoint = Shape.getVirtualPoint(this.startDragPoint.x, this.startDragPoint.y, 
+					this.scalingFactor, this.virtualDeltaX, this.virtualDeltaY);
+			
+			Point2D vCurrentDragPoint = Shape.getVirtualPoint(this.currentDragPoint.x, this.currentDragPoint.y, 
+					this.scalingFactor, this.virtualDeltaX, this.virtualDeltaY);
+			
+			// Calcule les facteurs d'agrandissement (largeur et hauteur)
+			float xScalingFactor = ((float)vCurrentDragPoint.getX() - refX) / ((float)vStartDragPoint.getX() - refX);
+			float yScalingFactor = ((float)vCurrentDragPoint.getY() - refY) / ((float)vStartDragPoint.getY() - refY);
+			
+			switch (this.resizingHandle.getType())
+			{
+				case TOP_RIGHT:
+				case TOP_LEFT:
+				case BOTTOM_RIGHT:
+				case BOTTOM_LEFT:
+					if (xScalingFactor > 0)
+					{
+						shape.scaleWidth(xScalingFactor, refX);
+						this.startDragPoint.x = this.currentDragPoint.x;
+					}
+					
+					if (yScalingFactor > 0)
+					{
+						shape.scaleHeight(yScalingFactor, refY);
+						this.startDragPoint.y = this.currentDragPoint.y;
+					}
+					break;
+
+				case BOTTOM_MIDDLE:
+				case TOP_MIDDLE:
+					if (yScalingFactor > 0)
+					{
+						shape.scaleHeight(yScalingFactor, refY);
+						this.startDragPoint.y = this.currentDragPoint.y;
+					}
+					break;
+
+				case MIDDLE_LEFT:
+				case MIDDLE_RIGHT:
+					if (xScalingFactor > 0)
+					{
+						shape.scaleWidth(xScalingFactor, refX);
+						this.startDragPoint.x = this.currentDragPoint.x;
+					}
+					break;
+			}
+		}		
+	}
+	
 	/*
 	 * Supprime les formes sélectionnées.
 	 */
@@ -808,24 +921,23 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		this.virtualDeltaX += (newWidth - originalWidth) / 2;
 		this.virtualDeltaY += (newHeight - originalHeight) / 2;
 
+		this.setCursorForMode(this.currentMode);
 		this.repaint();
 	}
 	
-	// Agrandit ou réduit les formes sélectionnées 
-	// en multipliant leur scaling factor par 1.1 pour chaque unité de scalingAmount.
-	// Par ex. si 3 est passé, sf = sf * 1.1^3. Si -2 est passé, sf = sf * 1.1^-2. 
-	private void scaleSelectedShapes(int scalingAmount)
-	{
-		float scalingMultiplier = (float) Math.pow(1.1, scalingAmount);
-
-		for (Shape shape : this.getCurrentSelection())
-		{
-//			shape.scale(scalingMultiplier, shape.getPosX() + shape.getWidth() / 2, shape.getPosY() + shape.getHeight() / 2);
-			shape.scale(scalingMultiplier, shape.getPosX() + shape.getWidth(), shape.getPosY() + shape.getHeight());
-//			shape.scale(scalingMultiplier, shape.getPosX(), shape.getPosY());
-		}
-		this.repaint();
-	}
+//	// Agrandit ou réduit les formes sélectionnées 
+//	// en multipliant leur scaling factor par 1.1 pour chaque unité de scalingAmount.
+//	// Par ex. si 3 est passé, sf = sf * 1.1^3. Si -2 est passé, sf = sf * 1.1^-2. 
+//	private void scaleSelectedShapes(int scalingAmount)
+//	{
+//		float scalingMultiplier = (float) Math.pow(1.1, scalingAmount);
+//
+//		for (Shape shape : this.getCurrentSelection())
+//		{
+//			shape.scale(scalingMultiplier, shape.getPosX() + shape.getWidth(), shape.getPosY() + shape.getHeight());
+//		}
+//		this.repaint();
+//	}
 	
 	/**
 	 * Retourne la liste de formes du dessin.

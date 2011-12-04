@@ -95,19 +95,6 @@ public class Group extends Shape
 		this.createHandles();
 	}
 	
-//	/* (non-Javadoc)
-//	 * @see appDrawing.model.Shape#setPosition(float, float)
-//	 */
-//	@Override
-//	public void setPosition(float posX, float posY)
-//	{
-//		// Calcule le déplacement de la forme
-//		float deltaX = posX - this.posX; 
-//		float deltaY = posY - this.posY; 
-//		
-//		this.translate(deltaX, deltaY);
-//	}
-
 	/* (non-Javadoc)
 	 * @see appDrawing.model.Shape#move(float, float)
 	 */
