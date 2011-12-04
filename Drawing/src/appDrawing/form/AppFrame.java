@@ -67,12 +67,11 @@ public class AppFrame extends JFrame implements ComponentListener, WindowListene
 		
 		// Spécifie les écouteurs pour la fenêtre
 		this.addComponentListener(this);
-		
 		this.addWindowListener(this);
 	}
 	
 	// Confirme que l'utilisateur veut vraiment sortir de l'application
-	private void quitApplication()
+	public void quitApplication()
 	{
 		int confirm = JOptionPane.showConfirmDialog(this,
 				AppFrame.QUIT_MESSAGE, AppFrame.QUIT_TITLE,

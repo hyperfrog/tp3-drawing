@@ -15,12 +15,20 @@ import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 
 import appDrawing.form.DrawingPanel.Mode;
+import appDrawing.form.DrawingPanel.ShapeType;
 
+/**
+ * 
+ * @author 
+ *
+ * TODO : Ajouter group et ungroup
+ */
 public class AppToolBar extends JToolBar implements ActionListener
 {
 	// Images utilisées par la classe pour les boutons de fichier
 	private static BufferedImage newImage = null;
 	private static BufferedImage saveImage = null;
+	private static BufferedImage saveAsImage = null;
 	private static BufferedImage loadImage = null;
 	// Images utilisées par la classe pour les outils
 	private static BufferedImage creatingImage = null;
@@ -39,14 +47,15 @@ public class AppToolBar extends JToolBar implements ActionListener
     {
             try
             {
-            	AppToolBar.newImage = ImageIO.read(AppToolBar.class.getResource("../../res/circle.png"));
-            	AppToolBar.saveImage = ImageIO.read(AppToolBar.class.getResource("../../res/circle.png"));
-            	AppToolBar.loadImage = ImageIO.read(AppToolBar.class.getResource("../../res/circle.png"));
+            	AppToolBar.newImage = ImageIO.read(AppToolBar.class.getResource("../../res/new_file.png"));
+            	AppToolBar.saveImage = ImageIO.read(AppToolBar.class.getResource("../../res/save.png"));
+            	AppToolBar.saveAsImage = ImageIO.read(AppToolBar.class.getResource("../../res/save_as.png"));
+            	AppToolBar.loadImage = ImageIO.read(AppToolBar.class.getResource("../../res/open.png"));
             	
-            	AppToolBar.creatingImage = ImageIO.read(AppToolBar.class.getResource("../../res/circle.png"));
-            	AppToolBar.movingImage = ImageIO.read(AppToolBar.class.getResource("../../res/circle.png"));
-            	AppToolBar.selectingImage = ImageIO.read(AppToolBar.class.getResource("../../res/circle.png"));
-            	AppToolBar.editingImage = ImageIO.read(AppToolBar.class.getResource("../../res/circle.png"));
+            	AppToolBar.creatingImage = ImageIO.read(AppToolBar.class.getResource("../../res/creating_mode.png"));
+            	AppToolBar.movingImage = ImageIO.read(AppToolBar.class.getResource("../../res/moving_mode.png"));
+            	AppToolBar.selectingImage = ImageIO.read(AppToolBar.class.getResource("../../res/selecting_mode.png"));
+            	AppToolBar.editingImage = ImageIO.read(AppToolBar.class.getResource("../../res/editing_mode.png"));
             	
             	AppToolBar.circleImage = ImageIO.read(AppToolBar.class.getResource("../../res/circle.png"));
             	AppToolBar.ellipseImage = ImageIO.read(AppToolBar.class.getResource("../../res/ellipse.png"));
@@ -76,6 +85,9 @@ public class AppToolBar extends JToolBar implements ActionListener
 	//
 	private JButton saveDrawingButton;
 	
+	//
+	private JButton saveAsDrawingButton;
+	
 	// 
 	private JToggleButton creatingTool;
 	
@@ -89,22 +101,25 @@ public class AppToolBar extends JToolBar implements ActionListener
 	private JToggleButton editingTool;
 	
 	// 
-	private ButtonGroup toolGroup;
+	private ButtonGroup toolsGroup;
 	
 	// 
-	private JButton circleButton;
+	private JToggleButton circleButton;
 	
 	//
-	private JButton ellipseButton;
+	private JToggleButton ellipseButton;
 	
 	//
-	private JButton rectangleButton;
+	private JToggleButton rectangleButton;
 	
 	//
-	private JButton squareButton;
+	private JToggleButton squareButton;
 	
 	//
-	private JButton polygonButton;
+	private JToggleButton polygonButton;
+	
+	//
+	private ButtonGroup shapesGroup;
 	
 	/**
 	 * 
@@ -127,19 +142,20 @@ public class AppToolBar extends JToolBar implements ActionListener
 		this.newDrawingButton = new JButton();
 		this.loadDrawingButton = new JButton();
 		this.saveDrawingButton = new JButton();
+		this.saveAsDrawingButton = new JButton();
 		// Outils
 		this.creatingTool = new JToggleButton();
 		this.movingTool = new JToggleButton();
 		this.selectingTool = new JToggleButton();
 		this.editingTool = new JToggleButton();
-		this.toolGroup = new ButtonGroup();
+		this.toolsGroup = new ButtonGroup();
 		// Mode création
-		// TODO : Aussi toggleButton
-		this.circleButton = new JButton();
-		this.ellipseButton = new JButton();
-		this.rectangleButton = new JButton();
-		this.squareButton = new JButton();
-		this.polygonButton = new JButton();
+		this.circleButton = new JToggleButton();
+		this.ellipseButton = new JToggleButton();
+		this.rectangleButton = new JToggleButton();
+		this.squareButton = new JToggleButton();
+		this.polygonButton = new JToggleButton();
+		this.shapesGroup = new ButtonGroup();
 		
 		this.newDrawingButton.setText(null);
 		this.newDrawingButton.setToolTipText("Nouveau dessin");
@@ -147,14 +163,19 @@ public class AppToolBar extends JToolBar implements ActionListener
 		this.newDrawingButton.setIcon(AppToolBar.newImage != null ? new ImageIcon(AppToolBar.newImage) : null);
 		
 		this.loadDrawingButton.setText(null);
-		this.loadDrawingButton.setToolTipText("Charger un dessin");
+		this.loadDrawingButton.setToolTipText("Ouvrir...");
 		this.loadDrawingButton.setActionCommand("LOAD");
 		this.loadDrawingButton.setIcon(AppToolBar.loadImage != null ? new ImageIcon(AppToolBar.loadImage) : null);
 		
 		this.saveDrawingButton.setText(null);
-		this.saveDrawingButton.setToolTipText("Sauvegarder un dessin");
+		this.saveDrawingButton.setToolTipText("Sauvegarder");
 		this.saveDrawingButton.setActionCommand("SAVE");
 		this.saveDrawingButton.setIcon(AppToolBar.saveImage != null ? new ImageIcon(AppToolBar.saveImage) : null);
+		
+		this.saveAsDrawingButton.setText(null);
+		this.saveAsDrawingButton.setToolTipText("Sauvegarder sous...");
+		this.saveAsDrawingButton.setActionCommand("SAVE_AS");
+		this.saveAsDrawingButton.setIcon(AppToolBar.saveAsImage != null ? new ImageIcon(AppToolBar.saveAsImage) : null);
 		
 		this.creatingTool.setText(null);
 		this.creatingTool.setToolTipText("Mode création");
@@ -177,15 +198,16 @@ public class AppToolBar extends JToolBar implements ActionListener
 		this.editingTool.setActionCommand("EDITING");
 		this.editingTool.setIcon(AppToolBar.editingImage != null ? new ImageIcon(AppToolBar.editingImage) : null);
 		
-		this.toolGroup.add(this.creatingTool);
-		this.toolGroup.add(this.movingTool);
-		this.toolGroup.add(this.selectingTool);
-		this.toolGroup.add(this.editingTool);
+		this.toolsGroup.add(this.creatingTool);
+		this.toolsGroup.add(this.movingTool);
+		this.toolsGroup.add(this.selectingTool);
+		this.toolsGroup.add(this.editingTool);
 		
 		this.ellipseButton.setText(null);
 		this.ellipseButton.setToolTipText("Ellipse");
 		this.ellipseButton.setActionCommand("ELLIPSE");
 		this.ellipseButton.setIcon(AppToolBar.ellipseImage != null ? new ImageIcon(AppToolBar.ellipseImage) : null);
+		this.ellipseButton.setSelected(true);
 		
 		this.circleButton.setText(null);
 		this.circleButton.setToolTipText("Cercle");
@@ -207,9 +229,16 @@ public class AppToolBar extends JToolBar implements ActionListener
 		this.polygonButton.setActionCommand("POLYGON");
 		this.polygonButton.setIcon(AppToolBar.polygonImage != null ? new ImageIcon(AppToolBar.polygonImage) : null);
 		
+		this.shapesGroup.add(this.ellipseButton);
+		this.shapesGroup.add(this.circleButton);
+		this.shapesGroup.add(this.rectangleButton);
+		this.shapesGroup.add(this.squareButton);
+		this.shapesGroup.add(this.polygonButton);
+		
 		this.add(this.newDrawingButton);
-		this.add(this.saveDrawingButton);
 		this.add(this.loadDrawingButton);
+		this.add(this.saveDrawingButton);
+		this.add(this.saveAsDrawingButton);
 		this.addSeparator();
 		this.add(this.creatingTool);
 		this.add(this.movingTool);
@@ -224,6 +253,7 @@ public class AppToolBar extends JToolBar implements ActionListener
 		
 		this.newDrawingButton.addActionListener(this);
 		this.saveDrawingButton.addActionListener(this);
+		this.saveAsDrawingButton.addActionListener(this);
 		this.loadDrawingButton.addActionListener(this);
 		this.creatingTool.addActionListener(this);
 		this.movingTool.addActionListener(this);
@@ -246,18 +276,47 @@ public class AppToolBar extends JToolBar implements ActionListener
 		{
 			switch (newMode)
 			{
-			case CREATING:
-				this.creatingTool.setSelected(true);
-				break;
-			case MOVING:
-				this.movingTool.setSelected(true);
-				break;
-			case SELECTING:
-				this.selectingTool.setSelected(true);
-				break;
-			case EDITING:
-				this.editingTool.setSelected(true);
-				break;
+				case CREATING:
+					this.creatingTool.setSelected(true);
+					break;
+				case MOVING:
+					this.movingTool.setSelected(true);
+					break;
+				case SELECTING:
+					this.selectingTool.setSelected(true);
+					break;
+				case EDITING:
+					this.editingTool.setSelected(true);
+					break;
+			}
+		}
+	}
+	
+	/**
+	 * 
+	 * @param newShapeType
+	 */
+	public void toggleShape(ShapeType newShapeType)
+	{
+		if (newShapeType != null)
+		{
+			switch (newShapeType)
+			{
+				case ELLIPSE:
+					this.ellipseButton.setSelected(true);
+					break;
+				case CIRCLE:
+					this.circleButton.setSelected(true);
+					break;
+				case RECTANGLE:
+					this.rectangleButton.setSelected(true);
+					break;
+				case SQUARE:
+					this.squareButton.setSelected(true);
+					break;
+				case POLYGON:
+					this.polygonButton.setSelected(true);
+					break;
 			}
 		}
 	}
@@ -294,6 +353,11 @@ public class AppToolBar extends JToolBar implements ActionListener
 			this.parent.actionPerformed(evt);
 		}
 		else if (evt.getActionCommand().equals("SAVE"))
+		{
+			// Ouvre la boîte de dialogue «Sauvegarder»
+			this.parent.actionPerformed(evt);
+		}
+		else if (evt.getActionCommand().equals("SAVE_AS"))
 		{
 			// Ouvre la boîte de dialogue «Sauvegarder»
 			this.parent.actionPerformed(evt);

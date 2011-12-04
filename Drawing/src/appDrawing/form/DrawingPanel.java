@@ -314,6 +314,32 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		this.setCursor(Cursor.getPredefinedCursor(preDefCursor));
 	}
 	
+	private void setShapeType(ShapeType newShapeType)
+	{
+		this.setMode(Mode.CREATING);
+		
+		this.parent.getToolBar().toggleShape(newShapeType);
+		
+		switch (newShapeType)
+		{
+			case ELLIPSE:
+				this.currentShapeType = ShapeType.ELLIPSE;
+				break;
+			case CIRCLE:
+				this.currentShapeType = ShapeType.CIRCLE;
+				break;
+			case RECTANGLE:
+				this.currentShapeType = ShapeType.RECTANGLE;
+				break;
+			case SQUARE:
+				this.currentShapeType = ShapeType.SQUARE;
+				break;
+			case POLYGON:
+				this.currentShapeType = ShapeType.POLYGON;
+				break;
+		}
+	}
+	
 	//si on créé un autre forme ou  que l'on change de mode et qu'un polygone est en cours de dessin,
 	//on ajoute le polygone dans la shapeList et on réinitialise le currentPolygon. Aussi, il serait possible 
 	//d'annuler le polygone en cours, car il n'est pas dans la liste tant que le dessin n'est pas terminé
@@ -575,32 +601,27 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 				break;
 
 			case KeyEvent.VK_E:
-				this.currentShapeType = ShapeType.ELLIPSE;
-				this.setMode(Mode.CREATING);
+				this.setShapeType(ShapeType.ELLIPSE);
 				System.out.println("e");
 				break;
 				
 			case KeyEvent.VK_S:
-				this.currentShapeType = ShapeType.SQUARE;
-				this.setMode(Mode.CREATING);
+				this.setShapeType(ShapeType.SQUARE);
 				System.out.println("s");
 				break;
 				
 			case KeyEvent.VK_R:
-				this.currentShapeType = ShapeType.RECTANGLE;
-				this.setMode(Mode.CREATING);
+				this.setShapeType(ShapeType.RECTANGLE);
 				System.out.println("r");
 				break;
 				
 			case KeyEvent.VK_C:
-				this.currentShapeType = ShapeType.CIRCLE;
-				this.setMode(Mode.CREATING);
+				this.setShapeType(ShapeType.CIRCLE);
 				System.out.println("c");
 				break;
 				
 			case KeyEvent.VK_P:
-				this.setMode(Mode.CREATING);
-				this.currentShapeType = ShapeType.POLYGON;
+				this.setShapeType(ShapeType.POLYGON);
 				break;
 				
 			case KeyEvent.VK_L:

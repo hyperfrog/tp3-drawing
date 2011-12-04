@@ -52,6 +52,9 @@ public class AppMenu extends JMenuBar implements ActionListener, ItemListener
 	// Élément «Ouvrir»
 	private JMenuItem loadItem;
 	
+	// Élément «Quitter»
+	private JMenuItem quitItem;
+	
 	// Objet parent
 	private AppFrame parent = null;
 	
@@ -77,6 +80,7 @@ public class AppMenu extends JMenuBar implements ActionListener, ItemListener
 		this.saveAsItem = new JMenuItem();
 		this.saveItem = new JMenuItem();
 		this.loadItem = new JMenuItem();
+		this.quitItem = new JMenuItem();
 		
 		this.fileMenu.setText("Fichier");
 		this.windowMenu.setText("Affichage");
@@ -104,10 +108,15 @@ public class AppMenu extends JMenuBar implements ActionListener, ItemListener
 		this.loadItem.setText("Ouvrir...");
 		this.loadItem.setActionCommand("LOAD");
 		
+		this.quitItem.setText("Quitter");
+		this.quitItem.setActionCommand("QUIT");
+		
 		this.fileMenu.add(this.newDrawingItem);
 		this.fileMenu.add(this.loadItem);
 		this.fileMenu.add(this.saveAsItem);
 		this.fileMenu.add(this.saveItem);
+		this.fileMenu.addSeparator();
+		this.fileMenu.add(this.quitItem);
 		
 		this.windowMenu.add(this.toolbarItem);
 		
@@ -126,6 +135,7 @@ public class AppMenu extends JMenuBar implements ActionListener, ItemListener
 		this.saveAsItem.addActionListener(this);
 		this.saveItem.addActionListener(this);
 		this.loadItem.addActionListener(this);
+		this.quitItem.addActionListener(this);
 	}
 	
 	/*
@@ -193,18 +203,23 @@ public class AppMenu extends JMenuBar implements ActionListener, ItemListener
 		}
 		else if (evt.getActionCommand().equals("SAVE_AS"))
 		{
-			// Demande au Board de sauvergarder
+			// Demande au Board de sauvergarder sous un dessin
 			this.parent.getBoard().actionPerformed(evt);
 		}
 		else if (evt.getActionCommand().equals("SAVE"))
 		{
-			// Demande au Board de sauvergarder
+			// Demande au Board de sauvergarder un dessin
 			this.parent.getBoard().actionPerformed(evt);
 		}
 		else if (evt.getActionCommand().equals("LOAD"))
 		{
-			// Demande au board de charger
+			// Demande au Board d'ouvrir un dessin 
 			this.parent.getBoard().actionPerformed(evt);
+		}
+		else if (evt.getActionCommand().equals("QUIT"))
+		{
+			// Demande au AppFrame de quitter l'application
+			this.parent.quitApplication();
 		}
 	}
 }
