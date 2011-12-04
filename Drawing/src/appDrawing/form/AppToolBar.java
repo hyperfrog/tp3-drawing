@@ -2,8 +2,6 @@ package appDrawing.form;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -23,7 +21,6 @@ import appDrawing.form.DrawingPanel.ShapeType;
  * 
  * @author 
  *
- * TODO : Ajouter group et ungroup
  */
 public class AppToolBar extends JToolBar implements ActionListener
 {
