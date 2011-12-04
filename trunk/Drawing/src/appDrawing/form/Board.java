@@ -2,7 +2,6 @@ package appDrawing.form;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -19,25 +18,27 @@ import appDrawing.model.Shape;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
- * La classe Board implémente l'interface de ...
- * Elle gère la plupart des évènements de l'interface utilisateur.
- * 
+ * La classe Board sert de conteneur à : dessin, barre d'outil, ...
+ *  
+ * @author Micaël Lemelin
  * @author Christian Lesage
  * @author Alexandre Tremblay
- *
+ * @author Pascal Turcot
+ * 
  */
-public class Board extends JPanel implements ActionListener, MouseListener
+public class Board extends JPanel implements ActionListener //, MouseListener
 {
+	
+	private static final String FILE_EXT = "ser";
+	private static final String FILE_DESCRIPTION = "Fichiers de dessin (*.ser)";
+	
 	// Objet parent
 	private AppFrame parent = null;
 	
@@ -46,6 +47,8 @@ public class Board extends JPanel implements ActionListener, MouseListener
 	
 	// Barre d'outils
 	private AppToolBar appToolBar;
+	
+	private String filePath = null;
 	
 	/**
 	 * Construit un plateau.
@@ -60,10 +63,10 @@ public class Board extends JPanel implements ActionListener, MouseListener
 		this.parent = parent;
 		
         // Initialise les composantes
+		this.appToolBar = new AppToolBar(this);
 		this.drawingPanel = new DrawingPanel(this);
 		this.drawingPanel.setBackground(Color.WHITE);
 		
-		this.appToolBar = new AppToolBar(this);
 		
 		this.setLayout(new BorderLayout());
 		
@@ -72,30 +75,90 @@ public class Board extends JPanel implements ActionListener, MouseListener
 	}
 	
 	/*
-	 * Sauve le dessin
+	 * Sauvegarde le dessin
 	 */
-	private void saveDrawing()
+	private void saveDrawing(boolean askFileName)
 	{
-		String response = JOptionPane.showInputDialog(null, "name the file to save", "Save", JOptionPane.QUESTION_MESSAGE);
+		JFileChooser fc = new JFileChooser();
+	    FileFilter filter = new FileNameExtensionFilter(Board.FILE_DESCRIPTION, Board.FILE_EXT);
+	    fc.addChoosableFileFilter(filter);
+	    boolean doSave = true;
+	    String filePath = null;
+	    
+	    if (askFileName || this.filePath == null)
+	    {
+	    	if (fc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) 
+	    	{
+	    		filePath = fc.getSelectedFile().getAbsolutePath();
 
-		ArrayList<Shape> list = this.drawingPanel.getShapeList();
+	    		// Si le nom du fichier ne se termine pas par l'extension voulue
+	    		if (!filePath.endsWith("." + Board.FILE_EXT))
+	    		{
+	    			// Ajoute l'extension 
+	    			filePath += "." + Board.FILE_EXT;
+	    		}
 
-	    FileOutputStream fos;
-		try
-		{
-			fos = new FileOutputStream(response + ".ser");
-		    ObjectOutputStream oos = new ObjectOutputStream(fos);
-		    oos.writeObject(list);
-		    oos.close();
-		}
-		catch (FileNotFoundException e)
-		{
-			e.printStackTrace();
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
+	    		// Fichier existant ?
+	    		if (new File(filePath).exists()) 
+	    		{
+	    			int result = JOptionPane.showConfirmDialog(this,
+	    					"Êtes-vous certain de vouloir remplacer le fichier :\n" + filePath, 
+	    					"Remplacer ?", 
+	    					JOptionPane.YES_NO_OPTION, 
+	    					JOptionPane.QUESTION_MESSAGE);
+
+	    			doSave = (result == JOptionPane.YES_OPTION);
+	    		}
+	    	}
+	    	else 
+	    	{
+	    		doSave = false;
+	    	}
+	    }
+	    
+	    if (doSave)
+	    {
+	    	if (filePath == null)
+    		{
+    			filePath = this.filePath;
+    		}
+    		else
+    		{
+    			this.filePath = filePath;
+    		}
+
+	    	ArrayList<Shape> shapeList = this.drawingPanel.getShapeList();
+	    	FileOutputStream fos;
+	    	ObjectOutputStream oos = null;
+
+	    	try
+	    	{
+	    		fos = new FileOutputStream(filePath);
+	    		oos = new ObjectOutputStream(fos);
+	    		oos.writeObject(shapeList);
+	    		oos.close();
+	    	}
+	    	catch (FileNotFoundException e)
+	    	{
+	    		JOptionPane.showMessageDialog(this, "Le fichier ne peut pas être créé.", "Erreur", JOptionPane.ERROR_MESSAGE);
+	    		this.filePath = null;
+	    		e.printStackTrace();
+	    	}
+	    	catch (IOException e)
+	    	{
+	    		JOptionPane.showMessageDialog(this, e.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+	    		this.filePath = null;
+	    		e.printStackTrace();
+	    	}
+	    	finally
+	    	{
+	    		if (oos != null)
+	    		{
+	    			try { oos.close(); } catch (IOException e) {}
+	    		}
+	    	}
+
+	    }
 	}
 	
 	/*
@@ -103,45 +166,48 @@ public class Board extends JPanel implements ActionListener, MouseListener
 	 */
 	private void loadDrawing()
 	{
-		String test = "";
-		JFileChooser fileopen = new JFileChooser();
-	    FileFilter filter = new FileNameExtensionFilter(".ser files", "ser");
-	    fileopen.addChoosableFileFilter(filter);
+		JFileChooser fc = new JFileChooser();
+	    FileFilter filter = new FileNameExtensionFilter(Board.FILE_DESCRIPTION, Board.FILE_EXT);
+	    fc.addChoosableFileFilter(filter);
 
-	    int ret = fileopen.showDialog(null, "Open file");
-
-	    if (ret == JFileChooser.APPROVE_OPTION) 
+	    if (fc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) 
 	    {
-	      File file = fileopen.getSelectedFile();
-	      test = file.getAbsolutePath();
+	    	FileInputStream fis = null;
+	    	ObjectInputStream ois = null;
+			try
+			{
+			    fis = new FileInputStream(fc.getSelectedFile());
+			    ois = new ObjectInputStream(fis);
+			    
+			    @SuppressWarnings("unchecked")
+				ArrayList<Shape> shapeList = (ArrayList<Shape>) ois.readObject();
+			    
+			    ois.close();
+			    
+			    this.drawingPanel.setShapeList((ArrayList<Shape>) shapeList);
+			}
+			catch (FileNotFoundException e)
+			{
+				JOptionPane.showMessageDialog(this, "Ce fichier n'existe pas.", "Erreur", JOptionPane.ERROR_MESSAGE);
+			}
+			catch (IOException e)
+			{
+				JOptionPane.showMessageDialog(this, e.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+				e.printStackTrace();
+			}
+			catch (ClassNotFoundException e)
+			{
+				JOptionPane.showMessageDialog(this, e.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+				e.printStackTrace();
+			}
+			finally
+			{
+	    		if (ois != null)
+	    		{
+	    			try { ois.close(); } catch (IOException e) {}
+	    		}
+			}
 	    }
-		
-		try
-		{
-		    FileInputStream fis = new FileInputStream(test);
-		    ObjectInputStream ois = new ObjectInputStream(fis);
-		    @SuppressWarnings("unchecked")
-			ArrayList<Shape> anotherList = (ArrayList<Shape>) ois.readObject();
-		    ois.close();
-		    
-		    this.drawingPanel.setShapeList((ArrayList<Shape>) anotherList);
-		    
-		}
-		catch (FileNotFoundException e)
-		{
-			JOptionPane.showMessageDialog(this, "Ce fichier n'existe pas.");
-			e.printStackTrace();
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-		catch (ClassNotFoundException e)
-		{
-			e.printStackTrace();
-		}
-		
-		this.repaint();
 	}
 	
 	/**
@@ -175,11 +241,17 @@ public class Board extends JPanel implements ActionListener, MouseListener
 		if (evt.getActionCommand().equals("NEW_DRAWING"))
 		{
 			this.drawingPanel.erase();
+			this.filePath = null;
+		}
+		
+		if (evt.getActionCommand().equals("SAVE_AS"))
+		{
+			this.saveDrawing(true);
 		}
 		
 		if (evt.getActionCommand().equals("SAVE"))
 		{
-			this.saveDrawing();
+			this.saveDrawing(false);
 		}
 		
 		if (evt.getActionCommand().equals("LOAD"))
@@ -188,36 +260,36 @@ public class Board extends JPanel implements ActionListener, MouseListener
 		}
 	}
 	
-	/**
-	 * Reçoit et traite les événements relatifs aux clics de la souris.
-	 * Cette méthode doit être publique mais ne devrait pas être appelée directement.
-	 * 
-	 * @see java.awt.event.MouseListener#mouseClicked(java.awt.event.MouseEvent)
-	 * 
-	 * @param evt événement déclencheur
-	 */
-	@Override
-	public void mouseReleased(MouseEvent evt)
-	{
-	}
-	
-	@Override
-	public void mouseEntered(MouseEvent e)
-	{
-	}
-	
-	@Override
-	public void mouseExited(MouseEvent e)
-	{
-	}
-	
-	@Override
-	public void mousePressed(MouseEvent e)
-	{
-	}
-	
-	@Override
-	public void mouseClicked(MouseEvent e)
-	{
-	}
+//	/**
+//	 * Reçoit et traite les événements relatifs aux clics de la souris.
+//	 * Cette méthode doit être publique mais ne devrait pas être appelée directement.
+//	 * 
+//	 * @see java.awt.event.MouseListener#mouseClicked(java.awt.event.MouseEvent)
+//	 * 
+//	 * @param evt événement déclencheur
+//	 */
+//	@Override
+//	public void mouseReleased(MouseEvent evt)
+//	{
+//	}
+//	
+//	@Override
+//	public void mouseEntered(MouseEvent e)
+//	{
+//	}
+//	
+//	@Override
+//	public void mouseExited(MouseEvent e)
+//	{
+//	}
+//	
+//	@Override
+//	public void mousePressed(MouseEvent e)
+//	{
+//	}
+//	
+//	@Override
+//	public void mouseClicked(MouseEvent e)
+//	{
+//	}
 }

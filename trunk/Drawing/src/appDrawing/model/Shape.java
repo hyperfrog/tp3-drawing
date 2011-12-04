@@ -14,7 +14,6 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
-import java.util.Arrays;
 
 import appDrawing.model.Handle.HandleType;
 
@@ -395,9 +394,12 @@ public abstract class Shape implements Serializable
 	// Dessine 8 poignées autour de la forme pour indiquer qu'elle est sélectionnée.
 	protected void drawSelection(Graphics2D g, float drawingScalingFactor, float drawingDeltaX, float drawingDeltaY)
 	{	
-		for (int i = 0; i < Shape.NUM_OF_HANDLES; ++i )
+		if (this.handles != null)
 		{
-			this.handles[i].draw(g, drawingScalingFactor, drawingDeltaX, drawingDeltaY);
+			for (int i = 0; i < this.handles.length; ++i )
+			{
+				this.handles[i].draw(g, drawingScalingFactor, drawingDeltaX, drawingDeltaY);
+			}
 		}
 	}
 	

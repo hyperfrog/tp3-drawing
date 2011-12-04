@@ -57,7 +57,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	
 	// Liste des formes déjà sélectionnées
 	// Sert au mode de sélection additive (avec la touche Ctrl)
-	private ArrayList<Shape> alreadySelectedShapes = new ArrayList<Shape>();
+	private ArrayList<Shape> alreadySelectedShapes;
 	
 	// Déplacement actuel du dessin en coordonnées virtuelles
 	private float virtualDeltaX;
@@ -130,6 +130,8 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 			            return false;  
 			        }
 			    });
+
+		this.erase();
 	}
 	
 	/**
@@ -235,6 +237,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	public void erase()
 	{
 		this.shapeList = new ArrayList<Shape>();
+		this.alreadySelectedShapes = new ArrayList<Shape>();
 		this.currentPolygon = null;
 		this.repaint();
 	}
@@ -287,6 +290,9 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 			this.lastMode = this.currentMode;
 			this.currentMode = newMode;
 		}
+
+		this.parent.getToolBar().toggleMode(newMode);
+		
 		int preDefCursor = Cursor.DEFAULT_CURSOR;
 		
 		switch (newMode)
@@ -423,6 +429,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		
 		this.startDragPoint = null;
 		this.currentDragPoint = null;
+		this.alreadySelectedShapes.clear();
 		
 		if (this.currentMode == Mode.PANNING || this.currentMode == Mode.MOVING)
 		{
@@ -440,7 +447,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 			
 			// mouseMoved() n'est pas appelé pendant un drag, alors on fait comme si...
 			this.currentMousePos = e.getPoint();
-			System.out.println(this.currentMousePos);
+//			System.out.println(this.currentMousePos);
 
 			// Si mode panning 
 			if (this.currentMode == Mode.PANNING)
@@ -495,7 +502,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	public void mouseMoved(MouseEvent e)
 	{
 		this.currentMousePos = e.getPoint();
-		System.out.println(this.currentMousePos);
+//		System.out.println(this.currentMousePos);
 		
 		if (this.currentPolygon != null)
 		{
@@ -570,40 +577,34 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 			case KeyEvent.VK_E:
 				this.currentShapeType = ShapeType.ELLIPSE;
 				this.setMode(Mode.CREATING);
-				this.parent.getToolBar().toggleMode(Mode.CREATING);
 				System.out.println("e");
 				break;
 				
 			case KeyEvent.VK_S:
 				this.currentShapeType = ShapeType.SQUARE;
 				this.setMode(Mode.CREATING);
-				this.parent.getToolBar().toggleMode(Mode.CREATING);
 				System.out.println("s");
 				break;
 				
 			case KeyEvent.VK_R:
 				this.currentShapeType = ShapeType.RECTANGLE;
 				this.setMode(Mode.CREATING);
-				this.parent.getToolBar().toggleMode(Mode.CREATING);
 				System.out.println("r");
 				break;
 				
 			case KeyEvent.VK_C:
 				this.currentShapeType = ShapeType.CIRCLE;
 				this.setMode(Mode.CREATING);
-				this.parent.getToolBar().toggleMode(Mode.CREATING);
 				System.out.println("c");
 				break;
 				
 			case KeyEvent.VK_P:
 				this.setMode(Mode.CREATING);
-				this.parent.getToolBar().toggleMode(Mode.CREATING);
 				this.currentShapeType = ShapeType.POLYGON;
 				break;
 				
 			case KeyEvent.VK_L:
 				this.setMode(Mode.SELECTING);
-				this.parent.getToolBar().toggleMode(Mode.SELECTING);
 				System.out.println("l");
 				break;
 				
@@ -635,12 +636,10 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 			case KeyEvent.VK_M:
 			case KeyEvent.VK_SHIFT:
 				this.setMode(Mode.MOVING);
-				this.parent.getToolBar().toggleMode(Mode.MOVING);
 				break;
 				
 			case KeyEvent.VK_I:
 				this.setMode(Mode.EDITING);
-				this.parent.getToolBar().toggleMode(Mode.EDITING);
 				break;
 		}
 	}
@@ -826,6 +825,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	{
 		if (shapeList != null)
 		{
+			this.erase();
 			this.shapeList = shapeList;
 			this.repaint();
 		}
