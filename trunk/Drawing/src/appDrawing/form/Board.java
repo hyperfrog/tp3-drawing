@@ -67,7 +67,6 @@ public class Board extends JPanel implements ActionListener //, MouseListener
 		this.drawingPanel = new DrawingPanel(this);
 		this.drawingPanel.setBackground(Color.WHITE);
 		
-		
 		this.setLayout(new BorderLayout());
 		
 		this.add(this.drawingPanel, BorderLayout.CENTER);
