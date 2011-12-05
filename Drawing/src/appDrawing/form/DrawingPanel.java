@@ -86,10 +86,10 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
     public enum Mode {CREATING, PANNING, MOVING, SELECTING, EDITING, RESIZING}
     
     // Mode de l'opération en cours
-    private Mode currentMode = DrawingPanel.DEFAULT_MODE;
+    private Mode currentMode = null; //DrawingPanel.DEFAULT_MODE;
 	
     // Mode de la dernière opération
-    private Mode lastMode = DrawingPanel.DEFAULT_MODE;
+    private Mode lastMode = null; //DrawingPanel.DEFAULT_MODE;
 
     // Type de la prochaine forme à être dessinée 
 	private ShapeType currentShapeType = ShapeType.ELLIPSE; 
@@ -289,7 +289,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		
 		if (newMode != this.currentMode)
 		{
-			// Ne mémorise pas les modes «transitoires»
+			// Mémorise les modes non «transitoires»
 			if (this.currentMode != Mode.PANNING && this.currentMode != Mode.MOVING && this.currentMode != Mode.RESIZING)
 			{
 				this.lastMode = this.currentMode;
@@ -326,12 +326,10 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	}
 	
 	/*
-	 * Met le mode à CREATING et change le type de prochaine forme à être créée pour celui spécifié
+	 * Change le type de prochaine forme à être créée pour celui spécifié et met le mode à CREATING 
 	 */
 	private void setShapeType(ShapeType newShapeType)
 	{
-		this.setMode(Mode.CREATING);
-		
 		this.parent.getToolBar().toggleShape(newShapeType);
 		
 		switch (newShapeType)
@@ -352,6 +350,8 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 				this.currentShapeType = ShapeType.POLYGON;
 				break;
 		}
+
+		this.setMode(Mode.CREATING);
 	}
 	
 	//si on créé un autre forme ou  que l'on change de mode et qu'un polygone est en cours de dessin,
