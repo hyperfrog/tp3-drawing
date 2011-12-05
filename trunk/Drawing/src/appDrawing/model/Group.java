@@ -77,7 +77,7 @@ public class Group extends Shape
 
 			for (int i = 1; i < shapeList.size(); i++)
 			{
-				s = shapeList.get(i);
+				s = this.shapeList.get(i);
 				r = r.createUnion(new Rectangle2D.Float(s.posX, s.posY, s.width, s.height));
 			}
 			
