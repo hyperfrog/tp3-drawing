@@ -28,10 +28,14 @@ public class Square extends Rectangle
 	{
 		super(posX, posY, width, height);
 		
-		float size = Math.min(this.width, this.height);
-		this.width = size;
-		this.height = size;
-		this.createHandles();
+		if (this.width != this.height)
+		{
+			float size = Math.min(this.width, this.height);
+			this.width = size;
+			this.height = size;
+			this.createHandles();
+		}
+		
 		this.gradColor2 = Color.YELLOW;
 	}
 
