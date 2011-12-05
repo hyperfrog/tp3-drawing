@@ -131,7 +131,7 @@ public class VPolygon extends Shape
 	@Override
 	public void scaleWidth(float scalingFactor, float refX)
 	{
-		if (scalingFactor > 0)
+		if (scalingFactor > 0 && scalingFactor != 1)
 		{
 			ArrayList<Point2D> newPoints = new ArrayList<Point2D>();
 			
@@ -154,7 +154,7 @@ public class VPolygon extends Shape
 	@Override
 	public void scaleHeight(float scalingFactor, float refY)
 	{
-		if (scalingFactor > 0)
+		if (scalingFactor > 0 && scalingFactor != 1)
 		{
 			ArrayList<Point2D> newPoints = new ArrayList<Point2D>();
 			
