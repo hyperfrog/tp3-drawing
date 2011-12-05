@@ -8,7 +8,6 @@ import java.awt.Graphics2D;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.Point;
-//import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -18,6 +17,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
@@ -27,13 +27,11 @@ import appDrawing.model.Circle;
 import appDrawing.model.Ellipse;
 import appDrawing.model.Group;
 import appDrawing.model.Handle;
-import appDrawing.model.Handle.HandleType;
 import appDrawing.model.VPolygon;
 import appDrawing.model.Rectangle;
 import appDrawing.model.Shape;
 import appDrawing.model.Square;
 
-import java.io.Serializable;
 /**
  * @author Micaël Lemelin
  * @author Christian Lesage
@@ -41,7 +39,7 @@ import java.io.Serializable;
  * @author Pascal Turcot
  *
  */
-public class DrawingPanel extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener, Serializable
+public class DrawingPanel extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener
 {
 	private static final Mode DEFAULT_MODE = Mode.CREATING;
 	
@@ -135,8 +133,6 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 			            return false;  
 			        }
 			    });
-
-		this.erase();
 	}
 	
 	/**
@@ -211,27 +207,21 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		g2d.drawRect(rect.x, rect.y, rect.width, rect.height);
 	}
 	
-	// La largeur et la hauteur d'une forme ne peuvent pas être négatives. 
-	// Il faut donc les inverser au besoin et changer les coordonnées du point d'origine.
+	/*
+	 * Crée et retourne un java.awt.Rectangle à partir des deux points spécifiés
+	 */
 	private java.awt.Rectangle makeRect(Point startPoint, Point endPoint)
 	{
 		int realWidth = endPoint.x - startPoint.x;
 		int realHeight = endPoint.y - startPoint.y;
 		
-		int realX = startPoint.x;
-		int realY = startPoint.y;
-	
-		if (realWidth < 0)
-		{
-			realWidth = -realWidth;
-			realX = endPoint.x;
-		}
-		
-		if (realHeight < 0)
-		{
-			realHeight = -realHeight;
-			realY = endPoint.y;
-		}
+		// La largeur et la hauteur d'une forme ne peuvent pas être négatives. 
+		// Il faut donc les inverser au besoin et changer les coordonnées du point d'origine.
+		int realX = (realWidth < 0) ? endPoint.x : startPoint.x;
+		int realY = (realHeight < 0) ? endPoint.y : startPoint.y;
+
+		realWidth = Math.abs(realWidth);
+		realHeight = Math.abs(realHeight);
 		
 		return new java.awt.Rectangle(realX, realY, realWidth, realHeight);
 	}
@@ -252,13 +242,16 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	// et dimensions réelles passées en paramètres.
 	private Shape createShape(int realX, int realY, int realWidth, int realHeight)
 	{
-		// Calcule les coordonnées et dimensions virtuelles
-		float virtualX = (realX / this.scalingFactor) - this.virtualDeltaX;
-		float virtualY = (realY / this.scalingFactor) - this.virtualDeltaY;
+		// Obtient les coordonnées et dimensions virtuelles
+		Rectangle2D r = Shape.getVirtualRect(realX, realY, realWidth, realHeight, 
+				this.scalingFactor, this.virtualDeltaX, this.virtualDeltaY);
+
+		float virtualX = (float) r.getX();
+		float virtualY = (float) r.getY();
 		
-		float virtualWidth = realWidth / this.scalingFactor;
-		float virtualHeight = realHeight / this.scalingFactor;
-		
+		float virtualWidth = (float) r.getWidth();
+		float virtualHeight = (float) r.getHeight();
+
 		Shape shape = null; 
 		
 		// Crée une forme selon le type de forme à créer 
@@ -284,6 +277,9 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		return shape;
 	}
 	
+	/*
+	 * Change le mode pour celui spéficié 
+	 */
 	private void setMode(Mode newMode)
 	{
 		if (newMode != Mode.CREATING || this.currentShapeType != ShapeType.POLYGON)
@@ -293,7 +289,12 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		
 		if (newMode != this.currentMode)
 		{
-			this.lastMode = this.currentMode;
+			// Ne mémorise pas les modes «transitoires»
+			if (this.currentMode != Mode.PANNING && this.currentMode != Mode.MOVING && this.currentMode != Mode.RESIZING)
+			{
+				this.lastMode = this.currentMode;
+			}
+			
 			this.currentMode = newMode;
 			
 			this.parent.getToolBar().toggleMode(newMode);
@@ -302,6 +303,9 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		}
 	}
 	
+	/*
+	 * Change le curseur en fonction du mode spécifié.
+	 */
 	private void setCursorForMode(Mode mode)
 	{
 		switch (mode)
@@ -321,6 +325,9 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		}
 	}
 	
+	/*
+	 * Met le mode à CREATING et change le type de prochaine forme à être créée pour celui spécifié
+	 */
 	private void setShapeType(ShapeType newShapeType)
 	{
 		this.setMode(Mode.CREATING);
@@ -477,6 +484,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		this.currentDragPoint = null;
 		this.alreadySelectedShapes.clear();
 		
+		// Si mode «transitoire» actif, rappelle le mode précédent
 		if (this.currentMode == Mode.PANNING  || this.currentMode == Mode.MOVING || this.currentMode == Mode.RESIZING)
 		{
 			this.setMode(this.lastMode);
@@ -541,54 +549,56 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 			this.repaint();
 		}
 		
-		Handle handle = this.getContainingHandle(this.currentMousePos, this.getCurrentSelection());
-
-		if (handle != null)
+		if (this.currentMode == Mode.SELECTING)
 		{
-			int preDefCursor = Cursor.DEFAULT_CURSOR;
+			Handle handle = this.getContainingHandle(this.currentMousePos, this.getCurrentSelection());
 
-			switch (handle.getType())
+			if (handle != null)
 			{
-				case BOTTOM_LEFT:
-					preDefCursor = Cursor.SW_RESIZE_CURSOR;
-					break;
+				int preDefCursor = Cursor.DEFAULT_CURSOR;
 
-				case BOTTOM_RIGHT:
-					preDefCursor = Cursor.SE_RESIZE_CURSOR;
-					break;
+				switch (handle.getType())
+				{
+					case BOTTOM_LEFT:
+						preDefCursor = Cursor.SW_RESIZE_CURSOR;
+						break;
 
-				case TOP_LEFT:
-					preDefCursor = Cursor.NW_RESIZE_CURSOR;
-					break;
+					case BOTTOM_RIGHT:
+						preDefCursor = Cursor.SE_RESIZE_CURSOR;
+						break;
 
-				case TOP_RIGHT:
-					preDefCursor = Cursor.NE_RESIZE_CURSOR;
-					break;
+					case TOP_LEFT:
+						preDefCursor = Cursor.NW_RESIZE_CURSOR;
+						break;
 
-				case BOTTOM_MIDDLE:
-					preDefCursor = Cursor.N_RESIZE_CURSOR;
-					break;
+					case TOP_RIGHT:
+						preDefCursor = Cursor.NE_RESIZE_CURSOR;
+						break;
 
-				case TOP_MIDDLE:
-					preDefCursor = Cursor.S_RESIZE_CURSOR;
-					break;
+					case BOTTOM_MIDDLE:
+						preDefCursor = Cursor.N_RESIZE_CURSOR;
+						break;
 
-				case MIDDLE_LEFT:
-					preDefCursor = Cursor.W_RESIZE_CURSOR;
-					break;
+					case TOP_MIDDLE:
+						preDefCursor = Cursor.S_RESIZE_CURSOR;
+						break;
 
-				case MIDDLE_RIGHT:
-					preDefCursor = Cursor.E_RESIZE_CURSOR;
-					break;
+					case MIDDLE_LEFT:
+						preDefCursor = Cursor.W_RESIZE_CURSOR;
+						break;
+
+					case MIDDLE_RIGHT:
+						preDefCursor = Cursor.E_RESIZE_CURSOR;
+						break;
+				}
+
+				this.setCursor(Cursor.getPredefinedCursor(preDefCursor));
 			}
-
-			this.setCursor(Cursor.getPredefinedCursor(preDefCursor));
+			else
+			{
+				this.setCursorForMode(this.currentMode);
+			}
 		}
-		else
-		{
-			this.setCursorForMode(this.currentMode);
-		}
-		
 	}
 
 	@Override
@@ -867,36 +877,26 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 			float xScalingFactor = ((float)vCurrentDragPoint.getX() - refX) / ((float)vStartDragPoint.getX() - refX);
 			float yScalingFactor = ((float)vCurrentDragPoint.getY() - refY) / ((float)vStartDragPoint.getY() - refY);
 			
-			boolean doScaleWidth = false;
-			boolean doScaleHeight = false;
-			
 			switch (this.resizingHandle.getType())
 			{
-				case TOP_RIGHT:
-				case TOP_LEFT:
-				case BOTTOM_RIGHT:
-				case BOTTOM_LEFT:
-					doScaleWidth = doScaleHeight = true;
-					break;
-
 				case BOTTOM_MIDDLE:
 				case TOP_MIDDLE:
-					doScaleHeight = true;
+					xScalingFactor = 1;
 					break;
 
 				case MIDDLE_LEFT:
 				case MIDDLE_RIGHT:
-					doScaleWidth = true;
+					yScalingFactor = 1;
 					break;
 			}
 			
-			if (doScaleWidth && xScalingFactor > 0)
+			if (xScalingFactor > 0 && xScalingFactor != 1)
 			{
 				shape.scaleWidth(xScalingFactor, refX);
 				this.startDragPoint.x = this.currentDragPoint.x;
 			}
 			
-			if (doScaleHeight && yScalingFactor > 0)
+			if (yScalingFactor > 0 && yScalingFactor != 1)
 			{
 				shape.scaleHeight(yScalingFactor, refY);
 				this.startDragPoint.y = this.currentDragPoint.y;
