@@ -5,6 +5,7 @@ package appDrawing.model;
 
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
 /**
@@ -69,29 +70,28 @@ public class Group extends Shape
 	 */
 	protected void computeDimensions()
 	{
-		// Détermine la hauteur et la largeur de la forme
-		double maxX = -Double.MAX_VALUE;
-		double minX = Double.MAX_VALUE;
-		double maxY = -Double.MAX_VALUE;
-		double minY = Double.MAX_VALUE;
-
-		for (Shape shape : this.shapeList)
+		if (this.shapeList != null && this.shapeList.size() > 0)
 		{
-			//Pour la largeur
-			maxX = Math.max(maxX, shape.posX + shape.width);
-			minX = Math.min(minX, shape.posX);
-			//Pour la hauteur
-			maxY = Math.max(maxY, shape.posY + shape.height);
-			minY = Math.min(minY, shape.posY);
+			Shape s = this.shapeList.get(0);
+			Rectangle2D r = new Rectangle2D.Float(s.posX, s.posY, s.width, s.height);
+
+			for (int i = 1; i < shapeList.size(); i++)
+			{
+				s = shapeList.get(i);
+				r = r.createUnion(new Rectangle2D.Float(s.posX, s.posY, s.width, s.height));
+			}
+			
+			this.posX = (float) r.getX();
+			this.posY = (float) r.getY();
+			this.width = (float) r.getWidth();
+			this.height = (float) r.getHeight();
 		}
-		
-		this.width = (float) (maxX - minX);
-		this.height = (float) (maxY - minY);
-		
-		// On définit comme point de depart le point en haut à gauche (comme dans un rectangle)
-		this.posX = (float) minX;
-		this.posY = (float) minY;
-		
+		else
+		{
+			this.width = 0;
+			this.height = 0;
+		}
+
 		this.createHandles();
 	}
 	
@@ -114,7 +114,7 @@ public class Group extends Shape
 	@Override
 	public void scaleWidth(float scalingFactor, float refX)
 	{
-		if (scalingFactor > 0)
+		if (scalingFactor > 0 && scalingFactor != 1)
 		{
 			for (Shape shape : this.shapeList)
 			{
@@ -130,7 +130,7 @@ public class Group extends Shape
 	@Override
 	public void scaleHeight(float scalingFactor, float refY)
 	{
-		if (scalingFactor > 0)
+		if (scalingFactor > 0 && scalingFactor != 1)
 		{
 			for (Shape shape : this.shapeList)
 			{

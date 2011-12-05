@@ -67,6 +67,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	// Facteur d'agrandissement/réduction du dessin
 	private float scalingFactor = 1;
 	
+	// Liste des formes composant le dessin
 	private ArrayList<Shape> shapeList;
 	
     // Trait utilisé pour dessiner une boîte autour d'une forme en mode création
@@ -97,6 +98,9 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	
 	//TRÈS PROBABLEMENT TEMPORAIRE
 	private VPolygon currentPolygon;
+	
+	// Poignée servant à redimensionner une forme en mode RESIZING
+	private Handle resizingHandle = null;
 	
 	/**
 	 * Construit un panneau dans lequel il est possible de dessiner.
@@ -300,25 +304,19 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	
 	private void setCursorForMode(Mode mode)
 	{
-		int preDefCursor = Cursor.DEFAULT_CURSOR;
-
 		switch (mode)
 		{
 			case CREATING:
-				preDefCursor = Cursor.CROSSHAIR_CURSOR;
-				this.setCursor(Cursor.getPredefinedCursor(preDefCursor));
+				this.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
 				break;
 			case PANNING:
-				preDefCursor = Cursor.HAND_CURSOR;
-				this.setCursor(Cursor.getPredefinedCursor(preDefCursor));
+				this.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 				break;
 			case MOVING:
-				preDefCursor = Cursor.MOVE_CURSOR;
-				this.setCursor(Cursor.getPredefinedCursor(preDefCursor));
+				this.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
 				break;
 			case SELECTING:
-				preDefCursor = Cursor.DEFAULT_CURSOR;
-				this.setCursor(Cursor.getPredefinedCursor(preDefCursor));
+				this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 				break;
 		}
 	}
@@ -365,22 +363,16 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	@Override
 	public void mouseClicked(MouseEvent e)
 	{
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void mouseEntered(MouseEvent e)
 	{
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e)
 	{
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -404,6 +396,10 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 				{
 					this.setMode(Mode.RESIZING);
 					this.resizingHandle = handle;
+					// Considère que le drag commence à partir du centre de la poignée
+					// pour éviter l'amplification de la distance entre le point de référence
+					// et le centre de la poignée en agrandissant la forme
+					this.startDragPoint = handle.getRealPos(this.scalingFactor, this.virtualDeltaX, this.virtualDeltaY);
 				}
 			}
 		}
@@ -414,8 +410,6 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		}
 	}
 	
-	private Handle resizingHandle = null;
-
 	@Override
 	public void mouseReleased(MouseEvent e)
 	{
@@ -503,26 +497,11 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 			// Si mode panning 
 			if (this.currentMode == Mode.PANNING)
 			{
-				// Ajuste le déplacement du dessin selon le déplacement de la souris converti en déplacement virtuel
-				this.virtualDeltaX += (e.getX() - this.startDragPoint.x) / this.scalingFactor;
-				this.virtualDeltaY += (e.getY() - this.startDragPoint.y) / this.scalingFactor;
-				
-				// Réinitialise le point de départ du déplacement
-				this.startDragPoint = this.currentDragPoint;
+				this.doPan();
 			}
 			else if (this.currentMode == Mode.MOVING) // Déplacement des formes sélectionnées
 			{
-				// Convertit le déplacement de la souris en déplacement virtuel
-				float virtualDeltaX = (e.getX() - this.startDragPoint.x) / this.scalingFactor;
-				float virtualDeltaY = (e.getY() - this.startDragPoint.y) / this.scalingFactor;
-				
-				// Applique le déplacement à chacune des formes sélectionnées 
-				for (Shape shape : this.getCurrentSelection())
-				{
-					shape.translate(virtualDeltaX, virtualDeltaY);
-				}
-				// Réinitialise le point de départ du déplacement
-				this.startDragPoint = this.currentDragPoint;
+				this.doMove();
 			}
 			else if (this.currentMode == Mode.SELECTING)
 			{
@@ -566,7 +545,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 
 		if (handle != null)
 		{
-			int preDefCursor = 0;
+			int preDefCursor = Cursor.DEFAULT_CURSOR;
 
 			switch (handle.getType())
 			{
@@ -711,10 +690,11 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	@Override
 	public void keyTyped(KeyEvent arg0)
 	{
-		// TODO Auto-generated method stub
-		
 	}
 	
+	/*
+	 * Retourne la forme qui contient le point spécifié ou null si aucune forme ne le contient.
+	 */
 	private Shape getContainingShape(Point point)
 	{
 		Shape containingShape = null;
@@ -734,7 +714,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	}
 	
 	/*
-	 * Construit et retourne une liste avec les formes sélectionnées.
+	 * Retourne une liste contenant les formes sélectionnées.
 	 */
 	private ArrayList<Shape> getCurrentSelection()
 	{
@@ -752,12 +732,12 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	}
 	
 	/*
-	 * Groupe les formes sélectionnées.
+	 * Groupe les formes sélectionnées s'il y en a au moins deux.
 	 */
 	private void groupSelectedShapes()
 	{
 		ArrayList<Shape> selection = this.getCurrentSelection();
-		if (selection.size() > 0)
+		if (selection.size() > 1)
 		{
 			Group group = new Group();
 
@@ -776,10 +756,10 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	}
 	
 	/*
-	 * Dégroupe le groupe sélectionné.
+	 * Dégroupe les formes du groupe sélectionné.
 	 * 
-	 * Ne fait rien si la sélection comporte plus d'une forme ou si la forme
-	 * sélectionnée n'est pas un groupe.
+	 * Ne fait rien si la sélection comporte plus d'une forme  
+	 * ou si la forme sélectionnée n'est pas un groupe.
 	 */
 	private void ungroupSelectedShape()
 	{
@@ -808,6 +788,10 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		}
 	}
 	
+	/*
+	 * Retourne la poignée qui contient le point spécifié à partir d'une liste de formes spécifiée.
+	 * Retourne null si aucune poignée ne contient le point.   
+	 */
 	private Handle getContainingHandle(Point p, ArrayList<Shape> fromShapes)
 	{
 		Handle h = null;
@@ -824,7 +808,41 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 			
 		return h;
 	}
-
+	
+	/*
+	 * Effectue le déplacement du dessin en fonction des points de départ et d'arrivée du drag
+	 */
+	private void doPan()
+	{
+		// Ajuste le déplacement du dessin selon le déplacement de la souris converti en déplacement virtuel
+		this.virtualDeltaX += (this.currentDragPoint.x - this.startDragPoint.x) / this.scalingFactor;
+		this.virtualDeltaY += (this.currentDragPoint.y - this.startDragPoint.y) / this.scalingFactor;
+		
+		// Réinitialise le point de départ du déplacement
+		this.startDragPoint = this.currentDragPoint;
+	}
+	
+	/*
+	 * Effectue le déplacement des formes sélectionnées en fonction des points de départ et d'arrivée du drag
+	 */
+	private void doMove()
+	{
+		// Convertit le déplacement de la souris en déplacement virtuel
+		float virtualDeltaX = (this.currentDragPoint.x - this.startDragPoint.x) / this.scalingFactor;
+		float virtualDeltaY = (this.currentDragPoint.y - this.startDragPoint.y) / this.scalingFactor;
+		
+		// Applique le déplacement à chacune des formes sélectionnées 
+		for (Shape shape : this.getCurrentSelection())
+		{
+			shape.translate(virtualDeltaX, virtualDeltaY);
+		}
+		// Réinitialise le point de départ du déplacement
+		this.startDragPoint = this.currentDragPoint;
+	}
+	
+	/*
+	 * Effectue le redimensionnement de la forme dont une poignée a été cliquée en fonction des points de départ et d'arrivée du drag
+	 */
 	private void doResize()
 	{
 		if (this.resizingHandle != null)
@@ -849,42 +867,39 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 			float xScalingFactor = ((float)vCurrentDragPoint.getX() - refX) / ((float)vStartDragPoint.getX() - refX);
 			float yScalingFactor = ((float)vCurrentDragPoint.getY() - refY) / ((float)vStartDragPoint.getY() - refY);
 			
+			boolean doScaleWidth = false;
+			boolean doScaleHeight = false;
+			
 			switch (this.resizingHandle.getType())
 			{
 				case TOP_RIGHT:
 				case TOP_LEFT:
 				case BOTTOM_RIGHT:
 				case BOTTOM_LEFT:
-					if (xScalingFactor > 0)
-					{
-						shape.scaleWidth(xScalingFactor, refX);
-						this.startDragPoint.x = this.currentDragPoint.x;
-					}
-					
-					if (yScalingFactor > 0)
-					{
-						shape.scaleHeight(yScalingFactor, refY);
-						this.startDragPoint.y = this.currentDragPoint.y;
-					}
+					doScaleWidth = doScaleHeight = true;
 					break;
 
 				case BOTTOM_MIDDLE:
 				case TOP_MIDDLE:
-					if (yScalingFactor > 0)
-					{
-						shape.scaleHeight(yScalingFactor, refY);
-						this.startDragPoint.y = this.currentDragPoint.y;
-					}
+					doScaleHeight = true;
 					break;
 
 				case MIDDLE_LEFT:
 				case MIDDLE_RIGHT:
-					if (xScalingFactor > 0)
-					{
-						shape.scaleWidth(xScalingFactor, refX);
-						this.startDragPoint.x = this.currentDragPoint.x;
-					}
+					doScaleWidth = true;
 					break;
+			}
+			
+			if (doScaleWidth && xScalingFactor > 0)
+			{
+				shape.scaleWidth(xScalingFactor, refX);
+				this.startDragPoint.x = this.currentDragPoint.x;
+			}
+			
+			if (doScaleHeight && yScalingFactor > 0)
+			{
+				shape.scaleHeight(yScalingFactor, refY);
+				this.startDragPoint.y = this.currentDragPoint.y;
 			}
 		}		
 	}

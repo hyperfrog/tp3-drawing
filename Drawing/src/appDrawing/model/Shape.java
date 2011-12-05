@@ -284,7 +284,7 @@ public abstract class Shape implements Serializable
 	 */
 	public void scaleWidth(float scalingFactor, float refX)
 	{
-		if (scalingFactor > 0)
+		if (scalingFactor > 0 && scalingFactor != 1)
 		{
 			this.width *= scalingFactor;
 			this.posX = refX + scalingFactor * (this.posX - refX);
@@ -308,7 +308,7 @@ public abstract class Shape implements Serializable
 	 */
 	public void scaleHeight(float scalingFactor, float refY)
 	{
-		if (scalingFactor > 0)
+		if (scalingFactor > 0 && scalingFactor != 1)
 		{
 			this.height *= scalingFactor;
 			this.posY = refY + scalingFactor * (this.posY - refY);
@@ -336,24 +336,41 @@ public abstract class Shape implements Serializable
 	public abstract void draw(Graphics2D g, float drawingScalingFactor, float drawingDeltaX, float drawingDeltaY);
 
 	/**
-	 * Construit et retourne un java.awt.Rectangle englobant la forme courante 
+	 * Retourne un java.awt.Rectangle englobant la forme courante 
 	 * dans le système de coordonnées réelles.
 	 * 
 	 * @param drawingScalingFactor facteur d'agrandissement/réduction du dessin
 	 * @param drawingDeltaX déplacement du dessin sur l'axe des x
 	 * @param drawingDeltaY déplacement du dessin sur l'axe des y
-	 * @return
+	 * @return rectangle englobant la forme courante dans le système de coordonnées réelles
 	 */
 	public Rectangle getRealRect(float drawingScalingFactor, float drawingDeltaX, float drawingDeltaY)
 	{
+		Point realPos = this.getRealPos(drawingScalingFactor, drawingDeltaX, drawingDeltaY);
+		
 		int realWidth = Math.round(this.width * drawingScalingFactor);
 		int realHeight = Math.round(this.height * drawingScalingFactor);
+		
+		return new Rectangle(realPos.x, realPos.y, realWidth, realHeight);
+	}
+	
+	/**
+	 * Retourne un point correspondant à la position de la forme  
+	 * dans le système de coordonnées réelles.
+	 * 
+	 * @param drawingScalingFactor facteur d'agrandissement/réduction du dessin
+	 * @param drawingDeltaX déplacement du dessin sur l'axe des x
+	 * @param drawingDeltaY déplacement du dessin sur l'axe des y
+	 * @return point correspondant à la position de la forme dans le système de coordonnées réelles
+	 */
+	public Point getRealPos(float drawingScalingFactor, float drawingDeltaX, float drawingDeltaY)
+	{
 		int realX = Math.round((this.posX + drawingDeltaX) * drawingScalingFactor);
 		int realY = Math.round((this.posY + drawingDeltaY) * drawingScalingFactor);
 		
-		return new Rectangle(realX, realY, realWidth, realHeight);
+		return new Point(realX, realY);
 	}
-	
+
 	// Construit et retourne un GradientPaint pour la forme actuelle en fonction
 	// des propriétés gradPoint1, gradPoint2, gradColor1 et gradColor2 de la forme courante.
 	// Malheureusement, on ne peut pas utiliser des GradientPaints préconstruits parce qu'ils 
