@@ -2,9 +2,8 @@ package appDrawing.model;
 
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
-import java.awt.Polygon;
 
-public class PolyLine extends VPolygon
+public class PolyLine extends Polygon
 {
 
 	public PolyLine(float posX, float posY)

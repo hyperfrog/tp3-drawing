@@ -1,7 +1,6 @@
 package appDrawing.model;
 
 import java.awt.Graphics2D;
-import java.awt.Polygon;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
@@ -12,7 +11,7 @@ import java.util.ArrayList;
  * @author Pascal Turcot
  *
  */
-public class VPolygon extends Shape
+public class Polygon extends Shape
 {
 	//liste de points du polygone
 	ArrayList<Point2D> points = new ArrayList<Point2D>();
@@ -23,7 +22,7 @@ public class VPolygon extends Shape
 	 * @param posX Coordonnée virtuelle du premier point en x 
 	 * @param posY Coordonnée virtuelle du premier point en y 
 	 */
-	public VPolygon(float posX, float posY)
+	public Polygon(float posX, float posY)
 	{
 		super(posX, posY, 0, 0);
 		this.points.add(new Point2D.Float(posX, posY));
@@ -81,7 +80,7 @@ public class VPolygon extends Shape
 			yPoints[i] = (int) Math.round( ( drawingDeltaY + this.points.get(i).getY() ) * drawingScalingFactor );
 		}
 		
-		Polygon model = new Polygon(xPoints, yPoints, this.points.size());
+		java.awt.Polygon model = new java.awt.Polygon(xPoints, yPoints, this.points.size());
 		
 		this.drawShape(g, model, drawingScalingFactor, drawingDeltaX, drawingDeltaY, true);
 	}
