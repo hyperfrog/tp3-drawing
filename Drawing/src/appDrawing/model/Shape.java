@@ -78,8 +78,6 @@ public abstract class Shape implements Serializable
 		this.width = Math.max(0, width);
 		this.height = Math.max(0, height);
 		this.createHandles();
-		Name = "shape" + SHAPE_COUNT;
-		SHAPE_COUNT++;
 	}
 
 	protected void createHandles()
@@ -182,6 +180,16 @@ public abstract class Shape implements Serializable
 	public String getName()
 	{
 		return Name;
+	}
+	
+	public void setDefaultName()
+	{
+		Name = "shape" + SHAPE_COUNT;
+	}
+	
+	public void setNewName(String newName)
+	{
+		Name = newName;
 	}
 	
 	/**
