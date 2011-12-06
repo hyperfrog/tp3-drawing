@@ -53,7 +53,7 @@ public class AppShapeListBar extends JPanel
 			bigData.addElement(list.get(i).getName());
 		}
 		
-		
+		bigDataList.setSelectedIndex(0);
 		
 	}
 

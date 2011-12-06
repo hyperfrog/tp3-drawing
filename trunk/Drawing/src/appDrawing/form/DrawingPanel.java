@@ -439,6 +439,8 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	@Override
 	public void mousePressed(MouseEvent e)
 	{
+		this.repaint();
+		
 		this.startDragPoint = e.getPoint();
 
 		// Si bouton de gauche et mode sélection actif
