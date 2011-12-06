@@ -39,6 +39,9 @@ public class AppToolBar extends JToolBar implements ActionListener
     private static BufferedImage rectangleImage = null;
     private static BufferedImage squareImage = null;
     private static BufferedImage polygonImage = null;
+    private static BufferedImage lineImage = null;
+    private static BufferedImage paintImage = null;
+    
     // Images utilisées par la classe pour les groupes
     private static BufferedImage groupImage = null;
     private static BufferedImage ungroupImage = null;
@@ -69,6 +72,8 @@ public class AppToolBar extends JToolBar implements ActionListener
             	AppToolBar.rectangleImage = ImageIO.read(AppToolBar.class.getResource("../../res/rectangle.png"));
             	AppToolBar.squareImage = ImageIO.read(AppToolBar.class.getResource("../../res/square.png"));
             	AppToolBar.polygonImage = ImageIO.read(AppToolBar.class.getResource("../../res/polygon.png"));
+            	AppToolBar.lineImage = ImageIO.read(AppToolBar.class.getResource("../../res/line.png"));
+            	AppToolBar.paintImage = ImageIO.read(AppToolBar.class.getResource("../../res/paint.png"));
             	
             	AppToolBar.groupImage = ImageIO.read(AppToolBar.class.getResource("../../res/group.png"));
             	AppToolBar.ungroupImage = ImageIO.read(AppToolBar.class.getResource("../../res/ungroup.png"));
@@ -133,6 +138,12 @@ public class AppToolBar extends JToolBar implements ActionListener
 	private JToggleButton polygonButton;
 	
 	//
+	private JToggleButton lineButton;
+	
+	//
+	private JToggleButton paintButton;
+	
+	//
 	private ButtonGroup shapesGroup;
 	
 	// 
@@ -194,6 +205,8 @@ public class AppToolBar extends JToolBar implements ActionListener
 		this.rectangleButton = new JToggleButton();
 		this.squareButton = new JToggleButton();
 		this.polygonButton = new JToggleButton();
+		this.lineButton = new JToggleButton();
+		this.paintButton = new JToggleButton();
 		this.shapesGroup = new ButtonGroup();
 		// Mode selection
 		this.groupButton = new JButton();
@@ -272,11 +285,23 @@ public class AppToolBar extends JToolBar implements ActionListener
 		this.polygonButton.setActionCommand("POLYGON");
 		this.polygonButton.setIcon(AppToolBar.polygonImage != null ? new ImageIcon(AppToolBar.polygonImage) : null);
 		
+		this.lineButton.setText(null);
+		this.lineButton.setToolTipText("Line brisée");
+		this.lineButton.setActionCommand("LINE");
+		this.lineButton.setIcon(AppToolBar.lineImage != null ? new ImageIcon(AppToolBar.lineImage) : null);
+		
+		this.paintButton.setText(null);
+		this.paintButton.setToolTipText("Pinceau");
+		this.paintButton.setActionCommand("PAINT");
+		this.paintButton.setIcon(AppToolBar.paintImage != null ? new ImageIcon(AppToolBar.paintImage) : null);
+		
 		this.shapesGroup.add(this.ellipseButton);
 		this.shapesGroup.add(this.circleButton);
 		this.shapesGroup.add(this.rectangleButton);
 		this.shapesGroup.add(this.squareButton);
 		this.shapesGroup.add(this.polygonButton);
+		this.shapesGroup.add(this.lineButton);
+		this.shapesGroup.add(this.paintButton);
 		
 		this.groupButton.setText(null);
 		this.groupButton.setToolTipText("Grouper");
@@ -332,7 +357,8 @@ public class AppToolBar extends JToolBar implements ActionListener
 		this.add(this.rectangleButton);
 		this.add(this.squareButton);
 		this.add(this.polygonButton);
-		
+		this.add(this.lineButton);
+		this.add(this.paintButton);
 		this.add(this.groupButton);
 		this.add(this.ungroupButton);
 		this.add(this.upButton);
@@ -354,6 +380,8 @@ public class AppToolBar extends JToolBar implements ActionListener
 		this.rectangleButton.addActionListener(this);
 		this.squareButton.addActionListener(this);
 		this.polygonButton.addActionListener(this);
+		this.lineButton.addActionListener(this);
+		this.paintButton.addActionListener(this);
 		this.groupButton.addActionListener(this);
 		this.ungroupButton.addActionListener(this);
 		this.upButton.addActionListener(this);
@@ -398,6 +426,8 @@ public class AppToolBar extends JToolBar implements ActionListener
 	{
 		if (newShapeType != null)
 		{
+			this.toggleMode(Mode.CREATING);
+			
 			switch (newShapeType)
 			{
 				case ELLIPSE:
@@ -427,6 +457,8 @@ public class AppToolBar extends JToolBar implements ActionListener
 		this.rectangleButton.setVisible(true);
 		this.squareButton.setVisible(true);
 		this.polygonButton.setVisible(true);
+		this.lineButton.setVisible(true);
+		this.paintButton.setVisible(true);
 	}
 	
 	// 
@@ -437,6 +469,8 @@ public class AppToolBar extends JToolBar implements ActionListener
 		this.rectangleButton.setVisible(false);
 		this.squareButton.setVisible(false);
 		this.polygonButton.setVisible(false);
+		this.lineButton.setVisible(false);
+		this.paintButton.setVisible(false);
 	}
 	
 	//
@@ -533,6 +567,14 @@ public class AppToolBar extends JToolBar implements ActionListener
 			else if (evt.getActionCommand().equals("POLYGON"))
 			{
 				this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_P, 'p'));
+			}
+			else if (evt.getActionCommand().equals("LINE"))
+			{
+				this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_B, 'b'));
+			}
+			else if (evt.getActionCommand().equals("PAINT"))
+			{
+				this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_F, 'f'));
 			}
 		}
 		else if (this.selectingTool.isSelected())
