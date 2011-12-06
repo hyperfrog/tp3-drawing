@@ -88,6 +88,9 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
     // Modes exclusifs de fonctionnement
     public enum Mode {CREATING, PANNING, MOVING, SELECTING, EDITING, RESIZING}
     
+    // Modes d'alignements possibles
+    public static enum Alignement {UP, DOWN, LEFT, RIGHT, HORIZONTAL, VERTICAL};
+    
     // Mode de l'opération en cours
     private Mode currentMode = null; //DrawingPanel.DEFAULT_MODE;
 	
@@ -677,10 +680,30 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 			case KeyEvent.VK_SHIFT:
 				this.setMode(Mode.MOVING);
 				break;
-				
-			case KeyEvent.VK_I:
-				this.setMode(Mode.EDITING);
+			
+			case KeyEvent.VK_0:
+				this.align(Alignement.UP);
 				break;
+				
+			case KeyEvent.VK_9:
+				this.align(Alignement.DOWN);
+				break;
+				
+			case KeyEvent.VK_8:
+				this.align(Alignement.LEFT);
+				break;
+				
+			case KeyEvent.VK_7:
+				this.align(Alignement.RIGHT);
+				break;
+				
+			case KeyEvent.VK_6:
+				this.align(Alignement.HORIZONTAL);
+				break;
+				
+			case KeyEvent.VK_5:
+				this.align(Alignement.VERTICAL);
+				break;			
 		}
 	}
 
@@ -773,6 +796,61 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 
 			this.shapeList.add(group);
 			group.setSelected(true);
+			this.repaint();
+		}
+	}
+	
+	/*
+	 * Aligne les formes selectionnées
+	 */
+	private void align(Alignement alignement)
+	{
+		System.out.println(alignement);
+		
+		ArrayList<Shape> selection = this.getCurrentSelection();
+		if (selection.size() > 1)
+		{
+			Shape s = selection.get(0);
+			Rectangle2D r = new Rectangle2D.Float(s.getPosX(), s.getPosY(), s.getWidth(), s.getHeight());
+			
+			for (int i = 1; i < selection.size(); i++)
+			{
+				s = selection.get(i);
+				r = r.createUnion(new Rectangle2D.Float(s.getPosX(), s.getPosY(), s.getWidth(), s.getHeight()));
+			}
+			
+			for (Shape sh : selection)
+			{
+				switch (alignement)
+				{
+					case HORIZONTAL:
+						int newYPos = (int) (r.getCenterY() - (sh.getHeight() / 2));
+						sh.setPosition(sh.getPosX(), newYPos);
+						break;
+						
+					case VERTICAL:
+						int newXPos = (int) (r.getCenterY() - (sh.getWidth() / 2));
+						sh.setPosition(newXPos, sh.getPosY());
+						break;
+						
+					case UP:
+						sh.setPosition(sh.getPosX(), (int) r.getMinX());
+						break;
+						
+					case DOWN:
+						sh.setPosition(sh.getPosX(), (int) (r.getMaxY() - sh.getHeight()));
+						break;
+						
+					case LEFT:
+						sh.setPosition((int) r.getMinX(), sh.getPosY());
+						break;
+						
+					case RIGHT:
+						sh.setPosition((int) (r.getMaxX() - sh.getWidth()), sh.getPosY());
+						break;
+				}
+			}
+			
 			this.repaint();
 		}
 	}

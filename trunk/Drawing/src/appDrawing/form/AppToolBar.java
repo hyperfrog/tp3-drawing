@@ -42,6 +42,13 @@ public class AppToolBar extends JToolBar implements ActionListener
     // Images utilisées par la classe pour les groupes
     private static BufferedImage groupImage = null;
     private static BufferedImage ungroupImage = null;
+    // Images utilisées par la classe pour les alignements
+    private static BufferedImage upImage = null;
+    private static BufferedImage downImage = null;
+    private static BufferedImage leftImage = null;
+    private static BufferedImage rightImage = null;
+    private static BufferedImage horizontalImage = null;
+    private static BufferedImage verticalImage = null;
     
     // Initialisation des images
     static
@@ -65,6 +72,13 @@ public class AppToolBar extends JToolBar implements ActionListener
             	
             	AppToolBar.groupImage = ImageIO.read(AppToolBar.class.getResource("../../res/group.png"));
             	AppToolBar.ungroupImage = ImageIO.read(AppToolBar.class.getResource("../../res/ungroup.png"));
+            	
+            	AppToolBar.upImage = ImageIO.read(AppToolBar.class.getResource("../../res/up.png"));
+            	AppToolBar.downImage = ImageIO.read(AppToolBar.class.getResource("../../res/down.png"));
+            	AppToolBar.leftImage = ImageIO.read(AppToolBar.class.getResource("../../res/left.png"));
+            	AppToolBar.rightImage = ImageIO.read(AppToolBar.class.getResource("../../res/right.png"));
+            	AppToolBar.horizontalImage = ImageIO.read(AppToolBar.class.getResource("../../res/horizontal.png"));
+            	AppToolBar.verticalImage = ImageIO.read(AppToolBar.class.getResource("../../res/vertical.png"));
             }
             catch (IOException e)
             {
@@ -127,6 +141,24 @@ public class AppToolBar extends JToolBar implements ActionListener
 	// 
 	private JButton ungroupButton;
 	
+	//
+	private JButton upButton;
+	
+	//
+	private JButton downButton;
+	
+	//
+	private JButton leftButton;
+	
+	//
+	private JButton rightButton;
+	
+	//
+	private JButton horizontalButton;
+	
+	//
+	private JButton verticalButton;
+	
 	/**
 	 * 
 	 * @param drawingPanel
@@ -166,6 +198,13 @@ public class AppToolBar extends JToolBar implements ActionListener
 		// Mode selection
 		this.groupButton = new JButton();
 		this.ungroupButton = new JButton();
+		// Mode alignement
+		this.upButton = new JButton();
+		this.downButton = new JButton();
+		this.leftButton = new JButton();
+		this.rightButton = new JButton();
+		this.horizontalButton = new JButton();
+		this.verticalButton = new JButton();
 		
 		this.newDrawingButton.setText(null);
 		this.newDrawingButton.setToolTipText("Nouveau dessin");
@@ -249,6 +288,36 @@ public class AppToolBar extends JToolBar implements ActionListener
 		this.ungroupButton.setActionCommand("UNGROUP");
 		this.ungroupButton.setIcon(AppToolBar.ungroupImage != null ? new ImageIcon(AppToolBar.ungroupImage) : null);
 		
+		this.upButton.setText(null);
+		this.upButton.setToolTipText("Aligner vers le haut");
+		this.upButton.setActionCommand("ALIGN_UP");
+		this.upButton.setIcon(AppToolBar.upImage != null ? new ImageIcon(AppToolBar.upImage) : null);
+		
+		this.downButton.setText(null);
+		this.downButton.setToolTipText("Aligner vers le bas");
+		this.downButton.setActionCommand("ALIGN_DOWN");
+		this.downButton.setIcon(AppToolBar.downImage != null ? new ImageIcon(AppToolBar.downImage) : null);
+		
+		this.leftButton.setText(null);
+		this.leftButton.setToolTipText("Aligner vers la gauche");
+		this.leftButton.setActionCommand("ALIGN_LEFT");
+		this.leftButton.setIcon(AppToolBar.leftImage != null ? new ImageIcon(AppToolBar.leftImage) : null);
+		
+		this.rightButton.setText(null);
+		this.rightButton.setToolTipText("Aligner vers la droite");
+		this.rightButton.setActionCommand("ALIGN_RIGHT");
+		this.rightButton.setIcon(AppToolBar.rightImage != null ? new ImageIcon(AppToolBar.rightImage) : null);
+		
+		this.horizontalButton.setText(null);
+		this.horizontalButton.setToolTipText("Aligner horizontalement");
+		this.horizontalButton.setActionCommand("ALIGN_HOR");
+		this.horizontalButton.setIcon(AppToolBar.horizontalImage != null ? new ImageIcon(AppToolBar.horizontalImage) : null);
+		
+		this.verticalButton.setText(null);
+		this.verticalButton.setToolTipText("Aligner verticalement");
+		this.verticalButton.setActionCommand("ALIGN_VER");
+		this.verticalButton.setIcon(AppToolBar.verticalImage != null ? new ImageIcon(AppToolBar.verticalImage) : null);
+		
 		this.add(this.newDrawingButton);
 		this.add(this.loadDrawingButton);
 		this.add(this.saveDrawingButton);
@@ -263,8 +332,15 @@ public class AppToolBar extends JToolBar implements ActionListener
 		this.add(this.rectangleButton);
 		this.add(this.squareButton);
 		this.add(this.polygonButton);
+		
 		this.add(this.groupButton);
 		this.add(this.ungroupButton);
+		this.add(this.upButton);
+		this.add(this.horizontalButton);
+		this.add(this.downButton);
+		this.add(this.leftButton);
+		this.add(this.verticalButton);
+		this.add(this.rightButton);
 		
 		this.newDrawingButton.addActionListener(this);
 		this.saveDrawingButton.addActionListener(this);
@@ -280,6 +356,12 @@ public class AppToolBar extends JToolBar implements ActionListener
 		this.polygonButton.addActionListener(this);
 		this.groupButton.addActionListener(this);
 		this.ungroupButton.addActionListener(this);
+		this.upButton.addActionListener(this);
+		this.downButton.addActionListener(this);
+		this.leftButton.addActionListener(this);
+		this.rightButton.addActionListener(this);
+		this.horizontalButton.addActionListener(this);
+		this.verticalButton.addActionListener(this);
 		
 		this.showCreationMode();
 		this.hideSelectionMode();
@@ -362,6 +444,13 @@ public class AppToolBar extends JToolBar implements ActionListener
 	{
 		this.groupButton.setVisible(true);
 		this.ungroupButton.setVisible(true);
+		
+		this.upButton.setVisible(true);
+		this.downButton.setVisible(true);
+		this.leftButton.setVisible(true);
+		this.rightButton.setVisible(true);
+		this.horizontalButton.setVisible(true);
+		this.verticalButton.setVisible(true);
 	}
 	
 	//
@@ -369,6 +458,13 @@ public class AppToolBar extends JToolBar implements ActionListener
 	{
 		this.groupButton.setVisible(false);
 		this.ungroupButton.setVisible(false);
+		
+		this.upButton.setVisible(false);
+		this.downButton.setVisible(false);
+		this.leftButton.setVisible(false);
+		this.rightButton.setVisible(false);
+		this.horizontalButton.setVisible(false);
+		this.verticalButton.setVisible(false);
 	}
 	
 	@Override
@@ -415,12 +511,6 @@ public class AppToolBar extends JToolBar implements ActionListener
 			this.hideCreationMode();
 			this.showSelectionMode();
 		}
-//		else if (evt.getActionCommand().equals("EDITING"))
-//		{
-//			this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_I, 'i'));
-//			this.hideCreationMode();
-//			this.hideSelectionMode();
-//		}
 		
 		if (this.creatingTool.isSelected())
 		{
@@ -454,6 +544,30 @@ public class AppToolBar extends JToolBar implements ActionListener
 			else if (evt.getActionCommand().equals("UNGROUP"))
 			{
 				this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_U, 'u'));
+			}
+			else if (evt.getActionCommand().equals("ALIGN_UP"))
+			{
+				this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_0, '0'));
+			}
+			else if (evt.getActionCommand().equals("ALIGN_DOWN"))
+			{
+				this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_9, '9'));
+			}
+			else if (evt.getActionCommand().equals("ALIGN_LEFT"))
+			{
+				this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_8, '8'));
+			}
+			else if (evt.getActionCommand().equals("ALIGN_RIGHT"))
+			{
+				this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_7, '7'));
+			}
+			else if (evt.getActionCommand().equals("ALIGN_HOR"))
+			{
+				this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_6, '6'));
+			}
+			else if (evt.getActionCommand().equals("ALIGN_VER"))
+			{
+				this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_5, '5'));
 			}
 		}
 	}
