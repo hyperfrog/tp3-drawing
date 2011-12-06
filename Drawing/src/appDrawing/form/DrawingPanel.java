@@ -27,22 +27,26 @@ import appDrawing.model.Ellipse;
 import appDrawing.model.Group;
 import appDrawing.model.Handle;
 import appDrawing.model.PolyLine;
-import appDrawing.model.VPolygon;
+import appDrawing.model.Polygon;
 import appDrawing.model.Rectangle;
 import appDrawing.model.Shape;
 import appDrawing.model.Square;
 
 /**
+ * Classe représentant un panneau de dessin qui contiendra les formes et écoutera les actions de la
+ * souris et du clavier
+ * 
  * @author Micaël Lemelin
  * @author Christian Lesage
  * @author Alexandre Tremblay
  * @author Pascal Turcot
- *
  */
 public class DrawingPanel extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener
 {
+	//Le mode par défaut est le mode création. C'est le mode qui sera actif à l'ouverture de l'application
 	private static final Mode DEFAULT_MODE = Mode.CREATING;
 	
+	//Le parent correspond au board qui contient le DrawingPanel
 	private Board parent = null;
 
 	// Point de départ d'un drag en coordonnées réelles
@@ -168,12 +172,12 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 						this.currentPoints.add(Shape.getVirtualPoint(this.currentMousePos.x, this.currentMousePos.y, 
 										this.scalingFactor, this.virtualDeltaX, this.virtualDeltaY));
 						//on crée un polygone temporaire
-						VPolygon poly;
+						Polygon poly;
 						
 						//selon le contexte on fait un polygone ou un polyline
 						if(this.currentShapeType == ShapeType.POLYGON)
 						{
-							poly = new VPolygon(0, 0);
+							poly = new Polygon(0, 0);
 						}
 						else
 						{
@@ -277,7 +281,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 				shape = new Circle(virtualX, virtualY, virtualWidth, virtualHeight);
 				break;
 			case POLYGON:
-				shape = new VPolygon(virtualX, virtualY);
+				shape = new Polygon(virtualX, virtualY);
 				break;
 			case POLYLINE:
 				shape = new PolyLine(virtualX, virtualY);
@@ -398,12 +402,12 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		if (this.currentPoints != null)
 		{
 			//on crée le polygone
-			VPolygon poly;
+			Polygon poly;
 			
 			//selon le contexte de polygone ou de polyline
 			if(this.currentShapeType == ShapeType.POLYGON)
 			{
-				poly = new VPolygon(0, 0);
+				poly = new Polygon(0, 0);
 			}
 			else
 			{
