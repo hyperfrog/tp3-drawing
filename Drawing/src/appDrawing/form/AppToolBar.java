@@ -407,12 +407,18 @@ public class AppToolBar extends JToolBar implements ActionListener
 			{
 				case CREATING:
 					this.creatingTool.setSelected(true);
+					this.showCreationMode();
+					this.hideSelectionMode();
 					break;
 				case MOVING:
 					this.movingTool.setSelected(true);
+					this.hideCreationMode();
+					this.hideSelectionMode();
 					break;
 				case SELECTING:
 					this.selectingTool.setSelected(true);
+					this.showSelectionMode();
+					this.hideCreationMode();
 					break;
 			}
 		}
@@ -530,20 +536,14 @@ public class AppToolBar extends JToolBar implements ActionListener
 		else if (evt.getActionCommand().equals("CREATING"))
 		{
 			this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_E, 'e'));
-			this.showCreationMode();
-			this.hideSelectionMode();
 		}
 		else if (evt.getActionCommand().equals("MOVING"))
 		{
 			this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_M, 'm'));
-			this.hideCreationMode();
-			this.hideSelectionMode();
 		}
 		else if (evt.getActionCommand().equals("SELECTING"))
 		{
 			this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_L, 'l'));
-			this.hideCreationMode();
-			this.showSelectionMode();
 		}
 		
 		if (this.creatingTool.isSelected())

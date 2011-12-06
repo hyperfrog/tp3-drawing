@@ -893,8 +893,6 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	
 	/*
 	 * Aligne les formes selectionnées
-	 * 
-	 * TODO : Can't align group + shape OR group + group
 	 */
 	private void align(Alignement alignement)
 	{
