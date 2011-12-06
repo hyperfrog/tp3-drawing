@@ -41,6 +41,6 @@ public class Rectangle extends Shape
 		// Obtient les coordonnées réelles du rectangle englobant
 		java.awt.Rectangle r = this.getRealRect(drawingScalingFactor, drawingDeltaX, drawingDeltaY);
 
-		this.drawShape(g, r, drawingScalingFactor, drawingDeltaX, drawingDeltaY);
+		this.drawShape(g, r, drawingScalingFactor, drawingDeltaX, drawingDeltaY, true);
 	}
 }

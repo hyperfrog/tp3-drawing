@@ -1,15 +1,9 @@
 package appDrawing.model;
 
-import java.awt.BasicStroke;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
-import java.awt.Rectangle;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Vector;
 
 /**
  * @author Micaël Lemelin
@@ -33,21 +27,6 @@ public class VPolygon extends Shape
 	{
 		super(posX, posY, 0, 0);
 		this.points.add(new Point2D.Float(posX, posY));
-	}
-
-	/**
-	 * Ajoute au polygone un point spécifié en coordonnées réelles.
-	 * 
-	 * @param realX	Coordonée réelle du point en X
-	 * @param realY Coordonée réelle du point en Y
-	 * @param scalingFactor scalingFactor du DrawingPanel
-	 * @param virtualDeltaX virtualDeltaX du DrawingPanel
-	 * @param virtualDeltaY virtualDeltaY du DrawingPanel
-	 */
-	public void addRealPoint(int realX, int realY, float scalingFactor, float virtualDeltaX, float virtualDeltaY)
-	{
-		this.points.add(Shape.getVirtualPoint(realX, realY, scalingFactor, virtualDeltaX, virtualDeltaY));
-		this.computeDimensions();
 	}
 
 	// Recalcule les dimensions du polygone après un déplacement, un agrandissement
@@ -104,7 +83,7 @@ public class VPolygon extends Shape
 		
 		Polygon model = new Polygon(xPoints, yPoints, this.points.size());
 		
-		this.drawShape(g, model, drawingScalingFactor, drawingDeltaX, drawingDeltaY);
+		this.drawShape(g, model, drawingScalingFactor, drawingDeltaX, drawingDeltaY, true);
 	}
 	
 	/* (non-Javadoc)

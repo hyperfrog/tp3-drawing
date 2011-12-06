@@ -65,7 +65,7 @@ public class Handle extends Shape
 	{
 		java.awt.Rectangle r = this.getRealRect(drawingScalingFactor, drawingDeltaX, drawingDeltaY);
 		
-		this.drawShape(g, r, drawingScalingFactor, drawingDeltaX, drawingDeltaY);
+		this.drawShape(g, r, drawingScalingFactor, drawingDeltaX, drawingDeltaY, true);
 	}
 	
 	/* (non-Javadoc)

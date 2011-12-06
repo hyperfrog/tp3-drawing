@@ -449,10 +449,13 @@ public abstract class Shape implements Serializable
 	// forme pouvant être représentée par une java.awt.Shape, mais son utilisation
 	// n'est pas obligatoire. De manière typique, la classe dérivée appelle drawShape()
 	// dans sa méthode draw().
-	protected void drawShape(Graphics2D g, java.awt.Shape shape, float drawingScalingFactor, float drawingDeltaX, float drawingDeltaY)
+	protected void drawShape(Graphics2D g, java.awt.Shape shape, float drawingScalingFactor, float drawingDeltaX, float drawingDeltaY, boolean fill)
 	{
-		g.setPaint(this.getGradientPaint(drawingScalingFactor, drawingDeltaX, drawingDeltaY));
-		g.fill(shape);
+		if(fill)
+		{
+			g.setPaint(this.getGradientPaint(drawingScalingFactor, drawingDeltaX, drawingDeltaY));
+			g.fill(shape);
+		}
 		g.setColor(this.strokeColor);
 		
 		if (this.strokeWidth > 0)

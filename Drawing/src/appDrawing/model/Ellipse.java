@@ -43,6 +43,6 @@ public class Ellipse extends Shape
 		
 		java.awt.Shape shape = new Ellipse2D.Float(r.x, r.y, r.width, r.height);
 		
-		this.drawShape(g, shape, drawingScalingFactor, drawingDeltaX, drawingDeltaY);
+		this.drawShape(g, shape, drawingScalingFactor, drawingDeltaX, drawingDeltaY, true);
 	}
 }
