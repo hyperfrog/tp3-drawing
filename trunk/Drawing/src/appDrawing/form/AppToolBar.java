@@ -33,7 +33,6 @@ public class AppToolBar extends JToolBar implements ActionListener
 	private static BufferedImage creatingImage = null;
 	private static BufferedImage movingImage = null;
 	private static BufferedImage selectingImage = null;
-	private static BufferedImage editingImage = null;
 	// Images utilisées par la classe pour les formes
     private static BufferedImage circleImage = null;
     private static BufferedImage ellipseImage = null;
@@ -57,7 +56,6 @@ public class AppToolBar extends JToolBar implements ActionListener
             	AppToolBar.creatingImage = ImageIO.read(AppToolBar.class.getResource("../../res/creating_mode.png"));
             	AppToolBar.movingImage = ImageIO.read(AppToolBar.class.getResource("../../res/moving_mode.png"));
             	AppToolBar.selectingImage = ImageIO.read(AppToolBar.class.getResource("../../res/selecting_mode.png"));
-            	AppToolBar.editingImage = ImageIO.read(AppToolBar.class.getResource("../../res/editing_mode.png"));
             	
             	AppToolBar.circleImage = ImageIO.read(AppToolBar.class.getResource("../../res/circle.png"));
             	AppToolBar.ellipseImage = ImageIO.read(AppToolBar.class.getResource("../../res/ellipse.png"));
@@ -103,9 +101,6 @@ public class AppToolBar extends JToolBar implements ActionListener
 	private JToggleButton selectingTool;
 	
 	// 
-	private JToggleButton editingTool;
-	
-	// 
 	private ButtonGroup toolsGroup;
 	
 	// 
@@ -138,6 +133,8 @@ public class AppToolBar extends JToolBar implements ActionListener
 	 */
 	public AppToolBar(Board parent)
 	{
+		super();
+		
 		this.parent = parent;
 		
 		this.setName("Barre d'outils");
@@ -158,7 +155,6 @@ public class AppToolBar extends JToolBar implements ActionListener
 		this.creatingTool = new JToggleButton();
 		this.movingTool = new JToggleButton();
 		this.selectingTool = new JToggleButton();
-		this.editingTool = new JToggleButton();
 		this.toolsGroup = new ButtonGroup();
 		// Mode création
 		this.circleButton = new JToggleButton();
@@ -207,15 +203,9 @@ public class AppToolBar extends JToolBar implements ActionListener
 		this.selectingTool.setActionCommand("SELECTING");
 		this.selectingTool.setIcon(AppToolBar.selectingImage != null ? new ImageIcon(AppToolBar.selectingImage) : null);
 		
-		this.editingTool.setText(null);
-		this.editingTool.setToolTipText("Mode édition");
-		this.editingTool.setActionCommand("EDITING");
-		this.editingTool.setIcon(AppToolBar.editingImage != null ? new ImageIcon(AppToolBar.editingImage) : null);
-		
 		this.toolsGroup.add(this.creatingTool);
 		this.toolsGroup.add(this.movingTool);
 		this.toolsGroup.add(this.selectingTool);
-		this.toolsGroup.add(this.editingTool);
 		
 		this.ellipseButton.setText(null);
 		this.ellipseButton.setToolTipText("Ellipse");
@@ -267,7 +257,6 @@ public class AppToolBar extends JToolBar implements ActionListener
 		this.add(this.creatingTool);
 		this.add(this.movingTool);
 		this.add(this.selectingTool);
-		this.add(this.editingTool);
 		this.addSeparator();
 		this.add(this.ellipseButton);
 		this.add(this.circleButton);
@@ -284,7 +273,6 @@ public class AppToolBar extends JToolBar implements ActionListener
 		this.creatingTool.addActionListener(this);
 		this.movingTool.addActionListener(this);
 		this.selectingTool.addActionListener(this);
-		this.editingTool.addActionListener(this);
 		this.circleButton.addActionListener(this);
 		this.ellipseButton.addActionListener(this);
 		this.rectangleButton.addActionListener(this);
@@ -293,7 +281,7 @@ public class AppToolBar extends JToolBar implements ActionListener
 		this.groupButton.addActionListener(this);
 		this.ungroupButton.addActionListener(this);
 		
-		this.hideCreationMode();
+		this.showCreationMode();
 		this.hideSelectionMode();
 	}
 	
@@ -315,9 +303,6 @@ public class AppToolBar extends JToolBar implements ActionListener
 					break;
 				case SELECTING:
 					this.selectingTool.setSelected(true);
-					break;
-				case EDITING:
-					this.editingTool.setSelected(true);
 					break;
 			}
 		}
@@ -430,12 +415,12 @@ public class AppToolBar extends JToolBar implements ActionListener
 			this.hideCreationMode();
 			this.showSelectionMode();
 		}
-		else if (evt.getActionCommand().equals("EDITING"))
-		{
-			this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_I, 'i'));
-			this.hideCreationMode();
-			this.hideSelectionMode();
-		}
+//		else if (evt.getActionCommand().equals("EDITING"))
+//		{
+//			this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_I, 'i'));
+//			this.hideCreationMode();
+//			this.hideSelectionMode();
+//		}
 		
 		if (this.creatingTool.isSelected())
 		{
