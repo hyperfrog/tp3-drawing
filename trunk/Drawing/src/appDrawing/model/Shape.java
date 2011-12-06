@@ -185,6 +185,7 @@ public abstract class Shape implements Serializable
 	public void setDefaultName()
 	{
 		Name = "shape" + SHAPE_COUNT;
+		SHAPE_COUNT++;
 	}
 	
 	public void setNewName(String newName)

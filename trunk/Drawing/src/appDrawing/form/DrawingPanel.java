@@ -415,6 +415,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 			
 			//on ajoute le polygone à la liste on efface la liste de points temporaires et on redessine
 			this.shapeList.add(poly);
+			poly.setDefaultName();
 			this.currentPoints = null;
 			this.repaint();
 		}
@@ -506,6 +507,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 						
 						// Ajoute la forme dans la liste de formes du dessin
 						this.shapeList.add(shape);
+						shape.setDefaultName();
 					}
 					
 					this.repaint();
