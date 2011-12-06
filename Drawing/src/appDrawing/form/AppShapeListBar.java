@@ -51,13 +51,17 @@ public class AppShapeListBar extends JPanel
 		for (int i = 0; i < list.size(); i++)
 		{
 			bigData.addElement(list.get(i).getName());
+			if (list.get(i).isSelected())
+			{
+				bigDataList.setSelectedIndex(i);
+			}
 		}
-		
-		bigDataList.setSelectedIndex(0);
-		
 	}
 
-
+	public JList getJList()
+	{
+		return bigDataList;
+	}
 
 
 }

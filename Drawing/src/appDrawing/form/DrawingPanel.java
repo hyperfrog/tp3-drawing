@@ -137,8 +137,6 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	public void paintComponent(Graphics g)
 	{
 		super.paintComponent(g);
-		
-		parent.getShapeListBar().testDynamicList(this.shapeList);
 
 		if (g != null)
 		{
@@ -420,6 +418,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 			//on ajoute le polygone à la liste on efface la liste de points temporaires et on redessine
 			this.shapeList.add(poly);
 			poly.setDefaultName();
+			parent.getShapeListBar().testDynamicList(this.shapeList);
 			this.currentPoints = null;
 			this.repaint();
 		}
@@ -514,6 +513,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 						// Ajoute la forme dans la liste de formes du dessin
 						this.shapeList.add(shape);
 						shape.setDefaultName();
+						parent.getShapeListBar().testDynamicList(this.shapeList);
 					}
 					
 					this.repaint();
