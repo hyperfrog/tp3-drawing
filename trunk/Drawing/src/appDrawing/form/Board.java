@@ -205,7 +205,6 @@ public class Board extends JPanel implements ActionListener //, MouseListener
 	    			try { oos.close(); } catch (IOException e) {}
 	    		}
 	    	}
-
 	    }
 	}
 	
@@ -232,7 +231,7 @@ public class Board extends JPanel implements ActionListener //, MouseListener
 			    
 			    ois.close();
 			    
-			    this.drawingPanel.setShapeList((ArrayList<Shape>) shapeList);
+			    this.drawingPanel.setShapeList(shapeList);
 			}
 			catch (FileNotFoundException e)
 			{
@@ -285,6 +284,14 @@ public class Board extends JPanel implements ActionListener //, MouseListener
 		return this.drawingPanel;
 	}
 	
+	/**
+	 * @return the parent
+	 */
+	public AppFrame getParent()
+	{
+		return parent;
+	}
+
 	/**
 	 * Reçoit et traite les événements relatifs à ...
 	 * Cette méthode doit être publique mais ne devrait pas être appelée directement.
