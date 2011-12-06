@@ -32,7 +32,7 @@ public abstract class Shape implements Serializable
 	protected static final float DEFAULT_STROKE_WIDTH = 2.0f;
 	protected static final Color DEFAULT_STROKE_COLOR = Color.BLACK;
 	protected static final Color DEFAULT_GRAD_COLOR1 = Color.RED;
-	protected static final Color DEFAULT_GRAD_COLOR2 = Color.YELLOW;
+	protected static final Color DEFAULT_GRAD_COLOR2 = new Color(255, 255, 0, 128); //Color.YELLOW;
 	protected static final Point2D.Float DEFAULT_GRAD_POINT1 = new Point2D.Float(0, 0);
 	protected static final Point2D.Float DEFAULT_GRAD_POINT2 = new Point2D.Float(1, 1);
 
@@ -227,6 +227,44 @@ public abstract class Shape implements Serializable
 	}
 
 	/**
+	 * @return the gradColor1
+	 */
+	public Color getGradColor1()
+	{
+		return gradColor1;
+	}
+
+	/**
+	 * @param color the gradColor1 to set
+	 */
+	public void setGradColor1(Color color)
+	{
+		if (color != null)
+		{
+			this.gradColor1 = color;
+		}
+	}
+
+	/**
+	 * @return the gradColor2
+	 */
+	public Color getGradColor2()
+	{
+		return gradColor2;
+	}
+
+	/**
+	 * @param color the gradColor2 to set
+	 */
+	public void setGradColor2(Color color)
+	{
+		if (color != null)
+		{
+			this.gradColor2 = color;
+		}
+	}
+
+	/**
 	 * Change la position de la forme.
 	 * 
 	 * @param posX nouvelle position de la forme sur l'axe des x
@@ -322,7 +360,6 @@ public abstract class Shape implements Serializable
 			}
 		}
 	}
-
 	
 	/**
 	 * Dessine la forme dans le graphics spécifié. Toutes les classes dérivées doivent 

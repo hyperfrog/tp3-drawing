@@ -2,8 +2,13 @@ package appDrawing.form;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dialog;
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
@@ -71,6 +76,46 @@ public class Board extends JPanel implements ActionListener //, MouseListener
 		
 		this.add(this.drawingPanel, BorderLayout.CENTER);
 		this.add(this.appToolBar, BorderLayout.NORTH);
+		
+		// Passe-passe pour envoyer les évènements du clavier au DrawingPanel 
+		// peu importe la composante qui a le focus (p. ex. barre d'outils).
+		// Peut-être temporaire... en attendant de trouver mieux.
+		this.drawingPanel.setFocusable(false);
+		final DrawingPanel dp = this.drawingPanel;
+
+		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(
+			    new KeyEventDispatcher() {
+			        public boolean dispatchKeyEvent(KeyEvent e)
+			        {
+			        	if (!Board.isModalDialogShowing())
+			        	{
+			        		KeyboardFocusManager.getCurrentKeyboardFocusManager().redispatchEvent(dp, e);
+			        	}
+
+			        	// return false -> évènement aussi envoyé à la composante qui a le focus
+			            return false;  
+			        }
+			    });
+
+	}
+	
+	// Deuxième passe-passe pour ne pas envoyer les les évènements du clavier au DrawingPanel
+	// quand une boîte de dialogue modale est affichée. 
+	// Nécessaire à cause de la première passe-passe.
+	private static boolean isModalDialogShowing()
+	{
+		Window[] windows = Window.getWindows();
+		if (windows != null) // don't rely on current implementation, which at least returns [0]
+		{
+			for (Window w : windows)
+			{
+				if (w.isShowing() && w instanceof Dialog && ((Dialog) w).isModal())
+				{
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 	
 	/*

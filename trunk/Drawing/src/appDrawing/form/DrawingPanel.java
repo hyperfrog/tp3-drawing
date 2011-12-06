@@ -3,11 +3,13 @@ package appDrawing.form;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Dialog;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.Point;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -21,6 +23,7 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+import javax.swing.JColorChooser;
 import javax.swing.JPanel;
 
 import appDrawing.model.Circle;
@@ -100,6 +103,8 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	// Poignée servant à redimensionner une forme en mode RESIZING
 	private Handle resizingHandle = null;
 	
+	private Color[] colors = new Color[2]; 
+	
 	/**
 	 * Construit un panneau dans lequel il est possible de dessiner.
 	 * 
@@ -117,22 +122,6 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		this.addMouseWheelListener(this);
 		this.erase();
 		this.setMode(DrawingPanel.DEFAULT_MODE);
-		
-		// Passe-passe pour envoyer les évènements du clavier au DrawingPanel 
-		// même quand le focus est sur une autre composante.
-		// Peut-être temporaire... En attendant de trouver mieux.
-		this.setFocusable(false);
-		final DrawingPanel dp = this;
-
-		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(
-			    new KeyEventDispatcher() {
-			        public boolean dispatchKeyEvent(KeyEvent e) {
-			        	KeyboardFocusManager.getCurrentKeyboardFocusManager().redispatchEvent(dp, e);
-
-			        	// return false -> évènement aussi envoyé à la composante qui a le focus
-			            return false;  
-			        }
-			    });
 	}
 	
 	/**
@@ -272,6 +261,12 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 			case POLYGON:
 				shape = new VPolygon(virtualX, virtualY);
 				break;
+		}
+		
+		if (shape != null)
+		{
+			shape.setGradColor1(this.colors[0]);
+			shape.setGradColor2(this.colors[1]);
 		}
 		
 		return shape;
@@ -613,10 +608,18 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	@Override
 	public void keyPressed(KeyEvent e)
 	{
-//		System.out.println(e.getKeyChar());
+		System.out.println(e.getKeyChar());
 		
 		switch (e.getKeyCode())
 		{
+			case KeyEvent.VK_1:
+				this.pickColor(0);
+				break;
+
+			case KeyEvent.VK_2:
+				this.pickColor(1);
+				break;
+
 			case KeyEvent.VK_G:
 				this.groupSelectedShapes();
 				break;
@@ -627,22 +630,18 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 
 			case KeyEvent.VK_E:
 				this.setShapeType(ShapeType.ELLIPSE);
-				System.out.println("e");
 				break;
 				
 			case KeyEvent.VK_S:
 				this.setShapeType(ShapeType.SQUARE);
-				System.out.println("s");
 				break;
 				
 			case KeyEvent.VK_R:
 				this.setShapeType(ShapeType.RECTANGLE);
-				System.out.println("r");
 				break;
 				
 			case KeyEvent.VK_C:
 				this.setShapeType(ShapeType.CIRCLE);
-				System.out.println("c");
 				break;
 				
 			case KeyEvent.VK_P:
@@ -651,7 +650,6 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 				
 			case KeyEvent.VK_L:
 				this.setMode(Mode.SELECTING);
-				System.out.println("l");
 				break;
 				
 			case KeyEvent.VK_ADD:
@@ -700,6 +698,20 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	@Override
 	public void keyTyped(KeyEvent arg0)
 	{
+	}
+	
+	// Temporaire
+	private void pickColor(int colorIndex)
+	{
+		if (colorIndex >= 0 && colorIndex < this.colors.length)
+		{
+			Color chosenColor = JColorChooser.showDialog(this, "Choisissez la couleur " + (colorIndex + 1), this.colors[colorIndex]);
+
+			if (chosenColor != null)
+			{
+				this.colors[colorIndex] = chosenColor;
+			}
+		}
 	}
 	
 	/*
