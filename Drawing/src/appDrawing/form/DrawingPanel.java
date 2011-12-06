@@ -136,6 +136,8 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	public void paintComponent(Graphics g)
 	{
 		super.paintComponent(g);
+		
+		parent.getShapeListBar().testDynamicList(this.shapeList);
 
 		if (g != null)
 		{
@@ -271,6 +273,8 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 			shape.setGradColor1(this.colors[0]);
 			shape.setGradColor2(this.colors[1]);
 		}
+		
+		
 		
 		return shape;
 	}
@@ -473,7 +477,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 						}
 					}
 				}
-
+				
 				this.repaint();
 			}
 		}

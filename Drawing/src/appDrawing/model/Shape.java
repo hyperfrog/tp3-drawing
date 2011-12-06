@@ -35,6 +35,7 @@ public abstract class Shape implements Serializable
 	protected static final Color DEFAULT_GRAD_COLOR2 = new Color(255, 255, 0, 128); //Color.YELLOW;
 	protected static final Point2D.Float DEFAULT_GRAD_POINT1 = new Point2D.Float(0, 0);
 	protected static final Point2D.Float DEFAULT_GRAD_POINT2 = new Point2D.Float(1, 1);
+	protected static int SHAPE_COUNT = 0;
 
 	protected float posX = 0;
 	protected float posY = 0;
@@ -52,6 +53,8 @@ public abstract class Shape implements Serializable
 	protected Color gradColor2 = Shape.DEFAULT_GRAD_COLOR2;
 	
 	protected Handle[] handles = null;
+	
+	protected String Name = null;
 	
 	public Shape()
 	{
@@ -75,6 +78,8 @@ public abstract class Shape implements Serializable
 		this.width = Math.max(0, width);
 		this.height = Math.max(0, height);
 		this.createHandles();
+		Name = "shape" + SHAPE_COUNT;
+		SHAPE_COUNT++;
 	}
 
 	protected void createHandles()
@@ -168,6 +173,15 @@ public abstract class Shape implements Serializable
 	public ArrayList<Handle> getHandles()
 	{
 		return new ArrayList<Handle>(Arrays.asList(this.handles));
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public String getName()
+	{
+		return Name;
 	}
 	
 	/**

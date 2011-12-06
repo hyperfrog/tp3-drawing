@@ -53,6 +53,8 @@ public class Board extends JPanel implements ActionListener //, MouseListener
 	// Barre d'outils
 	private AppToolBar appToolBar;
 	
+	private AppShapeListBar appShapeListBar;
+	
 	private String filePath = null;
 	
 	/**
@@ -71,11 +73,13 @@ public class Board extends JPanel implements ActionListener //, MouseListener
 		this.appToolBar = new AppToolBar(this);
 		this.drawingPanel = new DrawingPanel(this);
 		this.drawingPanel.setBackground(Color.WHITE);
+		this.appShapeListBar = new AppShapeListBar(this);
 		
 		this.setLayout(new BorderLayout());
 		
 		this.add(this.drawingPanel, BorderLayout.CENTER);
 		this.add(this.appToolBar, BorderLayout.NORTH);
+		this.add(this.appShapeListBar, BorderLayout.EAST);
 		
 		// Passe-passe pour envoyer les évènements du clavier au DrawingPanel 
 		// peu importe la composante qui a le focus (p. ex. barre d'outils).
@@ -261,6 +265,15 @@ public class Board extends JPanel implements ActionListener //, MouseListener
 	public AppToolBar getToolBar()
 	{
 		return this.appToolBar;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public AppShapeListBar getShapeListBar()
+	{
+		return this.appShapeListBar;
 	}
 	
 	/**
