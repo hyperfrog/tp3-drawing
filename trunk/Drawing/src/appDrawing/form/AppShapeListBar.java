@@ -19,7 +19,7 @@ import javax.swing.event.ListDataListener;
 
 import appDrawing.model.Shape;
 
-public class AppShapeListBar extends JPanel implements ListDataListener
+public class AppShapeListBar extends JPanel
 {
 	private int shapeCount;
 	private JList bigDataList;
@@ -44,11 +44,6 @@ public class AppShapeListBar extends JPanel implements ListDataListener
 
 		 
 	}
-	
-	//DefaultListModel bigData = new DefaultListModel() {
-	//     public int getSize() { return shapeCount; }
-	//     public Object getElementAt(int index) { return "bla"; }
-	//};
 
 	public void testDynamicList(ArrayList<Shape> list)
 	{
@@ -62,23 +57,7 @@ public class AppShapeListBar extends JPanel implements ListDataListener
 		
 	}
 
-	@Override
-	public void contentsChanged(ListDataEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
 
-	@Override
-	public void intervalAdded(ListDataEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void intervalRemoved(ListDataEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
 
 
 }
