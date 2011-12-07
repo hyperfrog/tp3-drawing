@@ -176,7 +176,7 @@ public abstract class Shape implements Serializable
 	/**
 	 * Copie les propriétés de la forme passée en paramètre.
 	 * 
-	 * @param shape
+	 * @param shape forme de laquelle les propriétés sont copiées
 	 */
 	public void copyPropertiesFrom(Shape shape)
 	{

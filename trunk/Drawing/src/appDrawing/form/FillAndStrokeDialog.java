@@ -76,6 +76,7 @@ public class FillAndStrokeDialog extends JDialog implements ActionListener, Wind
 		
 		this.parent = parent;
 		
+		// Utilise la forme de référence passée en paramètre et en fait une copie
 		this.refShape = refShape;
 		this.refShapeBackup = (Shape) DeepCopy.copy(refShape);
 		
@@ -86,15 +87,20 @@ public class FillAndStrokeDialog extends JDialog implements ActionListener, Wind
 		// Initialise les composants
 		this.initComponents();
 		
-        // Entre 3 et 64 disques, 5 par défaut, incrément de 1
+        // Épaisseur entre 0 et 64, 5 par défaut, incrément de 0,05
         SpinnerModel sm = new SpinnerNumberModel(5.0, 0.0, 64.0, 0.05);
         strokeSpinner.setModel(sm);
+        
+        // Formatté pour afficher deux décimales
         NumberEditor editor = new NumberEditor(strokeSpinner);
         editor.getFormat().setMinimumFractionDigits(2);
         strokeSpinner.setEditor(editor);
         
-        this.readShapeValues();
+        this.shapePanel.setBackground(Color.WHITE);
         
+        this.readRefShapeValues();
+        
+        // Écouteurs
         okButton.addActionListener(this);
         okButton.setActionCommand("OK");
         cancelButton.addActionListener(this);
@@ -105,14 +111,13 @@ public class FillAndStrokeDialog extends JDialog implements ActionListener, Wind
         gradColor1Button.setActionCommand("GRAD_COLOR_1");
         gradColor2Button.addActionListener(this);
         gradColor2Button.setActionCommand("GRAD_COLOR_2");
-        gradColor2CheckBox.addActionListener(this);
-        gradColor2CheckBox.setActionCommand("GRAD_COLOR_2_SLAVE");
         gradColor1Slider.addChangeListener(this);
         gradColor2Slider.addChangeListener(this);
         strokeColorButton.addActionListener(this);
         strokeColorButton.setActionCommand("STROKE_COLOR");
         strokeSpinner.addChangeListener(this);
         strokeSlider.addChangeListener(this);
+        gradColor2CheckBox.addChangeListener(this);
         
 		this.pack();
 		
@@ -130,7 +135,263 @@ public class FillAndStrokeDialog extends JDialog implements ActionListener, Wind
 		this.addWindowListener(this);
 	}
 	
-	// Initialise les composants de la boîte de dialogue
+	// Ferme la boîte de dialogue
+	private void close()
+	{
+		this.setVisible(false);
+		this.dispose();
+	}
+	
+	private void readRefShapeValues()
+	{
+        strokeSpinner.setValue((double) this.refShape.getStrokeWidth());
+        gradColor1Slider.setValue(this.refShape.getGradColor1().getAlpha());
+        gradColor2Slider.setValue(this.refShape.getGradColor2().getAlpha());
+        strokeSlider.setValue(this.refShape.getStrokeColor().getAlpha());
+        gradColor2CheckBox.setSelected(false);
+	}
+
+	
+	private class MiniDrawingPanel extends JPanel implements MouseListener, MouseMotionListener
+	{
+		// Point de départ d'un drag en coordonnées réelles
+		private Point startDragPoint = null;
+		
+		// Point actuel d'un drag en coordonnées réelles
+		private Point currentDragPoint = null;
+
+
+		/**
+		 * Construit un mini panneau dans lequel il est possible de dessiner.
+		 * 
+		 * @param parent Objet parent du panneau, doit être du type Board
+		 */
+		public MiniDrawingPanel(FillAndStrokeDialog parent)
+		{
+			this.addMouseListener(this);
+			this.addMouseMotionListener(this);
+		}
+		
+		/**
+		 * Redessine le panneau. Vous ne devriez pas avoir à appeler cette méthode directement.
+		 * 
+		 * @param g2d Graphics dans lequel le panneau doit se dessiner
+		 * 
+		 */
+		public void paintComponent(Graphics g)
+		{
+			super.paintComponent(g);
+			Graphics2D g2d = (Graphics2D) g; 
+
+			if (g2d != null)
+			{
+				refShape.draw(g2d, scalingFactor, virtualDeltaX, virtualDeltaY);
+				
+				if (startDragPoint != null && currentDragPoint != null)
+				{
+					g2d.setColor(Color.BLACK);
+					g2d.setStroke(DrawingPanel.DASHED_STROKE);
+					g2d.drawLine(startDragPoint.x, startDragPoint.y, currentDragPoint.x, currentDragPoint.y);
+				}
+			}
+		}
+		@Override
+		public void mouseClicked(MouseEvent e) { }
+
+		@Override
+		public void mouseEntered(MouseEvent e) { }
+
+		@Override
+		public void mouseExited(MouseEvent e) { }
+
+		@Override
+		public void mousePressed(MouseEvent e)
+		{
+			startDragPoint = e.getPoint();
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e)
+		{
+			this.repaint();
+			startDragPoint = null;
+			currentDragPoint = null;
+		}
+
+		@Override
+		public void mouseDragged(MouseEvent e)
+		{
+			currentDragPoint = e.getPoint();
+
+			Point2D p1 = Shape.getVirtualPoint(startDragPoint.x, startDragPoint.y, 
+					scalingFactor, virtualDeltaX, virtualDeltaY);
+
+			Point2D p2 = Shape.getVirtualPoint(e.getX(), e.getY(), 
+					scalingFactor, virtualDeltaX, virtualDeltaY);
+			
+			float xGradP1 = ((float) p1.getX() - refShape.getPosX()) / refShape.getWidth();
+			float yGradP1 = ((float) p1.getY() - refShape.getPosY()) / refShape.getHeight();
+
+			float xGradP2 = ((float) p2.getX() - refShape.getPosX()) / refShape.getWidth();
+			float yGradP2 = ((float) p2.getY() - refShape.getPosY()) / refShape.getHeight();
+			
+			
+			refShape.setGradPoint1(new Point2D.Float(xGradP1, yGradP1));
+			refShape.setGradPoint2(new Point2D.Float(xGradP2, yGradP2));
+			
+			this.repaint();
+		}
+
+		@Override
+		public void mouseMoved(MouseEvent e) { }
+	}
+	
+	/**
+	 * Reçoit et traite les événements relatifs aux boutons
+	 * Cette méthode doit être publique mais ne devrait pas être appelée directement.
+	 * 
+	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+	 * 
+	 * @param evt événement déclencheur
+	 */
+	@Override
+	public void actionPerformed(ActionEvent evt)
+	{
+		if (evt.getActionCommand().equals("OK"))
+		{
+			this.close();
+		}
+		else if (evt.getActionCommand().equals("GRAD_COLOR_1"))
+		{
+			Color c = JColorChooser.showDialog(this, "Choix de la couleur 1", this.refShape.getGradColor1());
+			
+			if (c != null)
+			{
+				this.refShape.setGradColor1(c);
+				
+				if (this.gradColor2CheckBox.isSelected())
+				{
+					this.refShape.setGradColor2(c);
+				}
+
+				this.shapePanel.repaint();
+			}
+		}
+		else if (evt.getActionCommand().equals("GRAD_COLOR_2"))
+		{
+			Color c = JColorChooser.showDialog(this, "Choix de la couleur 2", this.refShape.getGradColor2());
+			
+			if (c != null)
+			{
+				this.refShape.setGradColor2(c);
+				this.shapePanel.repaint();
+			}
+		}
+		else if (evt.getActionCommand().equals("STROKE_COLOR"))
+		{
+			Color c = JColorChooser.showDialog(this, "Choix de la couleur du trait", this.refShape.getStrokeColor());
+			if (c != null)
+			{
+				this.refShape.setStrokeColor(c);
+				this.shapePanel.repaint();
+			}
+		}
+		else if (evt.getActionCommand().equals("REVERT"))
+		{
+			this.refShape = (Shape) DeepCopy.copy(this.refShapeBackup);
+			this.parent.getBoard().getDrawingPanel().setRefShape(this.refShape);
+			this.readRefShapeValues();
+			this.repaint();
+		}
+		else if (evt.getActionCommand().equals("CANCEL"))
+		{
+			this.parent.getBoard().getDrawingPanel().setRefShape(this.refShapeBackup);
+			this.close();
+		}
+	}
+	
+	/** 
+	 * Méthode appelée quand la fenêtre va être fermée.
+	 * Cette méthode doit être publique mais ne devrait pas être appelée directement.
+	 * 
+	 * @param evt événement déclencheur
+	 */
+	@Override
+	public void windowClosing(WindowEvent evt)
+	{
+		this.close();
+	}
+	
+	@Override
+	public void windowActivated(WindowEvent evt) { }
+
+	@Override
+	public void windowClosed(WindowEvent evt) { }
+
+	@Override
+	public void windowDeactivated(WindowEvent evt) { }
+
+	@Override
+	public void windowDeiconified(WindowEvent evt) { }
+
+	@Override
+	public void windowIconified(WindowEvent evt) { }
+
+	@Override
+	public void windowOpened(WindowEvent evt) { }
+
+	@Override
+	public void stateChanged(ChangeEvent e)
+	{
+		if (e.getSource() == strokeSpinner)
+		{
+			this.refShape.setStrokeWidth(((Double)this.strokeSpinner.getValue()).floatValue());
+		}
+		else if (e.getSource() == strokeSlider)
+		{
+			this.refShape.setStrokeColor(this.getSameColorWithNewAlpha(this.refShape.getStrokeColor(), strokeSlider.getValue()));
+		}
+		else if (e.getSource() == gradColor1Slider)
+		{
+			this.refShape.setGradColor1(this.getSameColorWithNewAlpha(this.refShape.getGradColor1(), gradColor1Slider.getValue()));
+
+			if (this.gradColor2CheckBox.isSelected())
+			{
+				this.gradColor2Slider.setValue(this.gradColor1Slider.getValue());
+			}
+		}
+		else if (e.getSource() == gradColor2Slider)
+		{
+			this.refShape.setGradColor2(this.getSameColorWithNewAlpha(this.refShape.getGradColor2(), gradColor2Slider.getValue()));
+		}
+		else if (e.getSource() == gradColor2CheckBox)
+		{
+			gradColor2Button.setEnabled(!gradColor2CheckBox.isSelected());
+			gradColor2Slider.setEnabled(!gradColor2CheckBox.isSelected());
+			
+			if (this.gradColor2CheckBox.isSelected())
+			{
+				this.refShape.setGradColor2(this.refShape.getGradColor1());
+				this.gradColor2Slider.setValue(this.gradColor1Slider.getValue());
+				this.shapePanel.repaint();
+			}
+		}
+		
+		this.shapePanel.repaint();
+	}
+
+	private Color getSameColorWithNewAlpha(Color color, int alpha)
+	{
+		int rgbaColor = color.getRGB();
+		// Enlève les bits alpha de la couleur
+		rgbaColor &= 0xFFFFFF;
+		// Ajoute les bits alpha à partir de la valeur spécifiée 
+		rgbaColor |= alpha << 24;
+
+		return new Color(rgbaColor, true);
+	}
+	
+	// Initialise les composantes de la boîte de dialogue
 	private void initComponents()
 	{
         shapePanel = new MiniDrawingPanel(this);
@@ -308,285 +569,5 @@ public class FillAndStrokeDialog extends JDialog implements ActionListener, Wind
         );
 
         add(buttonPanel, java.awt.BorderLayout.PAGE_END);
-}
-	
-	// Ferme la boîte de dialogue
-	private void close()
-	{
-		this.setVisible(false);
-		this.dispose();
 	}
-	
-	private void readShapeValues()
-	{
-        strokeSpinner.setValue((double) this.refShape.getStrokeWidth());
-        gradColor1Slider.setValue(this.refShape.getGradColor1().getAlpha());
-        gradColor2Slider.setValue(this.refShape.getGradColor2().getAlpha());
-        strokeSlider.setValue(this.refShape.getStrokeColor().getAlpha());
-	}
-	
-	private Color pickColor(Color color)
-	{
-		return JColorChooser.showDialog(this, "Choisissez la couleur", color);
-	}
-	
-	private class MiniDrawingPanel extends JPanel implements MouseListener, MouseMotionListener
-	{
-		// Point de départ d'un drag en coordonnées réelles
-		private Point startDragPoint = null;
-		
-		// Point actuel d'un drag en coordonnées réelles
-		private Point currentDragPoint = null;
-
-
-		/**
-		 * Construit un mini panneau dans lequel il est possible de dessiner.
-		 * 
-		 * @param parent Objet parent du panneau, doit être du type Board
-		 */
-		public MiniDrawingPanel(FillAndStrokeDialog parent)
-		{
-			this.addMouseListener(this);
-			this.addMouseMotionListener(this);
-		}
-		
-		/**
-		 * Redessine le plateau de jeu.
-		 * Vous ne devriez pas avoir à appeler cette méthode directement.
-		 * @param g2d Graphics dans lequel le panneau doit se dessiner
-		 * 
-		 */
-		public void paintComponent(Graphics g)
-		{
-			super.paintComponent(g);
-			Graphics2D g2d = (Graphics2D) g; 
-
-			if (g2d != null)
-			{
-				refShape.draw(g2d, scalingFactor, virtualDeltaX, virtualDeltaY);
-				
-				if (startDragPoint != null && currentDragPoint != null)
-				{
-					g2d.setColor(Color.BLACK);
-					g2d.setStroke(DrawingPanel.DASHED_STROKE);
-					g2d.drawLine(startDragPoint.x, startDragPoint.y, currentDragPoint.x, currentDragPoint.y);
-				}
-			}
-		}
-		@Override
-		public void mouseClicked(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e)
-		{
-			startDragPoint = e.getPoint();
-		}
-
-		@Override
-		public void mouseReleased(MouseEvent e)
-		{
-			this.repaint();
-			startDragPoint = null;
-			currentDragPoint = null;
-		}
-
-		@Override
-		public void mouseDragged(MouseEvent e)
-		{
-			currentDragPoint = e.getPoint();
-
-			Point2D p1 = Shape.getVirtualPoint(startDragPoint.x, startDragPoint.y, 
-					scalingFactor, virtualDeltaX, virtualDeltaY);
-
-			Point2D p2 = Shape.getVirtualPoint(e.getX(), e.getY(), 
-					scalingFactor, virtualDeltaX, virtualDeltaY);
-			
-			float xGradP1 = ((float) p1.getX() - refShape.getPosX()) / refShape.getWidth();
-			float yGradP1 = ((float) p1.getY() - refShape.getPosY()) / refShape.getHeight();
-
-			float xGradP2 = ((float) p2.getX() - refShape.getPosX()) / refShape.getWidth();
-			float yGradP2 = ((float) p2.getY() - refShape.getPosY()) / refShape.getHeight();
-			
-			
-			refShape.setGradPoint1(new Point2D.Float(xGradP1, yGradP1));
-			refShape.setGradPoint2(new Point2D.Float(xGradP2, yGradP2));
-			
-			this.repaint();
-		}
-
-		@Override
-		public void mouseMoved(MouseEvent e)
-		{
-		}
-	}
-	
-	/**
-	 * Reçoit et traite les événements relatifs aux boutons
-	 * Cette méthode doit être publique mais ne devrait pas être appelée directement.
-	 * 
-	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
-	 * 
-	 * @param evt événement déclencheur
-	 */
-	@Override
-	public void actionPerformed(ActionEvent evt)
-	{
-		if (evt.getActionCommand().equals("OK"))
-		{
-			this.close();
-		}
-		else if (evt.getActionCommand().equals("GRAD_COLOR_1"))
-		{
-			Color c = JColorChooser.showDialog(this, "Choix de la couleur 1", this.refShape.getGradColor1());
-			
-			if (c != null)
-			{
-				this.refShape.setGradColor1(c);
-				
-				if (this.gradColor2CheckBox.isSelected())
-				{
-					this.refShape.setGradColor2(c);
-				}
-
-				this.shapePanel.repaint();
-			}
-		}
-		else if (evt.getActionCommand().equals("GRAD_COLOR_2"))
-		{
-			Color c = JColorChooser.showDialog(this, "Choix de la couleur 2", this.refShape.getGradColor2());
-			
-			if (c != null)
-			{
-				this.refShape.setGradColor2(c);
-				this.shapePanel.repaint();
-			}
-		}
-		else if (evt.getActionCommand().equals("GRAD_COLOR_2_SLAVE"))
-		{
-			gradColor2Button.setEnabled(!gradColor2CheckBox.isSelected());
-			gradColor2Slider.setEnabled(!gradColor2CheckBox.isSelected());
-			
-			if (this.gradColor2CheckBox.isSelected())
-			{
-				this.refShape.setGradColor2(this.refShape.getGradColor1());
-				this.gradColor2Slider.setValue(this.gradColor1Slider.getValue());
-				this.shapePanel.repaint();
-			}
-
-		}
-		else if (evt.getActionCommand().equals("STROKE_COLOR"))
-		{
-			Color c = JColorChooser.showDialog(this, "Choix de la couleur du trait", this.refShape.getStrokeColor());
-			if (c != null)
-			{
-				this.refShape.setStrokeColor(c);
-				this.shapePanel.repaint();
-			}
-		}
-		else if (evt.getActionCommand().equals("REVERT"))
-		{
-			this.refShape = (Shape) DeepCopy.copy(this.refShapeBackup);
-			this.readShapeValues();
-			this.repaint();
-		}
-		else if (evt.getActionCommand().equals("CANCEL"))
-		{
-			this.parent.getBoard().getDrawingPanel().setRefShape(this.refShapeBackup);
-			this.close();
-		}
-	}
-	
-	/** 
-	 * Méthode appelée quand la fenêtre va être fermée.
-	 * Cette méthode doit être publique mais ne devrait pas être appelée directement.
-	 * 
-	 * @param evt événement déclencheur
-	 */
-	@Override
-	public void windowClosing(WindowEvent evt)
-	{
-		this.close();
-	}
-	
-	@Override
-	public void windowActivated(WindowEvent evt)
-	{
-	}
-
-	@Override
-	public void windowClosed(WindowEvent evt)
-	{
-	}
-
-	@Override
-	public void windowDeactivated(WindowEvent evt)
-	{
-	}
-
-	@Override
-	public void windowDeiconified(WindowEvent evt)
-	{
-	}
-
-	@Override
-	public void windowIconified(WindowEvent evt)
-	{
-	}
-
-	@Override
-	public void windowOpened(WindowEvent evt)
-	{
-	}
-
-	@Override
-	public void stateChanged(ChangeEvent e)
-	{
-		if (e.getSource() == strokeSpinner)
-		{
-			this.refShape.setStrokeWidth(((Double)this.strokeSpinner.getValue()).floatValue());
-		}
-		else if (e.getSource() == strokeSlider)
-		{
-			this.refShape.setStrokeColor(this.getSameColorWithNewAlpha(this.refShape.getStrokeColor(), strokeSlider.getValue()));
-		}
-		else if (e.getSource() == gradColor1Slider)
-		{
-			this.refShape.setGradColor1(this.getSameColorWithNewAlpha(this.refShape.getGradColor1(), gradColor1Slider.getValue()));
-
-			if (this.gradColor2CheckBox.isSelected())
-			{
-				this.gradColor2Slider.setValue(this.gradColor1Slider.getValue());
-			}
-		}
-		else if (e.getSource() == gradColor2Slider)
-		{
-			this.refShape.setGradColor2(this.getSameColorWithNewAlpha(this.refShape.getGradColor2(), gradColor2Slider.getValue()));
-		}
-		
-		this.shapePanel.repaint();
-	}
-
-	private Color getSameColorWithNewAlpha(Color color, int alpha)
-	{
-		int rgbaColor = color.getRGB();
-		// Enlève les bits alpha de la couleur
-		rgbaColor &= 0xFFFFFF;
-		// Ajoute les bits alpha à partir de la valeur spécifiée 
-		rgbaColor |= alpha << 24;
-
-		return new Color(rgbaColor, true);
-	}
-
 }
