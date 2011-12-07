@@ -287,7 +287,7 @@ public class Board extends JPanel implements ActionListener //, MouseListener
 	/**
 	 * @return the parent
 	 */
-	public AppFrame getParent()
+	public AppFrame getFrame()
 	{
 		return parent;
 	}
