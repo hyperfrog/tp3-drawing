@@ -54,7 +54,7 @@ public abstract class Shape implements Serializable
 	
 	protected Handle[] handles = null;
 	
-	protected String Name = null;
+	protected String name = null;
 	
 	public Shape()
 	{
@@ -79,7 +79,7 @@ public abstract class Shape implements Serializable
 		this.height = Math.max(0, height);
 		this.createHandles();
 	}
-
+	
 	protected void createHandles()
 	{
 		if (!(this instanceof Handle))
@@ -152,7 +152,7 @@ public abstract class Shape implements Serializable
 		
 		if (this.handles != null)
 		{
-			for(Handle shapeHandle : this.handles)
+			for (Handle shapeHandle : this.handles)
 			{
 				if(shapeHandle.getRealRect(drawingScalingFactor, drawingDeltaX, drawingDeltaY).contains(point))
 				{
@@ -174,23 +174,40 @@ public abstract class Shape implements Serializable
 	}
 	
 	/**
+	 * Copie les propriétés de la forme passée en paramètre.
+	 * 
+	 * @param shape
+	 */
+	public void copyPropertiesFrom(Shape shape)
+	{
+		this.setStrokeColor(shape.getStrokeColor());
+		this.setStrokeWidth(shape.getStrokeWidth());
+		this.setGradColor1(shape.getGradColor1());
+		this.setGradColor2(shape.getGradColor2());
+		this.setGradPoint1(shape.getGradPoint1());
+		this.setGradPoint2(shape.getGradPoint2());		
+	}
+	
+	/**
 	 * 
 	 * @return
 	 */
 	public String getName()
 	{
-		return Name;
+		return this.name;
 	}
 	
 	public void setDefaultName()
 	{
-		Name = "shape" + SHAPE_COUNT;
-		SHAPE_COUNT++;
+//		this.name = "shape" + Shape.SHAPE_COUNT;
+		this.name = String.format("%s_%03d", this.getClass().getSimpleName(), Shape.SHAPE_COUNT);
+		
+		Shape.SHAPE_COUNT++;
 	}
 	
 	public void setNewName(String newName)
 	{
-		Name = newName;
+		this.name = newName;
 	}
 	
 	/**
@@ -250,6 +267,44 @@ public abstract class Shape implements Serializable
 	}
 
 	/**
+	 * @return the strokeColor
+	 */
+	public Color getStrokeColor()
+	{
+		return strokeColor;
+	}
+
+	/**
+	 * @param color the strokeColor to set
+	 */
+	public void setStrokeColor(Color color)
+	{
+		if (color != null)
+		{
+			this.strokeColor = color;
+		}
+	}
+
+	/**
+	 * @return the strokeWidth
+	 */
+	public float getStrokeWidth()
+	{
+		return strokeWidth;
+	}
+
+	/**
+	 * @param strokeWidth the strokeWidth to set
+	 */
+	public void setStrokeWidth(float strokeWidth)
+	{
+		if (strokeWidth >= 0)
+		{
+			this.strokeWidth = strokeWidth;
+		}
+	}
+
+	/**
 	 * @return the gradColor1
 	 */
 	public Color getGradColor1()
@@ -284,6 +339,44 @@ public abstract class Shape implements Serializable
 		if (color != null)
 		{
 			this.gradColor2 = color;
+		}
+	}
+
+	/**
+	 * @return the gradPoint1
+	 */
+	public Point2D.Float getGradPoint1()
+	{
+		return gradPoint1;
+	}
+
+	/**
+	 * @param point the gradPoint1 to set
+	 */
+	public void setGradPoint1(Point2D.Float point)
+	{
+		if (point != null)
+		{
+			this.gradPoint1 = point;
+		}
+	}
+
+	/**
+	 * @return the gradPoint2
+	 */
+	public Point2D.Float getGradPoint2()
+	{
+		return gradPoint2;
+	}
+
+	/**
+	 * @param point the gradPoint2 to set
+	 */
+	public void setGradPoint2(Point2D.Float point)
+	{
+		if (point != null)
+		{
+			this.gradPoint2 = point;
 		}
 	}
 
