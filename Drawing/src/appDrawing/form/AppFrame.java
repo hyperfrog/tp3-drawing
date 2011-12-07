@@ -25,7 +25,7 @@ public class AppFrame extends JFrame implements ComponentListener, WindowListene
 	private static AppFrame instance = null;
 	
 	// Dimension initiale de la fenêtre
-	private static final Dimension INIT_SIZE = new Dimension(640, 480);
+	private static final Dimension INIT_SIZE = new Dimension(800, 600);
 	
 	// Largeur minimale de la fenêtre
 	private static final int MIN_WIDTH = 640;
