@@ -43,10 +43,10 @@ import appDrawing.model.Square;
  */
 public class DrawingPanel extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener
 {
-	//Le mode par défaut est le mode création. C'est le mode qui sera actif à l'ouverture de l'application
+	// Le mode par défaut est le mode création. C'est le mode qui sera actif à l'ouverture de l'application
 	private static final Mode DEFAULT_MODE = Mode.CREATING;
 	
-	//Le parent correspond au board qui contient le DrawingPanel
+	// Le parent correspond au board qui contient le DrawingPanel
 	private Board parent = null;
 
 	// Point de départ d'un drag en coordonnées réelles
@@ -74,7 +74,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	
     // Trait utilisé pour dessiner une boîte autour d'une forme en mode création
 	// ainsi que la boîte de sélection
-	private final static BasicStroke DASHED_STROKE = 
+	public final static BasicStroke DASHED_STROKE = 
     		new BasicStroke(
     				2.0f, 
     				BasicStroke.CAP_BUTT, 
@@ -90,7 +90,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
     public enum Mode {CREATING, PANNING, MOVING, SELECTING, EDITING, RESIZING}
     
     // Modes d'alignements possibles
-    public static enum Alignement {UP, DOWN, LEFT, RIGHT, HORIZONTAL, VERTICAL};
+    public static enum Alignment {UP, DOWN, LEFT, RIGHT, HORIZONTAL, VERTICAL};
     
     // Mode de l'opération en cours
     private Mode currentMode = null; //DrawingPanel.DEFAULT_MODE;
@@ -101,13 +101,14 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
     // Type de la prochaine forme à être dessinée 
 	private ShapeType currentShapeType = ShapeType.ELLIPSE; 
 	
-	//Liste de points pour la ligne brisée et les polygones
-	private ArrayList<Point2D> currentPoints = null;
+	// Liste de points pour la construction d'une ligne brisée ou d'un polygone
+	private ArrayList<Point2D> polyPoints = null;
 	
 	// Poignée servant à redimensionner une forme en mode RESIZING
 	private Handle resizingHandle = null;
 	
-	private Color[] colors = new Color[2]; 
+	// Forme de référence; ses propriétés servent à la création d'une nouvelle forme 
+	private Shape refShape = new Rectangle(0, 0, 250, 175);
 	
 	/**
 	 * Construit un panneau dans lequel il est possible de dessiner.
@@ -164,37 +165,30 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 				if (this.currentShapeType == ShapeType.POLYGON || this.currentShapeType == ShapeType.POLYLINE
 						|| this.currentShapeType == ShapeType.FREELINE)
 				{
-					if (this.currentPoints != null)
+					if (this.polyPoints != null)
 					{ 
-						//on ajoute le point de la souris temporairement
-						this.currentPoints.add(Shape.getVirtualPoint(this.currentMousePos.x, this.currentMousePos.y, 
+						//on ajoute temporairement le point correspondant à la position de la souris
+						this.polyPoints.add(Shape.getVirtualPoint(this.currentMousePos.x, this.currentMousePos.y, 
 										this.scalingFactor, this.virtualDeltaX, this.virtualDeltaY));
-						//on crée un polygone temporaire
-						Polygon poly;
 						
-						//selon le contexte on fait un polygone ou un polyline
-						if(this.currentShapeType == ShapeType.POLYGON)
-						{
-							poly = new Polygon(0, 0);
-						}
-						else
-						{
-							poly = new PolyLine(0, 0);
-						}
+						//on crée un polygone temporaire
+						Polygon poly = (this.currentShapeType == ShapeType.POLYGON) ? new Polygon(0, 0) : new PolyLine(0, 0);
+						
+						poly.copyPropertiesFrom(this.refShape);
 						
 						//on ajoute les points au polygone
-						poly.setPoints(currentPoints);
+						poly.setPoints(this.polyPoints);
 						//on dessine
 						poly.draw(g2d, this.scalingFactor, this.virtualDeltaX, this.virtualDeltaY);
 						//on retire le point temporaire
-						this.currentPoints.remove(this.currentPoints.size()-1);
+						this.polyPoints.remove(this.polyPoints.size()-1);
 					}
 				}
 				// Sinon, si un drag est en cours
 				else if (this.startDragPoint != null && this.currentDragPoint != null)
 				{
-					java.awt.Rectangle rect = this.makeRect(this.startDragPoint, this.currentDragPoint);
 					// Dessine la forme sans l'ajouter dans la liste
+					java.awt.Rectangle rect = this.makeRect(this.startDragPoint, this.currentDragPoint);
 					Shape shape = createShape(rect.x, rect.y, rect.width, rect.height);
 					shape.draw(g2d, this.scalingFactor, this.virtualDeltaX, this.virtualDeltaY);
 					// Dessine un rectangle pointillé autour de la forme
@@ -242,7 +236,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	{
 		this.shapeList = new ArrayList<Shape>();
 		this.alreadySelectedShapes = new ArrayList<Shape>();
-		this.currentPoints = null;
+		this.polyPoints = null;
 		this.resizingHandle = null;
 		this.repaint();
 	}
@@ -282,8 +276,6 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 				shape = new Polygon(virtualX, virtualY);
 				break;
 			case POLYLINE:
-				shape = new PolyLine(virtualX, virtualY);
-				break;
 			case FREELINE:
 				shape = new PolyLine(virtualX, virtualY);
 				break;
@@ -291,11 +283,8 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		
 		if (shape != null)
 		{
-			shape.setGradColor1(this.colors[0]);
-			shape.setGradColor2(this.colors[1]);
+			shape.copyPropertiesFrom(this.refShape);
 		}
-		
-		
 		
 		return shape;
 	}
@@ -355,71 +344,38 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	{
 		this.parent.getToolBar().toggleShape(newShapeType);
 		
-		if(this.currentShapeType == ShapeType.POLYGON ||
-				this.currentShapeType == ShapeType.POLYLINE)
+//		if (this.currentShapeType == ShapeType.POLYGON || this.currentShapeType == ShapeType.POLYLINE)
 		{
-			if(newShapeType != currentShapeType)
+			if (newShapeType != this.currentShapeType)
 			{
 				this.endPolygonCreation();
 			}
 		}
 		
-		switch (newShapeType)
-		{
-			case ELLIPSE:
-				this.currentShapeType = ShapeType.ELLIPSE;
-				break;
-			case CIRCLE:
-				this.currentShapeType = ShapeType.CIRCLE;
-				break;
-			case RECTANGLE:
-				this.currentShapeType = ShapeType.RECTANGLE;
-				break;
-			case SQUARE:
-				this.currentShapeType = ShapeType.SQUARE;
-				break;
-			case POLYGON:
-				this.currentShapeType = ShapeType.POLYGON;
-				break;
-			case POLYLINE:
-				this.currentShapeType = ShapeType.POLYLINE;
-				break;
-			case FREELINE:
-				this.currentShapeType = ShapeType.FREELINE;
-				break;
-		}
-
+		this.currentShapeType = newShapeType;
 		this.setMode(Mode.CREATING);
 	}
 	
-	//si on créé un autre forme ou  que l'on change de mode et qu'un polygone est en cours de dessin,
-	//on ajoute le polygone dans la shapeList et on réinitialise le currentPolygon. Aussi, il serait possible 
-	//d'annuler le polygone en cours, car il n'est pas dans la liste tant que le dessin n'est pas terminé
+	// Si l'on change de type de forme ou de mode et qu'un polygone est en cours de création,
+	// on ajoute ce polygone dans la shapeList et on réinitialise la liste de points utilisée pour 
+	// sa construction . 
 	private void endPolygonCreation()
 	{
-		if (this.currentPoints != null)
+		if (this.polyPoints != null)
 		{
 			//on crée le polygone
-			Polygon poly;
-			
-			//selon le contexte de polygone ou de polyline
-			if(this.currentShapeType == ShapeType.POLYGON)
-			{
-				poly = new Polygon(0, 0);
-			}
-			else
-			{
-				poly = new PolyLine(0, 0);
-			}
-			
+			Polygon poly = (this.currentShapeType == ShapeType.POLYGON) ? new Polygon(0, 0) : new PolyLine(0, 0);
+
+			poly.copyPropertiesFrom(this.refShape);
+
 			//on assigne les points au polygone
-			poly.setPoints(this.currentPoints);
+			poly.setPoints(this.polyPoints);
 			
-			//on ajoute le polygone à la liste on efface la liste de points temporaires et on redessine
+			//on ajoute le polygone à la liste, on efface la liste de points temporaires et on redessine
 			this.shapeList.add(poly);
 			poly.setDefaultName();
 			parent.getShapeListBar().testDynamicList(this.shapeList);
-			this.currentPoints = null;
+			this.polyPoints = null;
 			this.repaint();
 		}
 	}
@@ -483,23 +439,22 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		{
 			if (this.currentMode == Mode.CREATING)
 			{
-				if (this.currentShapeType == ShapeType.POLYGON || 
-						this.currentShapeType == ShapeType.POLYLINE)
-					//polygone et polyline d'abord car pas de drag pour sa création
+				// Polygone ou polyline d'abord, car pas de drag pour leur création
+				if (this.currentShapeType == ShapeType.POLYGON || this.currentShapeType == ShapeType.POLYLINE)
 				{
-					if (this.currentPoints == null)//Si aucun polygone n'est en cours de création
+					if (this.polyPoints == null) //Si aucun polygone n'est en cours de création
 					{
-						this.currentPoints = new ArrayList<Point2D>();
+						this.polyPoints = new ArrayList<Point2D>();
 					}
 					
-					this.currentPoints.add(Shape.getVirtualPoint(e.getX(), e.getY(), this.scalingFactor, 
-							this.virtualDeltaX, this.virtualDeltaY));
+					this.polyPoints.add(Shape.getVirtualPoint(e.getX(), e.getY(), 
+							this.scalingFactor, this.virtualDeltaX, this.virtualDeltaY));
 					
 					this.repaint();
 				}
 				else if (this.currentDragPoint != null) // Mode création d'une autre forme?
 				{
-					if(this.currentShapeType == ShapeType.FREELINE)
+					if (this.currentShapeType == ShapeType.FREELINE)
 					{
 						this.endPolygonCreation();
 					}
@@ -571,22 +526,20 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 			// mouseMoved() n'est pas appelé pendant un drag, alors on fait comme si...
 			this.currentMousePos = e.getPoint();
 
-			if(this.currentMode == Mode.CREATING)//si mode création
+			if (this.currentMode == Mode.CREATING) // Si mode création
 			{
-				if(this.currentShapeType == ShapeType.FREELINE)
+				if (this.currentShapeType == ShapeType.FREELINE)
 				{
-					if(this.currentPoints == null)
+					if (this.polyPoints == null)
 					{
-						this.currentPoints = new ArrayList<Point2D>();
+						this.polyPoints = new ArrayList<Point2D>();
 					}
-					else
-					{
-						this.currentPoints.add(Shape.getVirtualPoint(this.currentDragPoint.x,this.currentDragPoint.y ,
-								this.scalingFactor, this.virtualDeltaX, this.virtualDeltaY));
-					}
+
+					this.polyPoints.add(Shape.getVirtualPoint(this.currentDragPoint.x, this.currentDragPoint.y,
+							this.scalingFactor, this.virtualDeltaX, this.virtualDeltaY));
 				}
 			}
-			else if (this.currentMode == Mode.PANNING)// Si mode panning 
+			else if (this.currentMode == Mode.PANNING) // Si mode panning 
 			{
 				this.doPan();
 			}
@@ -627,7 +580,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	{
 		this.currentMousePos = e.getPoint();
 		
-		if (this.currentPoints != null)
+		if (this.polyPoints != null)
 		{
 			this.repaint();
 		}
@@ -687,10 +640,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e)
 	{
-//		if ((e.getModifiers() & ActionEvent.SHIFT_MASK) == 0) // Shift pas enfoncé
-		{
-			this.zoom(-e.getWheelRotation());
-		}
+		this.zoom(-e.getWheelRotation());
 	}
 
 	@Override
@@ -699,11 +649,9 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		switch (e.getKeyCode())
 		{
 			case KeyEvent.VK_1:
-				this.pickColor(0);
-				break;
-
-			case KeyEvent.VK_2:
-				this.pickColor(1);
+				FillAndStrokeDialog fillAndStrokeDialog = new FillAndStrokeDialog(this.parent.getFrame(), this.refShape);
+				fillAndStrokeDialog.setLocationRelativeTo(this.parent);
+				fillAndStrokeDialog.setVisible(true);
 				break;
 
 			case KeyEvent.VK_G:
@@ -773,27 +721,27 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 				break;
 			
 			case KeyEvent.VK_0:
-				this.align(Alignement.UP);
+				this.align(Alignment.UP);
 				break;
 				
 			case KeyEvent.VK_9:
-				this.align(Alignement.DOWN);
+				this.align(Alignment.DOWN);
 				break;
 				
 			case KeyEvent.VK_8:
-				this.align(Alignement.LEFT);
+				this.align(Alignment.LEFT);
 				break;
 				
 			case KeyEvent.VK_7:
-				this.align(Alignement.RIGHT);
+				this.align(Alignment.RIGHT);
 				break;
 				
 			case KeyEvent.VK_6:
-				this.align(Alignement.HORIZONTAL);
+				this.align(Alignment.HORIZONTAL);
 				break;
 				
 			case KeyEvent.VK_5:
-				this.align(Alignement.VERTICAL);
+				this.align(Alignment.VERTICAL);
 				break;			
 		}
 	}
@@ -812,20 +760,6 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	@Override
 	public void keyTyped(KeyEvent arg0)
 	{
-	}
-	
-	// Temporaire
-	private void pickColor(int colorIndex)
-	{
-		if (colorIndex >= 0 && colorIndex < this.colors.length)
-		{
-			Color chosenColor = JColorChooser.showDialog(this, "Choisissez la couleur " + (colorIndex + 1), this.colors[colorIndex]);
-
-			if (chosenColor != null)
-			{
-				this.colors[colorIndex] = chosenColor;
-			}
-		}
 	}
 	
 	/*
@@ -892,9 +826,9 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	}
 	
 	/*
-	 * Aligne les formes selectionnées
+	 * Aligne les formes sélectionnées
 	 */
-	private void align(Alignement alignement)
+	private void align(Alignment alignment)
 	{
 		ArrayList<Shape> selection = this.getCurrentSelection();
 		if (selection.size() > 1)
@@ -910,32 +844,32 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 			
 			for (Shape sh : selection)
 			{
-				switch (alignement)
+				switch (alignment)
 				{
 					case HORIZONTAL:
-						int newYPos = (int) (r.getCenterY() - (sh.getHeight() / 2));
+						float newYPos = (float) (r.getCenterY() - (sh.getHeight() / 2));
 						sh.setPosition(sh.getPosX(), newYPos);
 						break;
 						
 					case VERTICAL:
-						int newXPos = (int) (r.getCenterY() - (sh.getWidth() / 2));
+						float newXPos = (float) (r.getCenterX() - (sh.getWidth() / 2));
 						sh.setPosition(newXPos, sh.getPosY());
 						break;
 						
 					case UP:
-						sh.setPosition(sh.getPosX(), (int) r.getMinX());
+						sh.setPosition(sh.getPosX(), (float) r.getMinX());
 						break;
 						
 					case DOWN:
-						sh.setPosition(sh.getPosX(), (int) (r.getMaxY() - sh.getHeight()));
+						sh.setPosition(sh.getPosX(), (float) (r.getMaxY() - sh.getHeight()));
 						break;
 						
 					case LEFT:
-						sh.setPosition((int) r.getMinX(), sh.getPosY());
+						sh.setPosition((float) r.getMinX(), sh.getPosY());
 						break;
 						
 					case RIGHT:
-						sh.setPosition((int) (r.getMaxX() - sh.getWidth()), sh.getPosY());
+						sh.setPosition((float) (r.getMaxX() - sh.getWidth()), sh.getPosY());
 						break;
 				}
 			}
@@ -985,7 +919,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	{
 		Handle h = null;
 		
-		// TODO : Parcourir la lise à l'envers pour optimiser
+		// TODO : Parcourir la liste à l'envers pour optimiser
 		for (Shape shape : fromShapes)
 		{
 			Handle tempHandle = shape.getContainingHandle(p, this.scalingFactor, this.virtualDeltaX, this.virtualDeltaY);
@@ -1155,6 +1089,25 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 			this.erase();
 			this.shapeList = shapeList;
 			this.repaint();
+		}
+	}
+
+	/**
+	 * @return the refShape
+	 */
+	public Shape getRefShape()
+	{
+		return refShape;
+	}
+
+	/**
+	 * @param refShape the refShape to set
+	 */
+	public void setRefShape(Shape refShape)
+	{
+		if (refShape != null)
+		{
+			this.refShape = refShape;
 		}
 	}
 	

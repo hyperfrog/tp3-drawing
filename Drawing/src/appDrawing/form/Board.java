@@ -3,6 +3,7 @@ package appDrawing.form;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dialog;
+import java.awt.Dimension;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.Window;
@@ -80,6 +81,8 @@ public class Board extends JPanel implements ActionListener //, MouseListener
 		this.add(this.drawingPanel, BorderLayout.CENTER);
 		this.add(this.appToolBar, BorderLayout.NORTH);
 		this.add(this.appShapeListBar, BorderLayout.EAST);
+
+		this.appShapeListBar.setPreferredSize(new Dimension(150, this.drawingPanel.getHeight()));
 		
 		// Passe-passe pour envoyer les évènements du clavier au DrawingPanel 
 		// peu importe la composante qui a le focus (p. ex. barre d'outils).
