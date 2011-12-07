@@ -15,6 +15,7 @@ import java.awt.geom.Point2D;
 
 import javax.swing.JColorChooser;
 import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSpinner.NumberEditor;
 import javax.swing.SpinnerModel;
@@ -26,10 +27,14 @@ import appDrawing.model.Shape;
 import appDrawing.util.DeepCopy;
 
 /**
- * La classe AppAboutDialog sert de boîte de dialogue pour la fenêtre «À propos».
+ * La classe FillAndStrokeDialog implémente une boîte de dialogue
+ * permettant la modification des propriétés de remplissage 
+ * et du trait d'une forme. 
  *
+ * @author Micaël Lemelin
  * @author Christian Lesage
  * @author Alexandre Tremblay
+ * @author Pascal Turcot
  *
  */
 public class FillAndStrokeDialog extends JDialog implements ActionListener, WindowListener, ChangeListener
@@ -53,9 +58,12 @@ public class FillAndStrokeDialog extends JDialog implements ActionListener, Wind
     private javax.swing.JSpinner strokeSpinner;
     private javax.swing.JLabel strokeWidthLabel;
     
-	private Shape refShape = null;
-	private Shape refShapeBackup = null;
+    // La forme de référence, utilisée pour restaurer les propriétés
+	private Shape originalShape = null;
 
+	// Copie de la forme de référence, affichée dans la partie du haut
+    private Shape shape = null;
+    
 	// Facteur d'agrandissement/réduction du dessin
 	private float scalingFactor = 1;
 	
@@ -65,29 +73,33 @@ public class FillAndStrokeDialog extends JDialog implements ActionListener, Wind
 	
 	private AppFrame parent;
 	
+	// Code de résultat 
+	private int result = JOptionPane.CLOSED_OPTION;
+	
 	/**
-	 * Construit la boîte de dialogue À propos
+	 * Construit la boîte de dialogue pour la modification 
+	 * des propriétés de remplissage et du trait d'une forme.
 	 * 
-	 * @param parent objet parent de la boîte de dialogue
+	 * @param parent JFrame parent de la boîte de dialogue
+	 * @param shape forme dont les propriétés de remplissage et de trait
+	 * sont à modifier
 	 */
-	public FillAndStrokeDialog(AppFrame parent, Shape refShape)
+	public FillAndStrokeDialog(AppFrame parent, Shape shape, String title)
 	{
 		super(parent);
 		
 		this.parent = parent;
 		
-		// Utilise la forme de référence passée en paramètre et en fait une copie
-		this.refShape = refShape;
-		this.refShapeBackup = (Shape) DeepCopy.copy(refShape);
-		
-		this.setTitle("Remplissage et trait");
+		this.setTitle(title);
 		this.setResizable(false);
 		this.setModal(true);
 		
 		// Initialise les composants
 		this.initComponents();
 		
-        // Épaisseur entre 0 et 64, 5 par défaut, incrément de 0,05
+		this.pack();
+		
+        // Épaisseur du trait entre 0 et 64, 5 par défaut, incrément de 0,05
         SpinnerModel sm = new SpinnerNumberModel(5.0, 0.0, 64.0, 0.05);
         strokeSpinner.setModel(sm);
         
@@ -98,8 +110,35 @@ public class FillAndStrokeDialog extends JDialog implements ActionListener, Wind
         
         this.shapePanel.setBackground(Color.WHITE);
         
-        this.readRefShapeValues();
+		// Garde une référence à la forme originale pour restaurer les propriétés au besoin
+		this.originalShape = shape;
+		
+		// Fait une copie de la forme passée en paramètre 
+		this.shape = (Shape) DeepCopy.copy(shape);
+		this.shape.setSelected(false);
+		
+        this.readShapeValues();
         
+		// Calcule un scalingFactor tel que la forme prend 80% de l'espace disponible
+		float xDiff = shapePanel.getWidth() - shape.getWidth();
+		float yDiff = shapePanel.getHeight() - shape.getHeight();
+		
+		scalingFactor = (xDiff < yDiff) ? 
+				shapePanel.getWidth() / shape.getWidth()
+				: shapePanel.getHeight() / shape.getHeight();
+		
+		scalingFactor *= 0.8;
+		
+		// Calcule les dimensions virtuelles du panneau d'affichage
+		float virtualWidth = shapePanel.getWidth() / this.scalingFactor;
+		float virtualHeight = shapePanel.getHeight() / this.scalingFactor;
+		
+		// Centre la forme (en déplaçant le dessin) 
+		this.virtualDeltaX = ((virtualWidth - shape.getWidth()) / 2) - shape.getPosX();
+		this.virtualDeltaY = ((virtualHeight - shape.getHeight()) / 2) - shape.getPosY();
+		
+		this.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+		
         // Écouteurs
         okButton.addActionListener(this);
         okButton.setActionCommand("OK");
@@ -118,39 +157,41 @@ public class FillAndStrokeDialog extends JDialog implements ActionListener, Wind
         strokeSpinner.addChangeListener(this);
         strokeSlider.addChangeListener(this);
         gradColor2CheckBox.addChangeListener(this);
-        
-		this.pack();
-		
-		// Calcule les dimensions virtuelles du panneau d'affichage
-		float shapePanelWidth = shapePanel.getWidth() / this.scalingFactor;
-		float shapePanelHeight = shapePanel.getHeight() / this.scalingFactor;
-		
-		// Centre la forme
-		this.virtualDeltaX = (shapePanelWidth - refShape.getWidth()) / 2;
-		this.virtualDeltaY = (shapePanelHeight - refShape.getHeight()) / 2;
-		
-		this.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-		
-		// Cette boîte de dialogue implémente son propre écouteur Window
-		this.addWindowListener(this);
+
+        this.addWindowListener(this);
 	}
 	
 	// Ferme la boîte de dialogue
 	private void close()
 	{
+		this.shape.setSelected(this.originalShape.isSelected());
 		this.setVisible(false);
 		this.dispose();
 	}
 	
-	private void readRefShapeValues()
+	/**
+	 * Retourne le code correspondant à l'action ayant mené à la fermeture du dialogue.
+	 * 
+	 * @return code correspondant à l'action ayant mené à la fermeture du dialogue
+	 */
+	public int getResult()
 	{
-        strokeSpinner.setValue((double) this.refShape.getStrokeWidth());
-        gradColor1Slider.setValue(this.refShape.getGradColor1().getAlpha());
-        gradColor2Slider.setValue(this.refShape.getGradColor2().getAlpha());
-        strokeSlider.setValue(this.refShape.getStrokeColor().getAlpha());
+		return this.result;
+	}
+	
+	public Shape getShape()
+	{
+		return this.shape;
+	}
+	
+	private void readShapeValues()
+	{
+        strokeSpinner.setValue((double) this.shape.getStrokeWidth());
+        gradColor1Slider.setValue(this.shape.getGradColor1().getAlpha());
+        gradColor2Slider.setValue(this.shape.getGradColor2().getAlpha());
+        strokeSlider.setValue(this.shape.getStrokeColor().getAlpha());
         gradColor2CheckBox.setSelected(false);
 	}
-
 	
 	private class MiniDrawingPanel extends JPanel implements MouseListener, MouseMotionListener
 	{
@@ -185,7 +226,7 @@ public class FillAndStrokeDialog extends JDialog implements ActionListener, Wind
 
 			if (g2d != null)
 			{
-				refShape.draw(g2d, scalingFactor, virtualDeltaX, virtualDeltaY);
+				shape.draw(g2d, scalingFactor, virtualDeltaX, virtualDeltaY);
 				
 				if (startDragPoint != null && currentDragPoint != null)
 				{
@@ -229,15 +270,14 @@ public class FillAndStrokeDialog extends JDialog implements ActionListener, Wind
 			Point2D p2 = Shape.getVirtualPoint(e.getX(), e.getY(), 
 					scalingFactor, virtualDeltaX, virtualDeltaY);
 			
-			float xGradP1 = ((float) p1.getX() - refShape.getPosX()) / refShape.getWidth();
-			float yGradP1 = ((float) p1.getY() - refShape.getPosY()) / refShape.getHeight();
+			float xGradP1 = ((float) p1.getX() - shape.getPosX()) / shape.getWidth();
+			float yGradP1 = ((float) p1.getY() - shape.getPosY()) / shape.getHeight();
 
-			float xGradP2 = ((float) p2.getX() - refShape.getPosX()) / refShape.getWidth();
-			float yGradP2 = ((float) p2.getY() - refShape.getPosY()) / refShape.getHeight();
+			float xGradP2 = ((float) p2.getX() - shape.getPosX()) / shape.getWidth();
+			float yGradP2 = ((float) p2.getY() - shape.getPosY()) / shape.getHeight();
 			
-			
-			refShape.setGradPoint1(new Point2D.Float(xGradP1, yGradP1));
-			refShape.setGradPoint2(new Point2D.Float(xGradP2, yGradP2));
+			shape.setGradPoint1(new Point2D.Float(xGradP1, yGradP1));
+			shape.setGradPoint2(new Point2D.Float(xGradP2, yGradP2));
 			
 			this.repaint();
 		}
@@ -259,19 +299,20 @@ public class FillAndStrokeDialog extends JDialog implements ActionListener, Wind
 	{
 		if (evt.getActionCommand().equals("OK"))
 		{
+			this.result = JOptionPane.OK_OPTION;
 			this.close();
 		}
 		else if (evt.getActionCommand().equals("GRAD_COLOR_1"))
 		{
-			Color c = JColorChooser.showDialog(this, "Choix de la couleur 1", this.refShape.getGradColor1());
+			Color c = JColorChooser.showDialog(this, "Choix de la couleur 1", this.shape.getGradColor1());
 			
 			if (c != null)
 			{
-				this.refShape.setGradColor1(c);
+				this.shape.setGradColor1(c);
 				
 				if (this.gradColor2CheckBox.isSelected())
 				{
-					this.refShape.setGradColor2(c);
+					this.shape.setGradColor2(c);
 				}
 
 				this.shapePanel.repaint();
@@ -279,33 +320,34 @@ public class FillAndStrokeDialog extends JDialog implements ActionListener, Wind
 		}
 		else if (evt.getActionCommand().equals("GRAD_COLOR_2"))
 		{
-			Color c = JColorChooser.showDialog(this, "Choix de la couleur 2", this.refShape.getGradColor2());
+			Color c = JColorChooser.showDialog(this, "Choix de la couleur 2", this.shape.getGradColor2());
 			
 			if (c != null)
 			{
-				this.refShape.setGradColor2(c);
+				this.shape.setGradColor2(c);
 				this.shapePanel.repaint();
 			}
 		}
 		else if (evt.getActionCommand().equals("STROKE_COLOR"))
 		{
-			Color c = JColorChooser.showDialog(this, "Choix de la couleur du trait", this.refShape.getStrokeColor());
+			Color c = JColorChooser.showDialog(this, "Choix de la couleur du trait", this.shape.getStrokeColor());
 			if (c != null)
 			{
-				this.refShape.setStrokeColor(c);
+				this.shape.setStrokeColor(c);
 				this.shapePanel.repaint();
 			}
 		}
 		else if (evt.getActionCommand().equals("REVERT"))
 		{
-			this.refShape = (Shape) DeepCopy.copy(this.refShapeBackup);
-			this.parent.getBoard().getDrawingPanel().setRefShape(this.refShape);
-			this.readRefShapeValues();
+			this.shape = (Shape) DeepCopy.copy(this.originalShape);
+			this.shape.setSelected(false);
+			this.readShapeValues();
 			this.repaint();
 		}
 		else if (evt.getActionCommand().equals("CANCEL"))
 		{
-			this.parent.getBoard().getDrawingPanel().setRefShape(this.refShapeBackup);
+			this.shape = this.originalShape;
+			this.result = JOptionPane.CANCEL_OPTION;
 			this.close();
 		}
 	}
@@ -319,6 +361,7 @@ public class FillAndStrokeDialog extends JDialog implements ActionListener, Wind
 	@Override
 	public void windowClosing(WindowEvent evt)
 	{
+		this.shape = this.originalShape;
 		this.close();
 	}
 	
@@ -345,15 +388,15 @@ public class FillAndStrokeDialog extends JDialog implements ActionListener, Wind
 	{
 		if (e.getSource() == strokeSpinner)
 		{
-			this.refShape.setStrokeWidth(((Double)this.strokeSpinner.getValue()).floatValue());
+			this.shape.setStrokeWidth(((Double)this.strokeSpinner.getValue()).floatValue());
 		}
 		else if (e.getSource() == strokeSlider)
 		{
-			this.refShape.setStrokeColor(this.getSameColorWithNewAlpha(this.refShape.getStrokeColor(), strokeSlider.getValue()));
+			this.shape.setStrokeColor(this.getSameColorWithNewAlpha(this.shape.getStrokeColor(), strokeSlider.getValue()));
 		}
 		else if (e.getSource() == gradColor1Slider)
 		{
-			this.refShape.setGradColor1(this.getSameColorWithNewAlpha(this.refShape.getGradColor1(), gradColor1Slider.getValue()));
+			this.shape.setGradColor1(this.getSameColorWithNewAlpha(this.shape.getGradColor1(), gradColor1Slider.getValue()));
 
 			if (this.gradColor2CheckBox.isSelected())
 			{
@@ -362,7 +405,7 @@ public class FillAndStrokeDialog extends JDialog implements ActionListener, Wind
 		}
 		else if (e.getSource() == gradColor2Slider)
 		{
-			this.refShape.setGradColor2(this.getSameColorWithNewAlpha(this.refShape.getGradColor2(), gradColor2Slider.getValue()));
+			this.shape.setGradColor2(this.getSameColorWithNewAlpha(this.shape.getGradColor2(), gradColor2Slider.getValue()));
 		}
 		else if (e.getSource() == gradColor2CheckBox)
 		{
@@ -371,7 +414,7 @@ public class FillAndStrokeDialog extends JDialog implements ActionListener, Wind
 			
 			if (this.gradColor2CheckBox.isSelected())
 			{
-				this.refShape.setGradColor2(this.refShape.getGradColor1());
+				this.shape.setGradColor2(this.shape.getGradColor1());
 				this.gradColor2Slider.setValue(this.gradColor1Slider.getValue());
 				this.shapePanel.repaint();
 			}
