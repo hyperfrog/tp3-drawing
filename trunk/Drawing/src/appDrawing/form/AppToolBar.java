@@ -18,9 +18,13 @@ import appDrawing.form.DrawingPanel.Mode;
 import appDrawing.form.DrawingPanel.ShapeType;
 
 /**
+ * La classe AppToolBar créer une barre d'outils permettant d'intéragir
+ * avec le programme de dessin vectoriel.
  * 
- * @author 
- *
+ * @author Micaël Lemelin
+ * @author Christian Lesage
+ * @author Alexandre Tremblay
+ * @author Pascal Turcot
  */
 public class AppToolBar extends JToolBar implements ActionListener
 {
@@ -33,6 +37,7 @@ public class AppToolBar extends JToolBar implements ActionListener
 	private static BufferedImage creatingImage = null;
 	private static BufferedImage movingImage = null;
 	private static BufferedImage selectingImage = null;
+	private static BufferedImage fillStrokeImage = null;
 	// Images utilisées par la classe pour les formes
     private static BufferedImage circleImage = null;
     private static BufferedImage ellipseImage = null;
@@ -41,7 +46,6 @@ public class AppToolBar extends JToolBar implements ActionListener
     private static BufferedImage polygonImage = null;
     private static BufferedImage lineImage = null;
     private static BufferedImage paintImage = null;
-    
     // Images utilisées par la classe pour les groupes
     private static BufferedImage groupImage = null;
     private static BufferedImage ungroupImage = null;
@@ -56,123 +60,128 @@ public class AppToolBar extends JToolBar implements ActionListener
     // Initialisation des images
     static
     {
-            try
-            {
-            	AppToolBar.newImage = ImageIO.read(AppToolBar.class.getResource("../../res/new_file.png"));
-            	AppToolBar.saveImage = ImageIO.read(AppToolBar.class.getResource("../../res/save.png"));
-            	AppToolBar.saveAsImage = ImageIO.read(AppToolBar.class.getResource("../../res/save_as.png"));
-            	AppToolBar.loadImage = ImageIO.read(AppToolBar.class.getResource("../../res/open.png"));
-            	
-            	AppToolBar.creatingImage = ImageIO.read(AppToolBar.class.getResource("../../res/creating_mode.png"));
-            	AppToolBar.movingImage = ImageIO.read(AppToolBar.class.getResource("../../res/moving_mode.png"));
-            	AppToolBar.selectingImage = ImageIO.read(AppToolBar.class.getResource("../../res/selecting_mode.png"));
-            	
-            	AppToolBar.circleImage = ImageIO.read(AppToolBar.class.getResource("../../res/circle.png"));
-            	AppToolBar.ellipseImage = ImageIO.read(AppToolBar.class.getResource("../../res/ellipse.png"));
-            	AppToolBar.rectangleImage = ImageIO.read(AppToolBar.class.getResource("../../res/rectangle.png"));
-            	AppToolBar.squareImage = ImageIO.read(AppToolBar.class.getResource("../../res/square.png"));
-            	AppToolBar.polygonImage = ImageIO.read(AppToolBar.class.getResource("../../res/polygon.png"));
-            	AppToolBar.lineImage = ImageIO.read(AppToolBar.class.getResource("../../res/line.png"));
-            	AppToolBar.paintImage = ImageIO.read(AppToolBar.class.getResource("../../res/paint.png"));
-            	
-            	AppToolBar.groupImage = ImageIO.read(AppToolBar.class.getResource("../../res/group.png"));
-            	AppToolBar.ungroupImage = ImageIO.read(AppToolBar.class.getResource("../../res/ungroup.png"));
-            	
-            	AppToolBar.upImage = ImageIO.read(AppToolBar.class.getResource("../../res/up.png"));
-            	AppToolBar.downImage = ImageIO.read(AppToolBar.class.getResource("../../res/down.png"));
-            	AppToolBar.leftImage = ImageIO.read(AppToolBar.class.getResource("../../res/left.png"));
-            	AppToolBar.rightImage = ImageIO.read(AppToolBar.class.getResource("../../res/right.png"));
-            	AppToolBar.horizontalImage = ImageIO.read(AppToolBar.class.getResource("../../res/horizontal.png"));
-            	AppToolBar.verticalImage = ImageIO.read(AppToolBar.class.getResource("../../res/vertical.png"));
-            }
-            catch (IOException e)
-            {
-                    System.out.println(e.getMessage());
-            }
-            catch (IllegalArgumentException e)
-            {
-                    System.out.println("Incapable de trouver une ou plusieurs image(s) de la classe AppToolBar.");
-            }
+    	try
+    	{
+    		AppToolBar.newImage = ImageIO.read(AppToolBar.class.getResource("../../res/new_file.png"));
+    		AppToolBar.saveImage = ImageIO.read(AppToolBar.class.getResource("../../res/save.png"));
+    		AppToolBar.saveAsImage = ImageIO.read(AppToolBar.class.getResource("../../res/save_as.png"));
+    		AppToolBar.loadImage = ImageIO.read(AppToolBar.class.getResource("../../res/open.png"));
+
+    		AppToolBar.creatingImage = ImageIO.read(AppToolBar.class.getResource("../../res/creating_mode.png"));
+    		AppToolBar.movingImage = ImageIO.read(AppToolBar.class.getResource("../../res/moving_mode.png"));
+    		AppToolBar.selectingImage = ImageIO.read(AppToolBar.class.getResource("../../res/selecting_mode.png"));
+    		AppToolBar.fillStrokeImage = ImageIO.read(AppToolBar.class.getResource("../../res/fill_stroke.png"));
+    		
+    		AppToolBar.circleImage = ImageIO.read(AppToolBar.class.getResource("../../res/circle.png"));
+    		AppToolBar.ellipseImage = ImageIO.read(AppToolBar.class.getResource("../../res/ellipse.png"));
+    		AppToolBar.rectangleImage = ImageIO.read(AppToolBar.class.getResource("../../res/rectangle.png"));
+    		AppToolBar.squareImage = ImageIO.read(AppToolBar.class.getResource("../../res/square.png"));
+    		AppToolBar.polygonImage = ImageIO.read(AppToolBar.class.getResource("../../res/polygon.png"));
+    		AppToolBar.lineImage = ImageIO.read(AppToolBar.class.getResource("../../res/line.png"));
+    		AppToolBar.paintImage = ImageIO.read(AppToolBar.class.getResource("../../res/paint.png"));
+
+    		AppToolBar.groupImage = ImageIO.read(AppToolBar.class.getResource("../../res/group.png"));
+    		AppToolBar.ungroupImage = ImageIO.read(AppToolBar.class.getResource("../../res/ungroup.png"));
+
+    		AppToolBar.upImage = ImageIO.read(AppToolBar.class.getResource("../../res/up.png"));
+    		AppToolBar.downImage = ImageIO.read(AppToolBar.class.getResource("../../res/down.png"));
+    		AppToolBar.leftImage = ImageIO.read(AppToolBar.class.getResource("../../res/left.png"));
+    		AppToolBar.rightImage = ImageIO.read(AppToolBar.class.getResource("../../res/right.png"));
+    		AppToolBar.horizontalImage = ImageIO.read(AppToolBar.class.getResource("../../res/horizontal.png"));
+    		AppToolBar.verticalImage = ImageIO.read(AppToolBar.class.getResource("../../res/vertical.png"));
+    	}
+    	catch (IOException e)
+    	{
+    		System.out.println(e.getMessage());
+    	}
+    	catch (IllegalArgumentException e)
+    	{
+    		System.out.println("Incapable de trouver une ou plusieurs image(s) de la classe AppToolBar.");
+    	}
     }
 	
-	// 
+	// Objet parent
 	private Board parent;
 	
-	//
+	// Bouton pour créer un nouveau dessin
 	private JButton newDrawingButton;
 	
-	//
+	// Bouton pour charger un dessin
 	private JButton loadDrawingButton;
 	
-	//
+	// Bouton pour sauvegarder le dessin courant
 	private JButton saveDrawingButton;
 	
-	//
+	// Bouton pour sauvegarder sous le dessin courant
 	private JButton saveAsDrawingButton;
 	
-	// 
+	// Bouton pour le mode création
 	private JToggleButton creatingTool;
 	
-	// 
+	// Bouton pour le mode déplacement
 	private JToggleButton movingTool;
 	
-	// 
+	// Bouton pour le mode sélection
 	private JToggleButton selectingTool;
 	
-	// 
+	// Bouton pour la boîte de dialogue «Remplissage et trait»
+	private JButton fillStrokeButton;
+	
+	// Groupe de boutons pour les modes
 	private ButtonGroup toolsGroup;
 	
-	// 
+	// Bouton pour le cercle
 	private JToggleButton circleButton;
 	
-	//
+	// Bouton pour l'ellipse
 	private JToggleButton ellipseButton;
 	
-	//
+	// Bouton pour le rectangle
 	private JToggleButton rectangleButton;
 	
-	//
+	// Bouton pour le carré
 	private JToggleButton squareButton;
 	
-	//
+	// Bouton pour le polygone
 	private JToggleButton polygonButton;
 	
-	//
+	// Bouton pour la ligne brisée
 	private JToggleButton lineButton;
 	
-	//
+	// Bouton pour le pinceau
 	private JToggleButton paintButton;
 	
-	//
+	// Groupe de boutons pour les formes
 	private ButtonGroup shapesGroup;
 	
-	// 
+	// Bouton pour grouper
 	private JButton groupButton;
 	
-	// 
+	// Bouton pour dégrouper
 	private JButton ungroupButton;
 	
-	//
+	// Bouton pour aligner vers le haut
 	private JButton upButton;
 	
-	//
+	// Bouton pour aligner vers le bas
 	private JButton downButton;
 	
-	//
+	// Bouton pour aigner vers la gauche
 	private JButton leftButton;
 	
-	//
+	// Bouton pour aligner vers la droite
 	private JButton rightButton;
 	
-	//
+	// Bouton pour aligner horizontalement
 	private JButton horizontalButton;
 	
-	//
+	// Bouton pour aligner verticalement
 	private JButton verticalButton;
 	
 	/**
+	 * Créer une nouvelle barre d'outils.
 	 * 
-	 * @param drawingPanel
+	 * @param parent le Board qui contient la barre d'outils
 	 */
 	public AppToolBar(Board parent)
 	{
@@ -183,10 +192,11 @@ public class AppToolBar extends JToolBar implements ActionListener
 		this.setName("Barre d'outils");
 		this.setFloatable(true);
 		
+		// Initialise les composantes
 		this.initComponents();
 	}
 
-	// 
+	// Initialise les composantes
 	private void initComponents()
 	{
 		// Fichier
@@ -199,6 +209,7 @@ public class AppToolBar extends JToolBar implements ActionListener
 		this.movingTool = new JToggleButton();
 		this.selectingTool = new JToggleButton();
 		this.toolsGroup = new ButtonGroup();
+		this.fillStrokeButton = new JButton();
 		// Mode création
 		this.circleButton = new JToggleButton();
 		this.ellipseButton = new JToggleButton();
@@ -258,6 +269,11 @@ public class AppToolBar extends JToolBar implements ActionListener
 		this.toolsGroup.add(this.creatingTool);
 		this.toolsGroup.add(this.movingTool);
 		this.toolsGroup.add(this.selectingTool);
+		
+		this.fillStrokeButton.setText(null);
+		this.fillStrokeButton.setToolTipText("Remplissage et trait");
+		this.fillStrokeButton.setActionCommand("FILL_STROKE_DIALOG");
+		this.fillStrokeButton.setIcon(AppToolBar.fillStrokeImage != null ? new ImageIcon(AppToolBar.fillStrokeImage) : null);
 		
 		this.ellipseButton.setText(null);
 		this.ellipseButton.setToolTipText("Ellipse");
@@ -352,6 +368,7 @@ public class AppToolBar extends JToolBar implements ActionListener
 		this.add(this.movingTool);
 		this.add(this.selectingTool);
 		this.addSeparator();
+		this.add(this.fillStrokeButton);
 		this.add(this.ellipseButton);
 		this.add(this.circleButton);
 		this.add(this.rectangleButton);
@@ -368,6 +385,7 @@ public class AppToolBar extends JToolBar implements ActionListener
 		this.add(this.verticalButton);
 		this.add(this.rightButton);
 		
+		// Spécifie les écouteurs d'action pour les boutons
 		this.newDrawingButton.addActionListener(this);
 		this.saveDrawingButton.addActionListener(this);
 		this.saveAsDrawingButton.addActionListener(this);
@@ -390,14 +408,18 @@ public class AppToolBar extends JToolBar implements ActionListener
 		this.rightButton.addActionListener(this);
 		this.horizontalButton.addActionListener(this);
 		this.verticalButton.addActionListener(this);
+		this.fillStrokeButton.addActionListener(this);
 		
+		// Affiche le mode création au démarrage
 		this.showCreationMode();
 		this.hideSelectionMode();
 	}
 	
 	/**
+	 * Change le mode sélectionné dans la barre d'outils par celui passé en paramètre.
+	 * Le nouveau mode ne doit pas être null.
 	 * 
-	 * @param newMode
+	 * @param newMode le nouveau mode
 	 */
 	public void toggleMode(Mode newMode)
 	{
@@ -414,6 +436,7 @@ public class AppToolBar extends JToolBar implements ActionListener
 					this.movingTool.setSelected(true);
 					this.hideCreationMode();
 					this.hideSelectionMode();
+					this.fillStrokeButton.setVisible(false);
 					break;
 				case SELECTING:
 					this.selectingTool.setSelected(true);
@@ -425,8 +448,10 @@ public class AppToolBar extends JToolBar implements ActionListener
 	}
 	
 	/**
+	 * Change le type de forme sélectionné dans la barre d'outils par celui passé en paramètre.
+	 * Le nouveau type de forme ne doit pas être null.
 	 * 
-	 * @param newShapeType
+	 * @param newShapeType le nouveau type de forme
 	 */
 	public void toggleShape(ShapeType newShapeType)
 	{
@@ -455,7 +480,7 @@ public class AppToolBar extends JToolBar implements ActionListener
 		}
 	}
 	
-	// 
+	// Affiche les boutons en lien avec le mode création
 	private void showCreationMode()
 	{
 		this.circleButton.setVisible(true);
@@ -465,9 +490,12 @@ public class AppToolBar extends JToolBar implements ActionListener
 		this.polygonButton.setVisible(true);
 		this.lineButton.setVisible(true);
 		this.paintButton.setVisible(true);
+		
+		this.fillStrokeButton.setVisible(true);
+		this.fillStrokeButton.setToolTipText("Remplissage et trait par défaut");
 	}
 	
-	// 
+	// Cache les boutons en lien avec le mode création
 	private void hideCreationMode()
 	{
 		this.circleButton.setVisible(false);
@@ -479,26 +507,27 @@ public class AppToolBar extends JToolBar implements ActionListener
 		this.paintButton.setVisible(false);
 	}
 	
-	//
+	// Affiche les boutons en lien avec le mode sélection
 	private void showSelectionMode()
 	{
 		this.groupButton.setVisible(true);
 		this.ungroupButton.setVisible(true);
-		
 		this.upButton.setVisible(true);
 		this.downButton.setVisible(true);
 		this.leftButton.setVisible(true);
 		this.rightButton.setVisible(true);
 		this.horizontalButton.setVisible(true);
 		this.verticalButton.setVisible(true);
+		
+		this.fillStrokeButton.setVisible(true);
+		this.fillStrokeButton.setToolTipText("Remplissage et trait de la forme sélectionnée");
 	}
 	
-	//
+	// Cache les boutons en lien avec le mode sélection
 	private void hideSelectionMode()
 	{
 		this.groupButton.setVisible(false);
 		this.ungroupButton.setVisible(false);
-		
 		this.upButton.setVisible(false);
 		this.downButton.setVisible(false);
 		this.leftButton.setVisible(false);
@@ -509,7 +538,12 @@ public class AppToolBar extends JToolBar implements ActionListener
 	
 	@Override
 	/**
+	 * Reçoit et traite les événements relatifs aux boutons
+	 * Cette méthode doit être publique mais ne devrait pas être appelée directement.
 	 * 
+	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+	 * 
+	 * @param evt événement déclencheur
 	 */
 	public void actionPerformed(ActionEvent evt)
 	{
@@ -535,14 +569,17 @@ public class AppToolBar extends JToolBar implements ActionListener
 		}
 		else if (evt.getActionCommand().equals("CREATING"))
 		{
+			// Créer un évènement pour déclencher le mode création
 			this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_E, 'e'));
 		}
 		else if (evt.getActionCommand().equals("MOVING"))
 		{
+			// Créer un évènement pour déclencher le mode déplacement
 			this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_M, 'm'));
 		}
 		else if (evt.getActionCommand().equals("SELECTING"))
 		{
+			// Créer un évènement pour déclencher le mode sélection
 			this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_L, 'l'));
 		}
 		
@@ -550,66 +587,91 @@ public class AppToolBar extends JToolBar implements ActionListener
 		{
 			if (evt.getActionCommand().equals("CIRCLE"))
 			{
+				// Créer un évènement pour changer le type de forme à «Cercle»
 				this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_C, 'c'));
 			}
 			else if (evt.getActionCommand().equals("ELLIPSE"))
 			{
+				// Créer un évènement pour changer le type de forme à «Ellipse»
 				this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_E, 'e'));
 			}
 			else if (evt.getActionCommand().equals("RECTANGLE"))
 			{
+				// Créer un évènement pour changer le type de forme à «Rectangle»
 				this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_R, 'r'));
 			}
 			else if (evt.getActionCommand().equals("SQUARE"))
 			{
+				// Créer un évènement pour changer le type de forme à «Carré»
 				this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_S, 's'));
 			}
 			else if (evt.getActionCommand().equals("POLYGON"))
 			{
+				// Créer un évènement pour changer le type de forme à «Polygon»
 				this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_P, 'p'));
 			}
 			else if (evt.getActionCommand().equals("LINE"))
 			{
+				// Créer un évènement pour changer le type de forme à «Line brisée»
 				this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_B, 'b'));
 			}
 			else if (evt.getActionCommand().equals("PAINT"))
 			{
+				// Créer un évènement pour changer le type de forme à «Pinceau»
 				this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_F, 'f'));
+			}
+			else if (evt.getActionCommand().equals("FILL_STROKE_DIALOG"))
+			{
+				// Créer un évènement pour afficher la boîte de dialogue «Remplissage et trait»
+				this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_1, '1'));
 			}
 		}
 		else if (this.selectingTool.isSelected())
 		{
 			if (evt.getActionCommand().equals("GROUP"))
 			{
+				// Créer un évènement pour grouper les formes sélectionnées
 				this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_G, 'g'));
 			}
 			else if (evt.getActionCommand().equals("UNGROUP"))
 			{
+				// Créer un évènement pour dégrouper les formes sélectionnées
 				this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_U, 'u'));
 			}
 			else if (evt.getActionCommand().equals("ALIGN_UP"))
 			{
+				// Créer un évènement pour aligner les formes sélectionnées vers le haut
 				this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_0, '0'));
 			}
 			else if (evt.getActionCommand().equals("ALIGN_DOWN"))
 			{
+				// Créer un évènement pour aligner les formes sélectionnées vers le bas
 				this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_9, '9'));
 			}
 			else if (evt.getActionCommand().equals("ALIGN_LEFT"))
 			{
+				// Créer un évènement pour aligner les formes sélectionnées vers la gauche
 				this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_8, '8'));
 			}
 			else if (evt.getActionCommand().equals("ALIGN_RIGHT"))
 			{
+				// Créer un évènement pour aligner les formes sélectionnées vers la droite
 				this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_7, '7'));
 			}
 			else if (evt.getActionCommand().equals("ALIGN_HOR"))
 			{
+				// Créer un évènement pour aligner les formes sélectionnées horizontalement
 				this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_6, '6'));
 			}
 			else if (evt.getActionCommand().equals("ALIGN_VER"))
 			{
+				// Créer un évènement pour aligner les formes sélectionnées verticalement
 				this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_5, '5'));
+			}
+			else if (evt.getActionCommand().equals("FILL_STROKE_DIALOG"))
+			{
+				// Créer un évènement pour afficher la boîte de dialogue «Remplissage et trait»
+				this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_2, '2'));
 			}
 		}
 	}

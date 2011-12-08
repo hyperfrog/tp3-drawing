@@ -22,21 +22,24 @@ import javax.swing.JPanel;
 /**
  * La classe AppAboutDialog sert de boîte de dialogue pour la fenêtre «À propos».
  *
+ * @author Micaël Lemelin
  * @author Christian Lesage
  * @author Alexandre Tremblay
- *
+ * @author Pascal Turcot
  */
 public class AppAboutDialog extends JDialog implements ActionListener, WindowListener
 {
 	// Nom de l'application
-	private static final String APP_NAME = "Travail pratique 2 : Démineur";
+	private static final String APP_NAME = "Travail pratique 3 : Outils de dessin vectoriel";
 	
 	// Version de l'application
 	private static final String APP_VERSION = "v 1.0";
 	
 	// Auteurs de l'application
-	private static final String APP_AUTHOR_ONE = "Christian Lesage";
-	private static final String APP_AUTHOR_TWO = "Alexandre Tremblay";
+	private static final String APP_AUTHOR_ONE = "Micaël Lemelin";
+	private static final String APP_AUTHOR_TWO = "Christian Lesage";
+	private static final String APP_AUTHOR_THREE = "Alexandre Tremblay";
+	private static final String APP_AUTHOR_FOUR = "Pascal Turcot";
 	
 	// Images utilisées pour la boîte de dialogue À propos
 	private static BufferedImage aboutLogo = null;
@@ -46,7 +49,7 @@ public class AppAboutDialog extends JDialog implements ActionListener, WindowLis
 	{
 		try
 		{
-			AppAboutDialog.aboutLogo = ImageIO.read(AppAboutDialog.class.getResource("../../res/demineur_logo.png"));
+			AppAboutDialog.aboutLogo = ImageIO.read(AppAboutDialog.class.getResource("../../res/logo.png"));
 		}
 		catch (IOException e)
 		{
@@ -91,7 +94,7 @@ public class AppAboutDialog extends JDialog implements ActionListener, WindowLis
 	{
 		super(parent);
 		
-		this.setTitle("À propos du Démineur");
+		this.setTitle("À propos de l'Outils de dessin vectoriel");
 		this.setResizable(false);
 		this.setModal(true);
 		
@@ -132,7 +135,7 @@ public class AppAboutDialog extends JDialog implements ActionListener, WindowLis
 		this.version.setText(AppAboutDialog.APP_VERSION);
 		this.version.setFont(new Font(null, Font.ITALIC, 10));
 		
-		this.authors.setText("Auteurs : " + AppAboutDialog.APP_AUTHOR_ONE + " et " + AppAboutDialog.APP_AUTHOR_TWO);
+		this.authors.setText(String.format("Auteurs : %s, %s, %s et %s", AppAboutDialog.APP_AUTHOR_ONE, AppAboutDialog.APP_AUTHOR_TWO, AppAboutDialog.APP_AUTHOR_THREE, AppAboutDialog.APP_AUTHOR_FOUR));
 		this.authors.setFont(new Font(null, Font.PLAIN, 14));
 		
 		this.infoPanel.add(this.title);
