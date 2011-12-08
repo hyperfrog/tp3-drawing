@@ -26,6 +26,7 @@ public class Polygon extends Shape
 	{
 		super(posX, posY, 0, 0);
 		this.points.add(new Point2D.Float(posX, posY));
+		this.computeDimensions();
 	}
 
 	// Recalcule les dimensions du polygone après un déplacement, un agrandissement
@@ -51,16 +52,16 @@ public class Polygon extends Shape
 			}
 
 			//calcul de la largeur et la hauteur
-			this.width = (float) (maxX - minX);
-			this.height = (float) (maxY - minY);
+			this.width = Math.max(Float.MIN_VALUE, (float) (maxX - minX));
+			this.height = Math.max(Float.MIN_VALUE, (float) (maxY - minY));
 			//on définit comme point de depart le point en haut à gauche (comme dans un rectangle)
 			this.posX = (float) minX;
 			this.posY = (float) minY;
 		}
 		else
 		{
-			this.width = 0;
-			this.height = 0;
+			this.width = Float.MIN_VALUE;
+			this.height = Float.MIN_VALUE;
 		}
 		this.createHandles();
 	}

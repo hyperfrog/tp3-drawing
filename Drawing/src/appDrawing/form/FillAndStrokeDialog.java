@@ -264,10 +264,10 @@ public class FillAndStrokeDialog extends JDialog implements ActionListener, Wind
 		{
 			currentDragPoint = e.getPoint();
 
-			Point2D p1 = Shape.getVirtualPoint(startDragPoint.x, startDragPoint.y, 
+			Point2D p1 = Shape.makeVirtualPoint(startDragPoint.x, startDragPoint.y, 
 					scalingFactor, virtualDeltaX, virtualDeltaY);
 
-			Point2D p2 = Shape.getVirtualPoint(e.getX(), e.getY(), 
+			Point2D p2 = Shape.makeVirtualPoint(e.getX(), e.getY(), 
 					scalingFactor, virtualDeltaX, virtualDeltaY);
 			
 			float xGradP1 = ((float) p1.getX() - shape.getPosX()) / shape.getWidth();
