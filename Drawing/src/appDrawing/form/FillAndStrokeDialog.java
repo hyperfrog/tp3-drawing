@@ -83,6 +83,7 @@ public class FillAndStrokeDialog extends JDialog implements ActionListener, Wind
 	 * @param parent JFrame parent de la boîte de dialogue
 	 * @param shape forme dont les propriétés de remplissage et de trait
 	 * sont à modifier
+	 * @param title titre de la boîte de dialogue
 	 */
 	public FillAndStrokeDialog(AppFrame parent, Shape shape, String title)
 	{
@@ -179,6 +180,11 @@ public class FillAndStrokeDialog extends JDialog implements ActionListener, Wind
 		return this.result;
 	}
 	
+	/**
+	 * Retourne la forme modifiée ou non selon l'action ayant mené à la fermeture du dialogue.
+	 * 
+	 * @return
+	 */
 	public Shape getRefShape()
 	{
 		return this.shape;

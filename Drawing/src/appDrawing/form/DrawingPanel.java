@@ -21,6 +21,15 @@ import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.ListSelection;
+import ca.odell.glazedlists.event.ListEvent;
+import ca.odell.glazedlists.event.ListEventListener;
 
 import appDrawing.model.Circle;
 import appDrawing.model.Ellipse;
@@ -31,6 +40,7 @@ import appDrawing.model.Polygon;
 import appDrawing.model.Rectangle;
 import appDrawing.model.Shape;
 import appDrawing.model.Square;
+import appDrawing.util.DeepCopy;
 
 /**
  * Classe représentant un panneau de dessin qui contiendra les formes et écoutera les actions de la
@@ -70,7 +80,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	private float scalingFactor = 1;
 	
 	// Liste des formes composant le dessin
-	private ArrayList<Shape> shapeList;
+	private EventList<Shape> shapeList;
 	
     // Trait utilisé pour dessiner une boîte autour d'une forme en mode création
 	// ainsi que la boîte de sélection
@@ -109,6 +119,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	
 	// Forme de référence; ses propriétés servent à la création d'une nouvelle forme 
 	private Shape refShape = new Rectangle(0, 0, 250, 175);
+
 	
 	/**
 	 * Construit un panneau dans lequel il est possible de dessiner.
@@ -234,7 +245,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	 */
 	public void erase()
 	{
-		this.shapeList = new ArrayList<Shape>();
+		this.shapeList = new BasicEventList<Shape>();
 		this.alreadySelectedShapes = new ArrayList<Shape>();
 		this.polyPoints = null;
 		this.resizingHandle = null;
@@ -374,7 +385,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 			//on ajoute le polygone à la liste, on efface la liste de points temporaires et on redessine
 			this.shapeList.add(poly);
 			poly.setDefaultName();
-			parent.getShapeListBar().testDynamicList(this.shapeList);
+//			parent.getShapeListBar().testDynamicList(this.shapeList);
 			this.polyPoints = null;
 			this.repaint();
 		}
@@ -468,7 +479,6 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 						// Ajoute la forme dans la liste de formes du dessin
 						this.shapeList.add(shape);
 						shape.setDefaultName();
-						parent.getShapeListBar().testDynamicList(this.shapeList);
 					}
 					
 					this.repaint();
@@ -484,7 +494,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 					if (shapeToSelect != null) // Forme trouvée?
 					{
 						// Inverse la sélection de cette forme 
-						shapeToSelect.setSelected(!shapeToSelect.isSelected());
+						this.selectShape(shapeToSelect, !shapeToSelect.isSelected());
 					}
 					
 					// Si Ctrl pas enfoncé, désélectionne toutes les formes sauf la forme trouvée 
@@ -494,7 +504,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 						{
 							if (shape != shapeToSelect)
 							{
-								shape.setSelected(false);
+								this.selectShape(shape, false);
 							}
 						}
 					}
@@ -560,13 +570,13 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 					// Forme contenue dans le rectangle de sélection?
 					if (dragVirtualRect.contains(shapeVirtualRect))
 					{
-						shape.setSelected(true);
+						this.selectShape(shape, true);
 					}
 					// Sinon, désélectionne la forme, à moins qu'elle fasse partie 
 					// de la sélection précédente 
 					else if (!this.alreadySelectedShapes.contains(shape))
 					{
-						shape.setSelected(false);
+						this.selectShape(shape, false);
 					}
 				}
 			}
@@ -649,8 +659,6 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	@Override
 	public void keyPressed(KeyEvent e)
 	{	
-		FillAndStrokeDialog fsDialog;
-		
 		switch (e.getKeyCode())
 		{
 			case KeyEvent.VK_1:
@@ -775,7 +783,31 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	public void keyTyped(KeyEvent arg0)
 	{
 	}
+	
+	private void selectShape(Shape shape, boolean selected)
+	{
+		if (shape.isSelected() != selected)
+		{
+			shape.setSelected(selected);
+			this.synchronizeSelection();
+		}
+	}
 
+	private void synchronizeSelection()
+	{
+		ArrayList<Shape> selection = this.getCurrentSelection();
+		
+		int[] indices = new int[selection.size()];
+		
+		for (int i = 0; i < selection.size(); i++)
+		{
+			int index = this.shapeList.indexOf(selection.get(i));
+			indices[i] = index;
+		}
+
+		this.parent.getAppShapeListBar().getVisualShapeList().setSelectedIndices(indices);
+	}
+	
 	/*
 	 * Modifie les propriétés de remplissage et du trait de la forme de référence.
 	 */
@@ -865,16 +897,18 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		{
 			Group group = new Group();
 
+			// Désélectionne les formes avant
 			for (Shape shape : selection)
 			{
-				shape.setSelected(false);
+				this.selectShape(shape, false);
 			}
 
 			group.setShapeList(selection);
 			this.shapeList.removeAll(selection);
 
 			this.shapeList.add(group);
-			group.setSelected(true);
+			this.selectShape(group, true);
+
 			this.repaint();
 		}
 	}
@@ -958,9 +992,9 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 			// Sélectionne les formes
 			for (Shape shape : groupShapes)
 			{
-				shape.setSelected(true);
+				this.selectShape(shape, true);
 			}
-			
+
 			this.repaint();
 		}
 	}
@@ -1126,7 +1160,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	 * 
 	 * @return la liste de formes du dessin
 	 */
-	public ArrayList<Shape> getShapeList()
+	public EventList<Shape> getShapeList()
 	{
 		return shapeList;
 	}
@@ -1134,9 +1168,9 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	/**
 	 * Affecte une nouvelle liste de formes au dessin.
 	 * 
-	 * @return nouvelle liste de formes du dessin
+	 * @param shapeList nouvelle liste de formes du dessin
 	 */
-	public void setShapeList(ArrayList<Shape> shapeList)
+	public void setShapeList(EventList<Shape> shapeList)
 	{
 		if (shapeList != null)
 		{
