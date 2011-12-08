@@ -32,9 +32,10 @@ public abstract class Shape implements Serializable
 	protected static final float DEFAULT_STROKE_WIDTH = 2.0f;
 	protected static final Color DEFAULT_STROKE_COLOR = Color.BLACK;
 	protected static final Color DEFAULT_GRAD_COLOR1 = Color.RED;
-	protected static final Color DEFAULT_GRAD_COLOR2 = new Color(255, 255, 0, 128); //Color.YELLOW;
+	protected static final Color DEFAULT_GRAD_COLOR2 = new Color(255, 255, 0, 128);
 	protected static final Point2D.Float DEFAULT_GRAD_POINT1 = new Point2D.Float(0, 0);
 	protected static final Point2D.Float DEFAULT_GRAD_POINT2 = new Point2D.Float(1, 1);
+
 	protected static int SHAPE_COUNT = 0;
 	
 	protected float posX = 0;

@@ -120,10 +120,10 @@ public class FillAndStrokeDialog extends JDialog implements ActionListener, Wind
         this.readShapeValues();
         
 		// Calcule un scalingFactor tel que la forme prend 80% de l'espace disponible
-		float xDiff = shapePanel.getWidth() - shape.getWidth();
-		float yDiff = shapePanel.getHeight() - shape.getHeight();
+		float panelAspectRatio = (float) shapePanel.getWidth() / shapePanel.getHeight();
+		float shapeAspectRatio = shape.getWidth() / shape.getHeight();
 		
-		scalingFactor = (xDiff < yDiff) ? 
+		scalingFactor = (panelAspectRatio < shapeAspectRatio) ? 
 				shapePanel.getWidth() / shape.getWidth()
 				: shapePanel.getHeight() / shape.getHeight();
 		
