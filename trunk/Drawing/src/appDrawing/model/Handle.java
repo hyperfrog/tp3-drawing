@@ -18,6 +18,21 @@ public class Handle extends Shape
 	private static final int HANDLE_SIZE = 10; // En pixels
 	protected static final Color SELECTION_COLOR = Color.BLUE;
 
+	/**
+	 * Enum des positions des poignées. Chaque Type contient des données xModifier et yModifier.
+	 * Ces données représentent les valeurs par lesquelles il faudra multiplier la largeur et la hauteur
+	 * de la forme.
+	 * 
+	 *<p>
+	 * par exemple:
+	 * this.setPosition(shape.getPosX() + (type.xModifier * shape.getWidth()), 
+						shape.getPosY() + (type.yModifier * shape.getHeight()));
+						</p>
+	 * @author Micaël Lemelin
+	 * @author Christian Lesage
+	 * @author Alexandre Tremblay
+	 * @author Pascal Turcot
+	 */
 	public static enum HandleType
 	{
 		TOP_LEFT		(0,    0   ),//point d'origine gauche

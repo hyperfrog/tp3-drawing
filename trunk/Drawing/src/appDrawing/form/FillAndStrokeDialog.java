@@ -179,7 +179,7 @@ public class FillAndStrokeDialog extends JDialog implements ActionListener, Wind
 		return this.result;
 	}
 	
-	public Shape getShape()
+	public Shape getRefShape()
 	{
 		return this.shape;
 	}
