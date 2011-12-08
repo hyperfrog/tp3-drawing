@@ -12,8 +12,10 @@ import javax.swing.KeyStroke;
 /**
  * La classe AppMenu implémente la barre de menus de l'application.
  * 
- * @author 
- * 
+ * @author Micaël Lemelin
+ * @author Christian Lesage
+ * @author Alexandre Tremblay
+ * @author Pascal Turcot
  */
 public class AppMenu extends JMenuBar implements ActionListener
 {

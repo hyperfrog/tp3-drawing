@@ -16,8 +16,10 @@ import javax.swing.UIManager;
  * La classe AppFrame permet de créer une fenêtre servant de contenant
  * au panneau principal.
  * 
- * @author 
- * 
+ * @author Micaël Lemelin
+ * @author Christian Lesage
+ * @author Alexandre Tremblay
+ * @author Pascal Turcot
  */
 public class AppFrame extends JFrame implements ComponentListener, WindowListener
 {
