@@ -214,6 +214,15 @@ public abstract class Shape implements Serializable
 		Shape.SHAPE_COUNT++;
 	}
 	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString()
+	{
+		return (this.name != null) ? this.name : this.getClass().getSimpleName(); 
+	}
+	
 	public void setNewName(String newName)
 	{
 		this.name = newName;

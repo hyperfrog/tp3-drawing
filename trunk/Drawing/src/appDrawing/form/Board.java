@@ -19,6 +19,8 @@ import javax.swing.JPanel;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import ca.odell.glazedlists.EventList;
+
 import appDrawing.model.Shape;
 
 import java.io.File;
@@ -74,7 +76,7 @@ public class Board extends JPanel implements ActionListener //, MouseListener
 		this.appToolBar = new AppToolBar(this);
 		this.drawingPanel = new DrawingPanel(this);
 		this.drawingPanel.setBackground(Color.WHITE);
-		this.appShapeListBar = new AppShapeListBar(this);
+		this.appShapeListBar = new AppShapeListBar(this, this.drawingPanel.getShapeList());
 		
 		this.setLayout(new BorderLayout());
 		
@@ -82,7 +84,7 @@ public class Board extends JPanel implements ActionListener //, MouseListener
 		this.add(this.appToolBar, BorderLayout.NORTH);
 		this.add(this.appShapeListBar, BorderLayout.EAST);
 
-		this.appShapeListBar.setPreferredSize(new Dimension(150, this.drawingPanel.getHeight()));
+//		this.appShapeListBar.setPreferredSize(new Dimension(150, this.drawingPanel.getHeight()));
 		
 		// Passe-passe pour envoyer les évènements du clavier au DrawingPanel 
 		// peu importe la composante qui a le focus (p. ex. barre d'outils).
@@ -178,7 +180,7 @@ public class Board extends JPanel implements ActionListener //, MouseListener
     			this.filePath = filePath;
     		}
 
-	    	ArrayList<Shape> shapeList = this.drawingPanel.getShapeList();
+	    	EventList<Shape> shapeList = this.drawingPanel.getShapeList();
 	    	FileOutputStream fos;
 	    	ObjectOutputStream oos = null;
 
@@ -230,7 +232,7 @@ public class Board extends JPanel implements ActionListener //, MouseListener
 			    ois = new ObjectInputStream(fis);
 			    
 			    @SuppressWarnings("unchecked")
-				ArrayList<Shape> shapeList = (ArrayList<Shape>) ois.readObject();
+				EventList<Shape> shapeList = (EventList<Shape>) ois.readObject();
 			    
 			    ois.close();
 			    
@@ -296,6 +298,14 @@ public class Board extends JPanel implements ActionListener //, MouseListener
 	}
 
 	/**
+	 * @return the appShapeListBar
+	 */
+	public AppShapeListBar getAppShapeListBar()
+	{
+		return appShapeListBar;
+	}
+
+	/**
 	 * Reçoit et traite les événements relatifs à ...
 	 * Cette méthode doit être publique mais ne devrait pas être appelée directement.
 	 * 
@@ -308,6 +318,7 @@ public class Board extends JPanel implements ActionListener //, MouseListener
 		if (evt.getActionCommand().equals("NEW_DRAWING"))
 		{
 			this.drawingPanel.erase();
+			this.resetShapeListBar();
 			this.filePath = null;
 		}
 		
@@ -324,8 +335,18 @@ public class Board extends JPanel implements ActionListener //, MouseListener
 		if (evt.getActionCommand().equals("LOAD"))
 		{
 			this.loadDrawing();
+			this.resetShapeListBar();
 		}
 	}
+	
+	private void resetShapeListBar()
+	{
+		this.remove(this.appShapeListBar);
+		this.appShapeListBar = new AppShapeListBar(this, this.drawingPanel.getShapeList());
+		this.add(this.appShapeListBar, BorderLayout.EAST);
+		this.validate();
+	}
+	
 	
 //	/**
 //	 * Reçoit et traite les événements relatifs aux clics de la souris.
