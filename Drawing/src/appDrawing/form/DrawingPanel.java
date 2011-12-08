@@ -787,7 +787,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		
 		if (fsDialog.getResult() == JOptionPane.OK_OPTION)
 		{
-			this.refShape = fsDialog.getShape();
+			this.refShape = fsDialog.getRefShape();
 		}
 	}
 	
@@ -810,7 +810,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 			if (fsDialog.getResult() == JOptionPane.OK_OPTION)
 			{
 				int i = this.shapeList.indexOf(shape);
-				this.shapeList.set(i, fsDialog.getShape());
+				this.shapeList.set(i, fsDialog.getRefShape());
 				this.repaint();
 			}
 		}

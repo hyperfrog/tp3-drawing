@@ -5,10 +5,17 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
 /**
+ * Classe qui représente un polygone. En fait, la classe contient une liste de Point2D.
+ * Ainsi, lorsque la forme se dessine, elle crée un nouveau java.awt.Polygon et le dessine
+ * dans le graphics.
+ * 
  * @author Micaël Lemelin
  * @author Christian Lesage
  * @author Alexandre Tremblay
  * @author Pascal Turcot
+ * 
+ * @see	Point2D
+ * @see	java.awt.Polygon
  *
  */
 public class Polygon extends Shape
