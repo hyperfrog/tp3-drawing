@@ -19,7 +19,6 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
-import javax.swing.JColorChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
@@ -169,7 +168,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 					if (this.polyPoints != null)
 					{ 
 						//on ajoute temporairement le point correspondant à la position de la souris
-						this.polyPoints.add(Shape.getVirtualPoint(this.currentMousePos.x, this.currentMousePos.y, 
+						this.polyPoints.add(Shape.makeVirtualPoint(this.currentMousePos.x, this.currentMousePos.y, 
 										this.scalingFactor, this.virtualDeltaX, this.virtualDeltaY));
 						
 						//on crée un polygone temporaire
@@ -247,7 +246,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	private Shape createShape(int realX, int realY, int realWidth, int realHeight)
 	{
 		// Obtient les coordonnées et dimensions virtuelles
-		Rectangle2D r = Shape.getVirtualRect(realX, realY, realWidth, realHeight, 
+		Rectangle2D r = Shape.makeVirtualRect(realX, realY, realWidth, realHeight, 
 				this.scalingFactor, this.virtualDeltaX, this.virtualDeltaY);
 
 		float virtualX = (float) r.getX();
@@ -448,7 +447,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 						this.polyPoints = new ArrayList<Point2D>();
 					}
 					
-					this.polyPoints.add(Shape.getVirtualPoint(e.getX(), e.getY(), 
+					this.polyPoints.add(Shape.makeVirtualPoint(e.getX(), e.getY(), 
 							this.scalingFactor, this.virtualDeltaX, this.virtualDeltaY));
 					
 					this.repaint();
@@ -536,7 +535,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 						this.polyPoints = new ArrayList<Point2D>();
 					}
 
-					this.polyPoints.add(Shape.getVirtualPoint(this.currentDragPoint.x, this.currentDragPoint.y,
+					this.polyPoints.add(Shape.makeVirtualPoint(this.currentDragPoint.x, this.currentDragPoint.y,
 							this.scalingFactor, this.virtualDeltaX, this.virtualDeltaY));
 				}
 			}
@@ -553,10 +552,13 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 				// Vérifie chacune des formes
 				for (Shape shape : this.shapeList)
 				{
-					java.awt.Rectangle shapeRect = shape.getRealRect(this.scalingFactor, this.virtualDeltaX, this.virtualDeltaY);
+					Rectangle2D shapeVirtualRect = shape.getVirtualRect();
+					
+					java.awt.Rectangle dragRect = this.makeRect(this.startDragPoint, this.currentDragPoint);
+					Rectangle2D dragVirtualRect = Shape.makeVirtualRect(dragRect.x, dragRect.y, dragRect.width, dragRect.height, this.scalingFactor, this.virtualDeltaX, this.virtualDeltaY);
 					
 					// Forme contenue dans le rectangle de sélection?
-					if (this.makeRect(this.startDragPoint, this.currentDragPoint).contains(shapeRect))
+					if (dragVirtualRect.contains(shapeVirtualRect))
 					{
 						shape.setSelected(true);
 					}
@@ -886,12 +888,12 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		if (selection.size() > 1)
 		{
 			Shape s = selection.get(0);
-			Rectangle2D r = new Rectangle2D.Float(s.getPosX(), s.getPosY(), s.getWidth(), s.getHeight());
+			Rectangle2D r = s.getVirtualRect();
 			
 			for (int i = 1; i < selection.size(); i++)
 			{
 				s = selection.get(i);
-				r = r.createUnion(new Rectangle2D.Float(s.getPosX(), s.getPosY(), s.getWidth(), s.getHeight()));
+				r = r.createUnion(s.getVirtualRect());
 			}
 			
 			for (Shape sh : selection)
@@ -1032,10 +1034,10 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 			float refY = oppositeHandle.getPosY();
 			
 			// Convertit les points de départ et d'arrivée du drag en coordonnées virtuelles 
-			Point2D vStartDragPoint = Shape.getVirtualPoint(this.startDragPoint.x, this.startDragPoint.y, 
+			Point2D vStartDragPoint = Shape.makeVirtualPoint(this.startDragPoint.x, this.startDragPoint.y, 
 					this.scalingFactor, this.virtualDeltaX, this.virtualDeltaY);
 			
-			Point2D vCurrentDragPoint = Shape.getVirtualPoint(this.currentDragPoint.x, this.currentDragPoint.y, 
+			Point2D vCurrentDragPoint = Shape.makeVirtualPoint(this.currentDragPoint.x, this.currentDragPoint.y, 
 					this.scalingFactor, this.virtualDeltaX, this.virtualDeltaY);
 			
 			// Calcule les facteurs d'agrandissement (largeur et hauteur)

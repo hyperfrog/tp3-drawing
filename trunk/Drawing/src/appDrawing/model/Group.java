@@ -73,12 +73,12 @@ public class Group extends Shape
 		if (this.shapeList != null && this.shapeList.size() > 0)
 		{
 			Shape s = this.shapeList.get(0);
-			Rectangle2D r = new Rectangle2D.Float(s.posX, s.posY, s.width, s.height);
+			Rectangle2D r = s.getVirtualRect();
 
 			for (int i = 1; i < shapeList.size(); i++)
 			{
 				s = this.shapeList.get(i);
-				r = r.createUnion(new Rectangle2D.Float(s.posX, s.posY, s.width, s.height));
+				r = r.createUnion(s.getVirtualRect());
 			}
 			
 			this.posX = (float) r.getX();
@@ -88,8 +88,8 @@ public class Group extends Shape
 		}
 		else
 		{
-			this.width = 0;
-			this.height = 0;
+			this.width = Float.MIN_VALUE;
+			this.height = Float.MIN_VALUE;
 		}
 
 		this.createHandles();

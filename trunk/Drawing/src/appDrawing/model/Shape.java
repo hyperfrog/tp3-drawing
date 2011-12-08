@@ -36,7 +36,7 @@ public abstract class Shape implements Serializable
 	protected static final Point2D.Float DEFAULT_GRAD_POINT1 = new Point2D.Float(0, 0);
 	protected static final Point2D.Float DEFAULT_GRAD_POINT2 = new Point2D.Float(1, 1);
 	protected static int SHAPE_COUNT = 0;
-
+	
 	protected float posX = 0;
 	protected float posY = 0;
 	protected float width = 0;
@@ -67,16 +67,16 @@ public abstract class Shape implements Serializable
 	 * 
 	 * @param posX position du rectangle englobant sur l'axe des x
 	 * @param posY position du rectangle englobant sur l'axe des y
-	 * @param width largeur du rectangle englobant; changée pour 0 si négative 
-	 * @param height hauteur du rectangle englobant; changée pour 0 si négative
+	 * @param width largeur du rectangle englobant; changée pour Float.MIN_VALUE si nulle ou négative 
+	 * @param height hauteur du rectangle englobant; changée pour Float.MIN_VALUE si nulle ou négative
 	 */
 	public Shape(float posX, float posY, float width, float height)
 	{
 		super();
 		this.posX = posX;
 		this.posY = posY;
-		this.width = Math.max(0, width);
-		this.height = Math.max(0, height);
+		this.width = Math.max(Float.MIN_VALUE, width);
+		this.height = Math.max(Float.MIN_VALUE, height);
 		this.createHandles();
 	}
 	
@@ -108,7 +108,7 @@ public abstract class Shape implements Serializable
 	 * @param virtualDeltaY virtualDeltaY du dessin
 	 * @return point converti en coordonnées virtuelles
 	 */
-	public static Point2D getVirtualPoint(int realX, int realY, float scalingFactor, float virtualDeltaX, float virtualDeltaY)
+	public static Point2D makeVirtualPoint(int realX, int realY, float scalingFactor, float virtualDeltaX, float virtualDeltaY)
 	{
 		// Calcule les coordonnées virtuelles
 		float virtualX = (realX / scalingFactor) - virtualDeltaX;
@@ -129,10 +129,10 @@ public abstract class Shape implements Serializable
 	 * @param virtualDeltaY virtualDeltaY du dessin
 	 * @return rectangle converti en coordonnées virtuelles
 	 */
-	public static Rectangle2D getVirtualRect(int realX, int realY, int realWidth, int realHeight, 
+	public static Rectangle2D makeVirtualRect(int realX, int realY, int realWidth, int realHeight, 
 			float scalingFactor, float virtualDeltaX, float virtualDeltaY)
 	{
-		Point2D p = Shape.getVirtualPoint(realX, realY, scalingFactor, virtualDeltaX, virtualDeltaY);
+		Point2D p = Shape.makeVirtualPoint(realX, realY, scalingFactor, virtualDeltaX, virtualDeltaY);
 		
 		float virtualWidth = realWidth / scalingFactor;
 		float virtualHeight = realHeight / scalingFactor;
@@ -163,6 +163,14 @@ public abstract class Shape implements Serializable
 		}
 		
 		return result;
+	}
+	
+	/**
+	 * @return
+	 */
+	public Rectangle2D getVirtualRect()
+	{
+		return new Rectangle2D.Float(this.posX, this.posY, this.width, this.height);
 	}
 	
 	/**
