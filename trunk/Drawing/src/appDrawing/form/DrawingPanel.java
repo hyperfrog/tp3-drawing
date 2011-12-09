@@ -59,6 +59,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	public static final int KEY_POLYLINE = KeyEvent.VK_B;
 	public static final int KEY_FREELINE = KeyEvent.VK_F;
 	public static final int KEY_SELECTING = KeyEvent.VK_L;
+	public static final int KEY_SELECT_ALL = KeyEvent.VK_A;
 	public static final int KEY_MOVING = KeyEvent.VK_M;
 	public static final int KEY_ZOOM_IN = KeyEvent.VK_ADD;
 	public static final int KEY_ZOOM_OUT = KeyEvent.VK_SUBTRACT;
@@ -416,6 +417,20 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 			this.polyPoints = null;
 			this.repaint();
 		}
+	}
+	
+	// Selectionne toutes les formes
+	private void selectAll()
+	{
+		for (Shape shape : this.shapeList)
+		{
+			shape.setSelected(true);
+		}
+		
+		this.parent.getToolBar().toggleMode(Mode.SELECTING);
+		this.setMode(Mode.SELECTING);
+		
+		this.repaint();
 	}
 	
 	@Override
@@ -784,7 +799,14 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 				
 			case DrawingPanel.KEY_ALIGN_VER:
 				this.align(Alignment.VERTICAL);
-				break;			
+				break;
+				
+			case DrawingPanel.KEY_SELECT_ALL:
+				if ((e.getModifiers() & ActionEvent.CTRL_MASK) != 0)
+				{
+					this.selectAll();
+				}
+				break;
 		}
 	}
 
