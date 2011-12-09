@@ -47,7 +47,6 @@ import appDrawing.model.Square;
 public class DrawingPanel extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener
 {
 	// Définition des touches utilisées comme raccourcis
-	public static final int KEY_CURRENT_FILL_AND_STROKE = KeyEvent.VK_1;
 	public static final int KEY_EDIT_FILL_AND_STROKE = KeyEvent.VK_2;
 	public static final int KEY_GROUP = KeyEvent.VK_G;
 	public static final int KEY_UNGROUP = KeyEvent.VK_U;
@@ -703,12 +702,8 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	{	
 		switch (e.getKeyCode())
 		{
-			case DrawingPanel.KEY_CURRENT_FILL_AND_STROKE:
-				this.editRefShapeFillAndStroke();
-				break;
-				
 			case DrawingPanel.KEY_EDIT_FILL_AND_STROKE:
-				this.editSelectedShapeFillAndStroke();
+				this.editFillAndStroke();
 				break;
 
 			case DrawingPanel.KEY_GROUP:
@@ -853,33 +848,22 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	}
 	
 	/*
-	 * Modifie les propriétés de remplissage et du trait de la forme de référence.
+	 * Modifie les propriétés de remplissage et du trait de la forme sélectionnée 
+	 * s'il y en a une et seulement une. 
+	 * 
+	 * S'il y en a plusieurs ou s'il n'y en a aucune, modifie les propriétés 
+	 * de remplissage et du trait de la forme de référence.
+	 *  
 	 */
-	private void editRefShapeFillAndStroke()
-	{
-		FillAndStrokeDialog fsDialog = new FillAndStrokeDialog(this.parent.getFrame(), this.refShape, "Remplissage et trait par défaut");
-		fsDialog.setLocationRelativeTo(this.parent);
-		fsDialog.setVisible(true);
-		
-		if (fsDialog.getResult() == JOptionPane.OK_OPTION)
-		{
-			this.refShape = fsDialog.getRefShape();
-		}
-	}
-	
-	/*
-	 * Modifie les propriétés de remplissage et du trait de la forme sélectionnée.
-	 * Ne fait rien si la sélection comporte moins d'une forme ou plus d'une forme 
-	 * ou si la forme sélectionnée est un groupe
-	 */
-	private void editSelectedShapeFillAndStroke()
+	private void editFillAndStroke()
 	{
 		ArrayList<Shape> selection = this.getCurrentSelection();
+		FillAndStrokeDialog fsDialog;
 		
 		if (selection.size() == 1 && !(selection.get(0) instanceof Group))
 		{
 			Shape shape = selection.get(0);
-			FillAndStrokeDialog fsDialog = new FillAndStrokeDialog(this.parent.getFrame(), shape, "Remplissage et trait de la forme sélectionnée");
+			fsDialog = new FillAndStrokeDialog(this.parent.getFrame(), shape, "Remplissage et trait de la forme sélectionnée");
 			fsDialog.setLocationRelativeTo(this.parent);
 			fsDialog.setVisible(true);
 
@@ -888,6 +872,17 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 				int i = this.shapeList.indexOf(shape);
 				this.shapeList.set(i, fsDialog.getRefShape());
 				this.repaint();
+			}
+		}
+		else
+		{
+			fsDialog = new FillAndStrokeDialog(this.parent.getFrame(), this.refShape, "Remplissage et trait par défaut");
+			fsDialog.setLocationRelativeTo(this.parent);
+			fsDialog.setVisible(true);
+			
+			if (fsDialog.getResult() == JOptionPane.OK_OPTION)
+			{
+				this.refShape = fsDialog.getRefShape();
 			}
 		}
 	}
