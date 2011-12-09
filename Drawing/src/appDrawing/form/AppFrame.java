@@ -3,8 +3,6 @@ package appDrawing.form;
 import java.awt.Dimension;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
@@ -23,8 +21,8 @@ import javax.swing.UIManager;
  */
 public class AppFrame extends JFrame implements ComponentListener, WindowListener
 {
-	// Sert à l'implémentation du singleton
-	private static AppFrame instance = null;
+	// Titre de la fenêtre
+	public static final String APP_TITLE = "Draw me a shape ®";
 	
 	// Dimension initiale de la fenêtre
 	private static final Dimension INIT_SIZE = new Dimension(800, 600);
@@ -35,13 +33,13 @@ public class AppFrame extends JFrame implements ComponentListener, WindowListene
 	// Hauteur minimale de la fenêtre
 	private static final int MIN_HEIGHT = 480;
 	
-	// Titre de la fenêtre
-	public static final String APP_TITLE = "Dessine-toi un mouton ®";
-	
 	// Messages pour la boîte de dialogue de confirmation de sortie
 	private static final String QUIT_MESSAGE = "Voulez-vous quitter l'application?";
 	private static final String QUIT_TITLE = "Quitter";
 
+	// Sert à l'implémentation du singleton
+	private static AppFrame instance = null;
+	
 	// Objet du panneau principal
 	private Board board;
 	

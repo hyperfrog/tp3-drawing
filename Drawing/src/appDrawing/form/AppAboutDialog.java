@@ -139,7 +139,7 @@ public class AppAboutDialog extends JDialog implements ActionListener, WindowLis
 		this.version.setText(AppAboutDialog.APP_VERSION);
 		this.version.setFont(new Font(null, Font.ITALIC, 11));
 		
-		this.authors.setText(String.format("<html>Auteurs : <br/><br/>%s, %s, %s et %s</html>", 
+		this.authors.setText(String.format("<html>Auteurs : <br/><br/>%s, %s, <br/>%s et %s</html>", 
 				AppAboutDialog.APP_AUTHOR_ONE, 
 				AppAboutDialog.APP_AUTHOR_TWO, 
 				AppAboutDialog.APP_AUTHOR_THREE, 
