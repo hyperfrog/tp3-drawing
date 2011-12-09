@@ -314,11 +314,10 @@ public class FillAndStrokeDialog extends JDialog implements ActionListener, Wind
 			
 			if (c != null)
 			{
-				this.shape.setGradColor1(c);
-				
+				this.shape.setGradColor1(this.getSameColorWithNewAlpha(c, gradColor1Slider.getValue()));
 				if (this.gradColor2CheckBox.isSelected())
 				{
-					this.shape.setGradColor2(c);
+					this.shape.setGradColor2(this.getSameColorWithNewAlpha(c, gradColor2Slider.getValue()));
 				}
 
 				this.shapePanel.repaint();
@@ -330,7 +329,7 @@ public class FillAndStrokeDialog extends JDialog implements ActionListener, Wind
 			
 			if (c != null)
 			{
-				this.shape.setGradColor2(c);
+				this.shape.setGradColor2(this.getSameColorWithNewAlpha(c, gradColor2Slider.getValue()));
 				this.shapePanel.repaint();
 			}
 		}
