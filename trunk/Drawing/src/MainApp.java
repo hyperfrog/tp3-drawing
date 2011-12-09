@@ -31,11 +31,17 @@ public class MainApp
 		String errMsg = "";
 		
 		ArrayList<Class<?>> classesToTest = new ArrayList<Class<?>>();
-//		classesToTest.add(util.test.BaseMatrixTest.class);
-//		classesToTest.add(appDemineur.model.test.GameTest.class);
-//		classesToTest.add(appDemineur.model.test.CellTest.class);
-//		classesToTest.add(appDemineur.model.test.BestTimesTest.class);
-//		classesToTest.add(appDemineur.model.test.LevelTest.class);
+//		classesToTest.add(util.test.DeepCopyTest.class);
+//		classesToTest.add(appDrawing.model.test.ShapeTest.class);
+//		classesToTest.add(appDrawing.model.test.CircleTest.class);
+//		classesToTest.add(appDrawing.model.test.EllipseTest.class);
+//		classesToTest.add(appDrawing.model.test.GroupTest.class);
+//		classesToTest.add(appDrawing.model.test.HandleTest.class);
+//		classesToTest.add(appDrawing.model.test.PolygonTest.class);
+//		classesToTest.add(appDrawing.model.test.PolyLineTest.class);
+//		classesToTest.add(appDrawing.model.test.RectangleTest.class);
+//		classesToTest.add(appDrawing.model.test.SquareTest.class);
+//		classesToTest.add(appDrawing.form.test.DrawingPanelTest.class);
 		
 		for(Class<?> someClass : classesToTest)
 		{
