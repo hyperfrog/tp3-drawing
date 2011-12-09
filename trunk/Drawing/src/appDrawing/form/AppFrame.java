@@ -36,7 +36,7 @@ public class AppFrame extends JFrame implements ComponentListener, WindowListene
 	private static final int MIN_HEIGHT = 480;
 	
 	// Titre de la fenêtre
-	private static final String INIT_TITLE = "Logiciel de dessin vectoriel";
+	public static final String APP_TITLE = "Dessine-toi un mouton ®";
 	
 	// Messages pour la boîte de dialogue de confirmation de sortie
 	private static final String QUIT_MESSAGE = "Voulez-vous quitter l'application?";
@@ -61,7 +61,7 @@ public class AppFrame extends JFrame implements ComponentListener, WindowListene
 		
 		this.setJMenuBar(this.appMenu);
 		
-		this.setTitle(AppFrame.INIT_TITLE);
+		this.setTitle(AppFrame.APP_TITLE);
 		this.setSize(AppFrame.INIT_SIZE);
 		this.setLocationRelativeTo(null);
 		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);

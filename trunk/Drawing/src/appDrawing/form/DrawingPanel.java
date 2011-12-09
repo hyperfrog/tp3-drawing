@@ -21,15 +21,9 @@ import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.ListSelection;
-import ca.odell.glazedlists.event.ListEvent;
-import ca.odell.glazedlists.event.ListEventListener;
 
 import appDrawing.model.Circle;
 import appDrawing.model.Ellipse;
@@ -40,7 +34,6 @@ import appDrawing.model.Polygon;
 import appDrawing.model.Rectangle;
 import appDrawing.model.Shape;
 import appDrawing.model.Square;
-import appDrawing.util.DeepCopy;
 
 /**
  * Classe représentant un panneau de dessin qui contiendra les formes et écoutera les actions de la
@@ -53,52 +46,30 @@ import appDrawing.util.DeepCopy;
  */
 public class DrawingPanel extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener
 {
+	// Définition des touches utilisées comme raccourcis
 	public static final int KEY_CURRENT_FILL_AND_STROKE = KeyEvent.VK_1;
-	
 	public static final int KEY_EDIT_FILL_AND_STROKE = KeyEvent.VK_2;
-
 	public static final int KEY_GROUP = KeyEvent.VK_G;
-
 	public static final int KEY_UNGROUP = KeyEvent.VK_U;
-
 	public static final int KEY_ELLIPSE = KeyEvent.VK_E;
-					
 	public static final int KEY_SQUARE = KeyEvent.VK_S;
-					
 	public static final int KEY_RECTANGLE = KeyEvent.VK_R;
-
 	public static final int KEY_CIRCLE = KeyEvent.VK_C;
-
 	public static final int KEY_POLYGON = KeyEvent.VK_P;
-
 	public static final int KEY_POLYLINE = KeyEvent.VK_B;
-					
 	public static final int KEY_FREELINE = KeyEvent.VK_F;
-					
 	public static final int KEY_SELECTING = KeyEvent.VK_L;
-					
 	public static final int KEY_MOVING = KeyEvent.VK_M;
-	
 	public static final int KEY_ZOOM_IN = KeyEvent.VK_ADD;
-					
 	public static final int KEY_ZOOM_OUT = KeyEvent.VK_SUBTRACT;
-					
 	public static final int KEY_CANCEL = KeyEvent.VK_ESCAPE;
-					
 	public static final int KEY_DELETE = KeyEvent.VK_DELETE;
-				
 	public static final int KEY_ALIGN_UP = KeyEvent.VK_0;
-					
 	public static final int KEY_ALIGN_DOWN = KeyEvent.VK_9;
-					
 	public static final int KEY_ALIGN_LEFT = KeyEvent.VK_8;
-					
 	public static final int KEY_ALIGN_RIGHT = KeyEvent.VK_7;
-					
 	public static final int KEY_ALIGN_HOR = KeyEvent.VK_6;
-					
 	public static final int KEY_ALIGN_VER = KeyEvent.VK_5;
-
 	
 	// Le mode par défaut est le mode création. C'est le mode qui sera actif à l'ouverture de l'application
 	private static final Mode DEFAULT_MODE = Mode.CREATING;
@@ -553,7 +524,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 						this.selectShape(shapeToSelect, !shapeToSelect.isSelected());
 					}
 					
-					// Si Ctrl pas enfoncé, désélectionne toutes les formes sauf la forme trouvée 
+					// Si Ctrl pas enfoncé, désélectionne tout sauf la forme trouvée 
 					if ((e.getModifiers() & ActionEvent.CTRL_MASK) == 0)
 					{
 						for (Shape shape : shapeList)
@@ -746,9 +717,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 				break;
 				
 			case DrawingPanel.KEY_CIRCLE:
-				{
-					this.setShapeType(ShapeType.CIRCLE);
-				}
+				this.setShapeType(ShapeType.CIRCLE);
 				break;
 
 			case DrawingPanel.KEY_POLYGON:
@@ -844,6 +813,8 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		}
 	}
 
+	// Synchronise la sélection de la liste affichée avec pour qu'elle corresponde 
+	// aux formes sélectionnées dans de la liste interne
 	private void synchronizeSelection()
 	{
 		ArrayList<Shape> selection = this.getCurrentSelection();

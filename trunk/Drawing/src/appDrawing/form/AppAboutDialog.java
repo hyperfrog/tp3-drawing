@@ -1,6 +1,7 @@
 package appDrawing.form;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -30,10 +31,10 @@ import javax.swing.JPanel;
 public class AppAboutDialog extends JDialog implements ActionListener, WindowListener
 {
 	// Nom de l'application
-	private static final String APP_NAME = "Logiciel de dessin vectoriel";
+//	private static final String APP_NAME = "Dessine-moi un mouton";
 	
 	// Version de l'application
-	private static final String APP_VERSION = "Version 0.9 (alpha)";
+	private static final String APP_VERSION = "Version 0.9 (alpha) - 9 décembre 2011";
 	
 	// Auteurs de l'application
 	private static final String APP_AUTHOR_ONE = "Micaël Lemelin";
@@ -94,13 +95,16 @@ public class AppAboutDialog extends JDialog implements ActionListener, WindowLis
 	{
 		super(parent);
 		
-		this.setTitle("À propos de l'Outils de dessin vectoriel");
+		this.setTitle("À propos de " + AppFrame.APP_TITLE);
 		this.setResizable(false);
 		this.setModal(true);
 		
 		// Initialise les composants
 		this.initComponents();
-		
+		this.setBackground(Color.WHITE);
+		this.aboutPanel.setBackground(Color.WHITE);
+		this.infoPanel.setBackground(Color.WHITE);
+		this.buttonsPanel.setBackground(Color.WHITE);
 		this.pack();
 		
 		this.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
@@ -129,14 +133,19 @@ public class AppAboutDialog extends JDialog implements ActionListener, WindowLis
 		this.logo.setIcon(AppAboutDialog.aboutLogo != null ? new ImageIcon(AppAboutDialog.aboutLogo) : null);
 		this.logo.setPreferredSize(new Dimension(256, 256));
 		
-		this.title.setText(AppAboutDialog.APP_NAME);
+		this.title.setText(AppFrame.APP_TITLE);
 		this.title.setFont(new Font(null, Font.BOLD, 24));
 		
 		this.version.setText(AppAboutDialog.APP_VERSION);
-		this.version.setFont(new Font(null, Font.ITALIC, 10));
+		this.version.setFont(new Font(null, Font.ITALIC, 11));
 		
-		this.authors.setText(String.format("<html>Auteurs : <br/>%s, %s, %s et %s</html>", AppAboutDialog.APP_AUTHOR_ONE, AppAboutDialog.APP_AUTHOR_TWO, AppAboutDialog.APP_AUTHOR_THREE, AppAboutDialog.APP_AUTHOR_FOUR));
-		this.authors.setFont(new Font(null, Font.PLAIN, 14));
+		this.authors.setText(String.format("<html>Auteurs : <br/><br/>%s, %s, %s et %s</html>", 
+				AppAboutDialog.APP_AUTHOR_ONE, 
+				AppAboutDialog.APP_AUTHOR_TWO, 
+				AppAboutDialog.APP_AUTHOR_THREE, 
+				AppAboutDialog.APP_AUTHOR_FOUR));
+		
+		this.authors.setFont(new Font(null, Font.PLAIN, 13));
 		
 		this.infoPanel.add(this.title);
 		this.infoPanel.add(this.version);
