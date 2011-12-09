@@ -59,7 +59,6 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	public static final int KEY_FREELINE = KeyEvent.VK_F;
 	public static final int KEY_SELECTING = KeyEvent.VK_L;
 	public static final int KEY_SELECT_ALL = KeyEvent.VK_A;
-	public static final int KEY_MOVING = KeyEvent.VK_M;
 	public static final int KEY_ZOOM_IN = KeyEvent.VK_ADD;
 	public static final int KEY_ZOOM_OUT = KeyEvent.VK_SUBTRACT;
 	public static final int KEY_CANCEL = KeyEvent.VK_ESCAPE;
@@ -115,7 +114,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
     public enum ShapeType {ELLIPSE, CIRCLE, RECTANGLE, SQUARE, POLYGON, POLYLINE, FREELINE};
     
     // Modes exclusifs de fonctionnement
-    public enum Mode {CREATING, PANNING, MOVING, SELECTING, EDITING, RESIZING}
+    public enum Mode {CREATING, PANNING, MOVING, SELECTING, RESIZING}
     
     // Modes d'alignements possibles
     public static enum Alignment {UP, DOWN, LEFT, RIGHT, HORIZONTAL, VERTICAL};
@@ -340,7 +339,8 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		if (newMode != this.currentMode)
 		{
 			// Mémorise les modes non «transitoires»
-			if (this.currentMode != Mode.PANNING && this.currentMode != Mode.MOVING && this.currentMode != Mode.RESIZING)
+//			if (this.currentMode != Mode.PANNING && this.currentMode != Mode.MOVING && this.currentMode != Mode.RESIZING)
+			if (this.currentMode == Mode.SELECTING || this.currentMode == Mode.CREATING)
 			{
 				this.lastMode = this.currentMode;
 			}
@@ -382,7 +382,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	{
 		this.parent.getToolBar().toggleShape(newShapeType);
 		
-//		if (this.currentShapeType == ShapeType.POLYGON || this.currentShapeType == ShapeType.POLYLINE)
+		if (this.currentShapeType == ShapeType.POLYGON || this.currentShapeType == ShapeType.POLYLINE)
 		{
 			if (newShapeType != this.currentShapeType)
 			{
@@ -412,7 +412,6 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 			//on ajoute le polygone à la liste, on efface la liste de points temporaires et on redessine
 			this.shapeList.add(poly);
 			poly.setDefaultName();
-//			parent.getShapeListBar().testDynamicList(this.shapeList);
 			this.polyPoints = null;
 			this.repaint();
 		}
@@ -426,10 +425,19 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 			this.selectShape(shape, true);
 		}
 		
-		this.parent.getToolBar().toggleMode(Mode.SELECTING);
 		this.setMode(Mode.SELECTING);
 		
 		this.repaint();
+	}
+	
+	/**
+	 * Retourne le mode courant.
+	 * 
+	 * @return le mode courant
+	 */
+	public Mode getCurrentMode()
+	{
+		return this.currentMode;
 	}
 	
 	@Override
@@ -455,10 +463,10 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		this.startDragPoint = e.getPoint();
 
 		// Si bouton de gauche et mode sélection actif
-		if (e.getButton() == MouseEvent.BUTTON1 && this.currentMode == Mode.SELECTING)
+		if (e.getButton() == MouseEvent.BUTTON1 && (this.currentMode == Mode.SELECTING || this.currentMode == Mode.MOVING))
 		{
 			// Si Ctrl enfoncé
-			if ((e.getModifiers() & ActionEvent.CTRL_MASK) != 0)
+			if (this.currentMode == Mode.SELECTING && (e.getModifiers() & ActionEvent.CTRL_MASK) != 0)
 			{
 				this.alreadySelectedShapes = this.getCurrentSelection();
 			}
@@ -536,6 +544,11 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 					{
 						// Inverse la sélection de cette forme 
 						this.selectShape(shapeToSelect, !shapeToSelect.isSelected());
+						
+						if (shapeToSelect.isSelected() && ((e.getModifiers() & ActionEvent.CTRL_MASK) == 0))
+						{
+							this.setMode(Mode.MOVING);
+						}
 					}
 					
 					// Si Ctrl pas enfoncé, désélectionne tout sauf la forme trouvée 
@@ -560,7 +573,8 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		this.alreadySelectedShapes.clear();
 		
 		// Si mode «transitoire» actif, rappelle le mode précédent
-		if (this.currentMode == Mode.PANNING  || this.currentMode == Mode.MOVING || this.currentMode == Mode.RESIZING)
+//		if (this.currentMode == Mode.PANNING  || this.currentMode == Mode.MOVING || this.currentMode == Mode.RESIZING)
+		if (this.currentMode == Mode.PANNING  || this.currentMode == Mode.RESIZING)
 		{
 			this.setMode(this.lastMode);
 		}
@@ -639,11 +653,12 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 			this.repaint();
 		}
 		
-		if (this.currentMode == Mode.SELECTING)
+		if (this.currentMode == Mode.SELECTING || this.currentMode == Mode.MOVING)
 		{
 			Handle handle = this.getContainingHandle(this.currentMousePos, this.getCurrentSelection());
 
-			if (handle != null)
+			// Si au-dessus d'une poignée et Ctrl pas enfoncé
+			if (handle != null && (e.getModifiers() & ActionEvent.CTRL_MASK) == 0)
 			{
 				int preDefCursor = Cursor.DEFAULT_CURSOR;
 
@@ -686,7 +701,19 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 			}
 			else
 			{
-				this.setCursorForMode(this.currentMode);
+				Shape shape = this.getContainingShape(this.currentMousePos);
+				
+				// Si au-dessus d'une forme sélectionnée et Ctrl pas enfoncé
+				if (shape != null && shape.isSelected() && (e.getModifiers() & ActionEvent.CTRL_MASK) == 0)
+				{
+					this.setMode(Mode.MOVING);
+					this.setCursorForMode(this.currentMode);
+				}
+				else
+				{
+					this.setMode(Mode.SELECTING);
+					this.setCursorForMode(this.currentMode);
+				}
 			}
 		}
 	}
@@ -767,11 +794,6 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 				this.deleteSelectedShapes();
 				break;
 			
-			case DrawingPanel.KEY_MOVING:
-			case KeyEvent.VK_SHIFT:
-				this.setMode(Mode.MOVING);
-				break;
-			
 			case DrawingPanel.KEY_ALIGN_UP:
 				this.align(Alignment.UP);
 				break;
@@ -802,6 +824,13 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 					this.selectAll();
 				}
 				break;
+				
+			case KeyEvent.VK_CONTROL:
+				if (this.currentMode == Mode.MOVING)
+				{
+					this.setMode(Mode.SELECTING);
+				}
+				break;
 		}
 	}
 
@@ -810,9 +839,18 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	{
 		switch (e.getKeyCode())
 		{
-			case KeyEvent.VK_SHIFT:
-				this.setMode(this.lastMode);
+			case KeyEvent.VK_CONTROL:
+			{
+				Shape shape = this.getContainingShape(this.currentMousePos);
+
+				// Si au-dessus d'une forme sélectionnée
+				if (shape != null && shape.isSelected() && this.currentMode == Mode.SELECTING)
+				{
+					this.setMode(Mode.MOVING);
+					this.setCursorForMode(this.currentMode);
+				}
 				break;
+			}
 		}		
 	}
 
@@ -1142,7 +1180,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 				shape.scaleHeight(yScalingFactor, refY);
 				this.startDragPoint.y = this.currentDragPoint.y;
 			}
-		}		
+		}
 	}
 	
 	/*

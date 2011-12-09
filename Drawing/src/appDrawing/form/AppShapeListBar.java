@@ -17,6 +17,7 @@ import javax.swing.event.ListSelectionListener;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.swing.EventListModel;
 
+import appDrawing.form.DrawingPanel.Mode;
 import appDrawing.model.Shape;
 
 public class AppShapeListBar extends JPanel implements ListSelectionListener, ActionListener
@@ -110,7 +111,13 @@ public class AppShapeListBar extends JPanel implements ListSelectionListener, Ac
 				this.shapeList.get(i).setSelected(selectedIndices.contains(i));
 			}
 			
-			this.parent.getToolBar().actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "SELECTING"));
+			Mode currentMode = this.parent.getDrawingPanel().getCurrentMode();
+			
+			if (currentMode != Mode.SELECTING && currentMode != Mode.MOVING)
+			{
+				this.parent.getToolBar().actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "SELECTING"));
+			}
+			
 			this.parent.getDrawingPanel().repaint();
 		}
 	}
