@@ -830,8 +830,8 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		}
 	}
 
-	// Synchronise la sélection de la liste affichée avec pour qu'elle corresponde 
-	// aux formes sélectionnées dans de la liste interne
+	// Synchronise la sélection de la liste affichée pour qu'elle corresponde 
+	// aux formes sélectionnées dans la liste interne du dessin
 	private void synchronizeSelection()
 	{
 		ArrayList<Shape> selection = this.getCurrentSelection();
@@ -1169,6 +1169,10 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		// Ajuste le sacling factor en le multipliant par 1.1 pour chaque
 		// «coche» de la roulette
 		this.scalingFactor *= Math.pow(1.1, zoomAMount);
+		
+		// Applique un plancher et un plafond au scaling factor (1.1^-100 et 1.1^100)
+		this.scalingFactor = Math.min(this.scalingFactor, (float) Math.pow(1.1, 100));
+		this.scalingFactor = Math.max(this.scalingFactor, (float) Math.pow(1.1, -100));
 
 		// Calcule les nouvelles dimensions virtuelles de la portion affichée du dessin
 		float newWidth = this.getWidth() / this.scalingFactor;
