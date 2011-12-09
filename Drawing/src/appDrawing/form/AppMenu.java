@@ -1,5 +1,6 @@
 package appDrawing.form;
 
+import java.awt.Event;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -72,27 +73,32 @@ public class AppMenu extends JMenuBar implements ActionListener
 		
 		this.newDrawingItem.setText("Nouveau dessin");
 		this.newDrawingItem.setActionCommand("NEW_DRAWING");
-		this.newDrawingItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0));
+		this.newDrawingItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, Event.CTRL_MASK));
 		
 		this.aboutItem.setText("À propos...");
 		this.aboutItem.setActionCommand("ABOUT");
+		this.aboutItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0));
 				
 		this.saveAsItem.setText("Enregistrer sous...");
 		this.saveAsItem.setActionCommand("SAVE_AS");
+		this.saveAsItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, Event.CTRL_MASK | Event.ALT_MASK));
 		
 		this.saveItem.setText("Enregistrer");
 		this.saveItem.setActionCommand("SAVE");
+		this.saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, Event.CTRL_MASK));
 		
 		this.loadItem.setText("Ouvrir...");
 		this.loadItem.setActionCommand("LOAD");
+		this.loadItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, Event.CTRL_MASK));
 		
 		this.quitItem.setText("Quitter");
 		this.quitItem.setActionCommand("QUIT");
-		
+		this.quitItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, Event.CTRL_MASK));
+
 		this.fileMenu.add(this.newDrawingItem);
 		this.fileMenu.add(this.loadItem);
-		this.fileMenu.add(this.saveAsItem);
 		this.fileMenu.add(this.saveItem);
+		this.fileMenu.add(this.saveAsItem);
 		this.fileMenu.addSeparator();
 		this.fileMenu.add(this.quitItem);
 		

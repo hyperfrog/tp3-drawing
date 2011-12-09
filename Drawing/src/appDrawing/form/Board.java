@@ -77,15 +77,13 @@ public class Board extends JPanel implements ActionListener
 		this.appToolBar = new AppToolBar(this);
 		this.drawingPanel = new DrawingPanel(this);
 		this.drawingPanel.setBackground(Color.WHITE);
-		this.appShapeListBar = new AppShapeListBar(this, this.drawingPanel.getShapeList());
 		
 		this.setLayout(new BorderLayout());
 		
 		this.add(this.drawingPanel, BorderLayout.CENTER);
 		this.add(this.appToolBar, BorderLayout.NORTH);
-		this.add(this.appShapeListBar, BorderLayout.EAST);
 
-		this.appShapeListBar.setPreferredSize(new Dimension(125, this.drawingPanel.getHeight()));
+		this.resetShapeListBar();
 		
 		// Passe-passe pour envoyer les évènements du clavier au DrawingPanel 
 		// peu importe la composante qui a le focus (p. ex. barre d'outils).
@@ -342,9 +340,13 @@ public class Board extends JPanel implements ActionListener
 	
 	private void resetShapeListBar()
 	{
-		this.remove(this.appShapeListBar);
+		if (this.appShapeListBar != null)
+		{
+			this.remove(this.appShapeListBar);
+		}
 		this.appShapeListBar = new AppShapeListBar(this, this.drawingPanel.getShapeList());
 		this.add(this.appShapeListBar, BorderLayout.EAST);
+		this.appShapeListBar.setPreferredSize(new Dimension(125, this.drawingPanel.getHeight()));
 		this.validate();
 	}
 }

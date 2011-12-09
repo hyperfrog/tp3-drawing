@@ -302,7 +302,7 @@ public class AppToolBar extends JToolBar implements ActionListener
 		this.polygonButton.setIcon(AppToolBar.polygonImage != null ? new ImageIcon(AppToolBar.polygonImage) : null);
 		
 		this.lineButton.setText(null);
-		this.lineButton.setToolTipText("Line brisée");
+		this.lineButton.setToolTipText("Ligne brisée");
 		this.lineButton.setActionCommand("LINE");
 		this.lineButton.setIcon(AppToolBar.lineImage != null ? new ImageIcon(AppToolBar.lineImage) : null);
 		
