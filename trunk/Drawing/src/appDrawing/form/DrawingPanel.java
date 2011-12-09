@@ -864,6 +864,8 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		{
 			Shape shape = selection.get(0);
 			fsDialog = new FillAndStrokeDialog(this.parent.getFrame(), shape, "Remplissage et trait de la forme sélectionnée");
+			fsDialog.setLocationRelativeTo(this.parent);
+			fsDialog.setVisible(true);
 
 			if (fsDialog.getResult() == JOptionPane.OK_OPTION)
 			{
@@ -875,15 +877,14 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		else
 		{
 			fsDialog = new FillAndStrokeDialog(this.parent.getFrame(), this.refShape, "Remplissage et trait par défaut");
+			fsDialog.setLocationRelativeTo(this.parent);
+			fsDialog.setVisible(true);
 			
 			if (fsDialog.getResult() == JOptionPane.OK_OPTION)
 			{
 				this.refShape = fsDialog.getRefShape();
 			}
 		}
-
-		fsDialog.setLocationRelativeTo(this.parent);
-		fsDialog.setVisible(true);
 	}
 	
 	/*
