@@ -3,9 +3,7 @@
  */
 package appDrawing.model;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
-import java.io.Serializable;
 
 /**
  * @author Micaël Lemelin
@@ -28,8 +26,6 @@ public class Rectangle extends Shape
 	public Rectangle(float posX, float posY, float width, float height)
 	{
 		super(posX, posY, width, height);
-		this.gradColor1 = Color.GREEN;
-		this.gradColor2 = Color.CYAN;
 	}
 
 	/* (non-Javadoc)

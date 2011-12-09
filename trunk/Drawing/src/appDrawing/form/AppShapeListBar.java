@@ -55,7 +55,7 @@ public class AppShapeListBar extends JPanel implements ListSelectionListener, Ac
 		buttonPanel.add(this.upButton);
 		buttonPanel.add(this.downButton);
 		
-		this.add(buttonPanel, BorderLayout.SOUTH);
+		this.add(buttonPanel, BorderLayout.NORTH);
 		
 		this.upButton.addActionListener(this);
 		this.downButton.addActionListener(this);
@@ -78,33 +78,24 @@ public class AppShapeListBar extends JPanel implements ListSelectionListener, Ac
 	{
 		if (e.getValueIsAdjusting() == false)
 		{
+			this.upButton.setEnabled(false);
+			this.downButton.setEnabled(false);
+
 			if (this.visualShapeList.getSelectedIndices().length == 1)
 			{
-				if (this.visualShapeList.getSelectedIndex() == -1) 
+				if (this.visualShapeList.getSelectedIndex() == 0)
 				{
-					this.upButton.setEnabled(false);
-					this.downButton.setEnabled(false);
-				}
-				else if (this.visualShapeList.getSelectedIndex() == 0)
-				{
-					this.upButton.setEnabled(false);
 					this.downButton.setEnabled(true);
 				}
 				else if (this.visualShapeList.getSelectedIndex() == this.shapeList.size() - 1)
 				{
 					this.upButton.setEnabled(true);
-					this.downButton.setEnabled(false);
 				}
 				else
 				{
 					this.upButton.setEnabled(true);
 					this.downButton.setEnabled(true);
 				}
-			}
-			else
-			{
-				this.upButton.setEnabled(false);
-				this.downButton.setEnabled(false);
 			}
 
 			List<Integer> selectedIndices = new ArrayList<Integer>();

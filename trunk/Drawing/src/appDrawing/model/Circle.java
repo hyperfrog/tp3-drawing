@@ -3,9 +3,6 @@
  */
 package appDrawing.model;
 
-import java.awt.Color;
-import java.io.Serializable;
-
 /**
  * @author Micaël Lemelin
  * @author Christian Lesage
@@ -35,8 +32,6 @@ public class Circle extends Ellipse
 			this.height = size;
 			this.createHandles();
 		}
-		
-		this.gradColor2 = Color.DARK_GRAY;
 	}
 
 	/**

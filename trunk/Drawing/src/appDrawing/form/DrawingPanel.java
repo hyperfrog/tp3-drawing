@@ -918,6 +918,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		if (selection.size() > 1)
 		{
 			Group group = new Group();
+			group.setDefaultName();
 
 			// Désélectionne les formes avant
 			for (Shape shape : selection)

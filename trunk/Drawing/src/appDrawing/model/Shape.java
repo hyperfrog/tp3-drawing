@@ -29,10 +29,10 @@ import appDrawing.model.Handle.HandleType;
 public abstract class Shape implements Serializable
 {
 	protected static final int NUM_OF_HANDLES = 8;
-	protected static final float DEFAULT_STROKE_WIDTH = 2.0f;
+	protected static final float DEFAULT_STROKE_WIDTH = 3.0f;
 	protected static final Color DEFAULT_STROKE_COLOR = Color.BLACK;
 	protected static final Color DEFAULT_GRAD_COLOR1 = Color.RED;
-	protected static final Color DEFAULT_GRAD_COLOR2 = new Color(255, 255, 0, 128);
+	protected static final Color DEFAULT_GRAD_COLOR2 = Color.DARK_GRAY;
 	protected static final Point2D.Float DEFAULT_GRAD_POINT1 = new Point2D.Float(0, 0);
 	protected static final Point2D.Float DEFAULT_GRAD_POINT2 = new Point2D.Float(1, 1);
 
