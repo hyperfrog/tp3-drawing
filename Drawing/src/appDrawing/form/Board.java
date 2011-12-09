@@ -35,7 +35,7 @@ import java.util.ArrayList;
 /**
  * La classe Board sert de conteneur au panneau de dessin, 
  * à la barre d'outils et à la liste de formes.
- *  
+ * 
  * @author Micaël Lemelin
  * @author Christian Lesage
  * @author Alexandre Tremblay

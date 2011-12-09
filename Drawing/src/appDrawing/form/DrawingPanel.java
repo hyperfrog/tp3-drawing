@@ -968,7 +968,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 						break;
 						
 					case UP:
-						sh.setPosition(sh.getPosX(), (float) r.getMinX());
+						sh.setPosition(sh.getPosX(), (float) r.getMinY());
 						break;
 						
 					case DOWN:
