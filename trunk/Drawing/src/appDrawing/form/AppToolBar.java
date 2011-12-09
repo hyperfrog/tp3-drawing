@@ -35,7 +35,6 @@ public class AppToolBar extends JToolBar implements ActionListener
 	private static BufferedImage loadImage = null;
 	// Images utilisées par la classe pour les outils
 	private static BufferedImage creatingImage = null;
-	private static BufferedImage movingImage = null;
 	private static BufferedImage selectingImage = null;
 	private static BufferedImage fillStrokeImage = null;
 	// Images utilisées par la classe pour les formes
@@ -68,7 +67,6 @@ public class AppToolBar extends JToolBar implements ActionListener
     		AppToolBar.loadImage = ImageIO.read(AppToolBar.class.getResource("../../res/open.png"));
 
     		AppToolBar.creatingImage = ImageIO.read(AppToolBar.class.getResource("../../res/creating_mode.png"));
-    		AppToolBar.movingImage = ImageIO.read(AppToolBar.class.getResource("../../res/moving_mode.png"));
     		AppToolBar.selectingImage = ImageIO.read(AppToolBar.class.getResource("../../res/selecting_mode.png"));
     		AppToolBar.fillStrokeImage = ImageIO.read(AppToolBar.class.getResource("../../res/fill_stroke.png"));
     		
@@ -117,9 +115,6 @@ public class AppToolBar extends JToolBar implements ActionListener
 	
 	// Bouton pour le mode création
 	private JToggleButton creatingTool;
-	
-	// Bouton pour le mode déplacement
-	private JToggleButton movingTool;
 	
 	// Bouton pour le mode sélection
 	private JToggleButton selectingTool;
@@ -206,7 +201,6 @@ public class AppToolBar extends JToolBar implements ActionListener
 		this.saveAsDrawingButton = new JButton();
 		// Outils
 		this.creatingTool = new JToggleButton();
-		this.movingTool = new JToggleButton();
 		this.selectingTool = new JToggleButton();
 		this.toolsGroup = new ButtonGroup();
 		this.fillStrokeButton = new JButton();
@@ -256,18 +250,12 @@ public class AppToolBar extends JToolBar implements ActionListener
 		this.creatingTool.setSelected(true);
 		this.creatingTool.setIcon(AppToolBar.creatingImage != null ? new ImageIcon(AppToolBar.creatingImage) : null);
 		
-		this.movingTool.setText(null);
-		this.movingTool.setToolTipText("Mode déplacement");
-		this.movingTool.setActionCommand("MOVING");
-		this.movingTool.setIcon(AppToolBar.movingImage != null ? new ImageIcon(AppToolBar.movingImage) : null);
-		
 		this.selectingTool.setText(null);
 		this.selectingTool.setToolTipText("Mode sélection");
 		this.selectingTool.setActionCommand("SELECTING");
 		this.selectingTool.setIcon(AppToolBar.selectingImage != null ? new ImageIcon(AppToolBar.selectingImage) : null);
 		
 		this.toolsGroup.add(this.creatingTool);
-		this.toolsGroup.add(this.movingTool);
 		this.toolsGroup.add(this.selectingTool);
 		
 		this.fillStrokeButton.setText(null);
@@ -365,7 +353,6 @@ public class AppToolBar extends JToolBar implements ActionListener
 		this.add(this.saveAsDrawingButton);
 		this.addSeparator();
 		this.add(this.creatingTool);
-		this.add(this.movingTool);
 		this.add(this.selectingTool);
 		this.add(this.fillStrokeButton);
 		this.addSeparator();
@@ -391,7 +378,6 @@ public class AppToolBar extends JToolBar implements ActionListener
 		this.saveAsDrawingButton.addActionListener(this);
 		this.loadDrawingButton.addActionListener(this);
 		this.creatingTool.addActionListener(this);
-		this.movingTool.addActionListener(this);
 		this.selectingTool.addActionListener(this);
 		this.circleButton.addActionListener(this);
 		this.ellipseButton.addActionListener(this);
@@ -430,11 +416,6 @@ public class AppToolBar extends JToolBar implements ActionListener
 				case CREATING:
 					this.creatingTool.setSelected(true);
 					this.showCreationMode();
-					this.hideSelectionMode();
-					break;
-				case MOVING:
-					this.movingTool.setSelected(true);
-					this.hideCreationMode();
 					this.hideSelectionMode();
 					break;
 				case SELECTING:
@@ -567,11 +548,6 @@ public class AppToolBar extends JToolBar implements ActionListener
 			// Créer un évènement pour déclencher le mode création
 			keyCode = DrawingPanel.KEY_ELLIPSE;
 		}
-		else if (evt.getActionCommand().equals("MOVING"))
-		{
-			// Créer un évènement pour déclencher le mode déplacement
-			keyCode = DrawingPanel.KEY_MOVING;
-		}
 		else if (evt.getActionCommand().equals("SELECTING"))
 		{
 			// Créer un évènement pour déclencher le mode sélection
@@ -612,7 +588,7 @@ public class AppToolBar extends JToolBar implements ActionListener
 			}
 			else if (evt.getActionCommand().equals("LINE"))
 			{
-				// Créer un évènement pour changer le type de forme à «Line brisée»
+				// Créer un évènement pour changer le type de forme à «Ligne brisée»
 				keyCode = DrawingPanel.KEY_POLYLINE;
 			}
 			else if (evt.getActionCommand().equals("PEN"))
