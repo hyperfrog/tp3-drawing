@@ -85,7 +85,7 @@ public class AppShapeListBar extends JPanel implements ListSelectionListener, Ac
 			{
 				if (this.visualShapeList.getSelectedIndex() == 0)
 				{
-					this.downButton.setEnabled(true);
+					this.downButton.setEnabled(this.shapeList.size() > 1);
 				}
 				else if (this.visualShapeList.getSelectedIndex() == this.shapeList.size() - 1)
 				{
