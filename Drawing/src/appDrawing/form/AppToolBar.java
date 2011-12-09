@@ -45,7 +45,7 @@ public class AppToolBar extends JToolBar implements ActionListener
     private static BufferedImage squareImage = null;
     private static BufferedImage polygonImage = null;
     private static BufferedImage lineImage = null;
-    private static BufferedImage paintImage = null;
+    private static BufferedImage penImage = null;
     // Images utilisées par la classe pour les groupes
     private static BufferedImage groupImage = null;
     private static BufferedImage ungroupImage = null;
@@ -78,7 +78,7 @@ public class AppToolBar extends JToolBar implements ActionListener
     		AppToolBar.squareImage = ImageIO.read(AppToolBar.class.getResource("../../res/square.png"));
     		AppToolBar.polygonImage = ImageIO.read(AppToolBar.class.getResource("../../res/polygon.png"));
     		AppToolBar.lineImage = ImageIO.read(AppToolBar.class.getResource("../../res/line.png"));
-    		AppToolBar.paintImage = ImageIO.read(AppToolBar.class.getResource("../../res/paint.png"));
+    		AppToolBar.penImage = ImageIO.read(AppToolBar.class.getResource("../../res/pen.png"));
 
     		AppToolBar.groupImage = ImageIO.read(AppToolBar.class.getResource("../../res/group.png"));
     		AppToolBar.ungroupImage = ImageIO.read(AppToolBar.class.getResource("../../res/ungroup.png"));
@@ -149,7 +149,7 @@ public class AppToolBar extends JToolBar implements ActionListener
 	private JToggleButton lineButton;
 	
 	// Bouton pour le pinceau
-	private JToggleButton paintButton;
+	private JToggleButton penButton;
 	
 	// Groupe de boutons pour les formes
 	private ButtonGroup shapesGroup;
@@ -217,7 +217,7 @@ public class AppToolBar extends JToolBar implements ActionListener
 		this.squareButton = new JToggleButton();
 		this.polygonButton = new JToggleButton();
 		this.lineButton = new JToggleButton();
-		this.paintButton = new JToggleButton();
+		this.penButton = new JToggleButton();
 		this.shapesGroup = new ButtonGroup();
 		// Mode selection
 		this.groupButton = new JButton();
@@ -306,10 +306,10 @@ public class AppToolBar extends JToolBar implements ActionListener
 		this.lineButton.setActionCommand("LINE");
 		this.lineButton.setIcon(AppToolBar.lineImage != null ? new ImageIcon(AppToolBar.lineImage) : null);
 		
-		this.paintButton.setText(null);
-		this.paintButton.setToolTipText("Pinceau");
-		this.paintButton.setActionCommand("PAINT");
-		this.paintButton.setIcon(AppToolBar.paintImage != null ? new ImageIcon(AppToolBar.paintImage) : null);
+		this.penButton.setText(null);
+		this.penButton.setToolTipText("Crayon");
+		this.penButton.setActionCommand("PEN");
+		this.penButton.setIcon(AppToolBar.penImage != null ? new ImageIcon(AppToolBar.penImage) : null);
 		
 		this.shapesGroup.add(this.ellipseButton);
 		this.shapesGroup.add(this.circleButton);
@@ -317,7 +317,7 @@ public class AppToolBar extends JToolBar implements ActionListener
 		this.shapesGroup.add(this.squareButton);
 		this.shapesGroup.add(this.polygonButton);
 		this.shapesGroup.add(this.lineButton);
-		this.shapesGroup.add(this.paintButton);
+		this.shapesGroup.add(this.penButton);
 		
 		this.groupButton.setText(null);
 		this.groupButton.setToolTipText("Grouper");
@@ -375,7 +375,7 @@ public class AppToolBar extends JToolBar implements ActionListener
 		this.add(this.squareButton);
 		this.add(this.polygonButton);
 		this.add(this.lineButton);
-		this.add(this.paintButton);
+		this.add(this.penButton);
 		this.add(this.groupButton);
 		this.add(this.ungroupButton);
 		this.add(this.upButton);
@@ -399,7 +399,7 @@ public class AppToolBar extends JToolBar implements ActionListener
 		this.squareButton.addActionListener(this);
 		this.polygonButton.addActionListener(this);
 		this.lineButton.addActionListener(this);
-		this.paintButton.addActionListener(this);
+		this.penButton.addActionListener(this);
 		this.groupButton.addActionListener(this);
 		this.ungroupButton.addActionListener(this);
 		this.upButton.addActionListener(this);
@@ -489,7 +489,7 @@ public class AppToolBar extends JToolBar implements ActionListener
 		this.squareButton.setVisible(true);
 		this.polygonButton.setVisible(true);
 		this.lineButton.setVisible(true);
-		this.paintButton.setVisible(true);
+		this.penButton.setVisible(true);
 		
 		this.fillStrokeButton.setVisible(true);
 		this.fillStrokeButton.setToolTipText("Remplissage et trait par défaut");
@@ -504,7 +504,7 @@ public class AppToolBar extends JToolBar implements ActionListener
 		this.squareButton.setVisible(false);
 		this.polygonButton.setVisible(false);
 		this.lineButton.setVisible(false);
-		this.paintButton.setVisible(false);
+		this.penButton.setVisible(false);
 	}
 	
 	// Affiche les boutons en lien avec le mode sélection
@@ -547,6 +547,8 @@ public class AppToolBar extends JToolBar implements ActionListener
 	 */
 	public void actionPerformed(ActionEvent evt)
 	{
+		int keyCode = -1;
+		
 		if (evt.getActionCommand().equals("NEW_DRAWING"))
 		{
 			// Efface le dessin courant
@@ -570,17 +572,17 @@ public class AppToolBar extends JToolBar implements ActionListener
 		else if (evt.getActionCommand().equals("CREATING"))
 		{
 			// Créer un évènement pour déclencher le mode création
-			this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_E, 'e'));
+			keyCode = DrawingPanel.KEY_ELLIPSE;
 		}
 		else if (evt.getActionCommand().equals("MOVING"))
 		{
 			// Créer un évènement pour déclencher le mode déplacement
-			this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_M, 'm'));
+			keyCode = DrawingPanel.KEY_MOVING;
 		}
 		else if (evt.getActionCommand().equals("SELECTING"))
 		{
 			// Créer un évènement pour déclencher le mode sélection
-			this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_L, 'l'));
+			keyCode = DrawingPanel.KEY_SELECTING;
 		}
 		
 		if (this.creatingTool.isSelected())
@@ -588,42 +590,42 @@ public class AppToolBar extends JToolBar implements ActionListener
 			if (evt.getActionCommand().equals("CIRCLE"))
 			{
 				// Créer un évènement pour changer le type de forme à «Cercle»
-				this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_C, 'c'));
+				keyCode = DrawingPanel.KEY_CIRCLE;
 			}
 			else if (evt.getActionCommand().equals("ELLIPSE"))
 			{
 				// Créer un évènement pour changer le type de forme à «Ellipse»
-				this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_E, 'e'));
+				keyCode = DrawingPanel.KEY_ELLIPSE;
 			}
 			else if (evt.getActionCommand().equals("RECTANGLE"))
 			{
 				// Créer un évènement pour changer le type de forme à «Rectangle»
-				this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_R, 'r'));
+				keyCode = DrawingPanel.KEY_RECTANGLE;
 			}
 			else if (evt.getActionCommand().equals("SQUARE"))
 			{
 				// Créer un évènement pour changer le type de forme à «Carré»
-				this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_S, 's'));
+				keyCode = DrawingPanel.KEY_SQUARE;
 			}
 			else if (evt.getActionCommand().equals("POLYGON"))
 			{
 				// Créer un évènement pour changer le type de forme à «Polygon»
-				this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_P, 'p'));
+				keyCode = DrawingPanel.KEY_POLYGON;
 			}
 			else if (evt.getActionCommand().equals("LINE"))
 			{
 				// Créer un évènement pour changer le type de forme à «Line brisée»
-				this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_B, 'b'));
+				keyCode = DrawingPanel.KEY_POLYLINE;
 			}
-			else if (evt.getActionCommand().equals("PAINT"))
+			else if (evt.getActionCommand().equals("PEN"))
 			{
-				// Créer un évènement pour changer le type de forme à «Pinceau»
-				this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_F, 'f'));
+				// Créer un évènement pour changer le type de forme à «Crayon»
+				keyCode = DrawingPanel.KEY_FREELINE;
 			}
 			else if (evt.getActionCommand().equals("FILL_STROKE_DIALOG"))
 			{
 				// Créer un évènement pour afficher la boîte de dialogue «Remplissage et trait»
-				this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_1, '1'));
+				keyCode = DrawingPanel.KEY_CURRENT_FILL_AND_STROKE;
 			}
 		}
 		else if (this.selectingTool.isSelected())
@@ -631,48 +633,54 @@ public class AppToolBar extends JToolBar implements ActionListener
 			if (evt.getActionCommand().equals("GROUP"))
 			{
 				// Créer un évènement pour grouper les formes sélectionnées
-				this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_G, 'g'));
+				keyCode = DrawingPanel.KEY_GROUP;
 			}
 			else if (evt.getActionCommand().equals("UNGROUP"))
 			{
 				// Créer un évènement pour dégrouper les formes sélectionnées
-				this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_U, 'u'));
+				keyCode = DrawingPanel.KEY_UNGROUP;
 			}
 			else if (evt.getActionCommand().equals("ALIGN_UP"))
 			{
 				// Créer un évènement pour aligner les formes sélectionnées vers le haut
-				this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_0, '0'));
+				keyCode = DrawingPanel.KEY_ALIGN_UP;
 			}
 			else if (evt.getActionCommand().equals("ALIGN_DOWN"))
 			{
 				// Créer un évènement pour aligner les formes sélectionnées vers le bas
-				this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_9, '9'));
+				keyCode = DrawingPanel.KEY_ALIGN_DOWN;
 			}
 			else if (evt.getActionCommand().equals("ALIGN_LEFT"))
 			{
 				// Créer un évènement pour aligner les formes sélectionnées vers la gauche
-				this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_8, '8'));
+				keyCode = DrawingPanel.KEY_ALIGN_LEFT;
 			}
 			else if (evt.getActionCommand().equals("ALIGN_RIGHT"))
 			{
 				// Créer un évènement pour aligner les formes sélectionnées vers la droite
-				this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_7, '7'));
+				keyCode = DrawingPanel.KEY_ALIGN_RIGHT;
 			}
 			else if (evt.getActionCommand().equals("ALIGN_HOR"))
 			{
 				// Créer un évènement pour aligner les formes sélectionnées horizontalement
-				this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_6, '6'));
+				keyCode = DrawingPanel.KEY_ALIGN_HOR;
 			}
 			else if (evt.getActionCommand().equals("ALIGN_VER"))
 			{
 				// Créer un évènement pour aligner les formes sélectionnées verticalement
-				this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_5, '5'));
+				keyCode = DrawingPanel.KEY_ALIGN_VER;
 			}
 			else if (evt.getActionCommand().equals("FILL_STROKE_DIALOG"))
 			{
 				// Créer un évènement pour afficher la boîte de dialogue «Remplissage et trait»
-				this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, KeyEvent.VK_2, '2'));
+				keyCode = DrawingPanel.KEY_EDIT_FILL_AND_STROKE;
 			}
+		}
+		
+		if (keyCode != -1)
+		{
+			char keyChar = KeyEvent.getKeyText(keyCode).charAt(0);
+			this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, keyCode, keyChar));
 		}
 	}
 }

@@ -1,5 +1,6 @@
 package appDrawing.form;
 
+import java.awt.AWTEvent;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -37,7 +38,7 @@ public class AppShapeListBar extends JPanel implements ListSelectionListener, Ac
 		this.shapeList = shapeList;
 		this.shapeListModel = new EventListModel<Shape>(this.shapeList);
 		this.visualShapeList = new JList(this.shapeListModel);
-		this.visualShapeList.setPrototypeCellValue("Index 1234567890");
+//		this.visualShapeList.setPrototypeCellValue("Index 1234567890");
 		this.scrollPane = new JScrollPane(this.visualShapeList);
 		
 		this.setLayout(new BorderLayout());
@@ -118,7 +119,8 @@ public class AppShapeListBar extends JPanel implements ListSelectionListener, Ac
 			{
 				this.shapeList.get(i).setSelected(selectedIndices.contains(i));
 			}
-
+			
+			this.parent.getToolBar().actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "SELECTING"));
 			this.parent.getDrawingPanel().repaint();
 		}
 	}
