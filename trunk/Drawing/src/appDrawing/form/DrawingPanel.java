@@ -423,7 +423,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	{
 		for (Shape shape : this.shapeList)
 		{
-			shape.setSelected(true);
+			this.selectShape(shape, true);
 		}
 		
 		this.parent.getToolBar().toggleMode(Mode.SELECTING);
