@@ -53,6 +53,53 @@ import appDrawing.util.DeepCopy;
  */
 public class DrawingPanel extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener
 {
+	public static final int KEY_CURRENT_FILL_AND_STROKE = KeyEvent.VK_1;
+	
+	public static final int KEY_EDIT_FILL_AND_STROKE = KeyEvent.VK_2;
+
+	public static final int KEY_GROUP = KeyEvent.VK_G;
+
+	public static final int KEY_UNGROUP = KeyEvent.VK_U;
+
+	public static final int KEY_ELLIPSE = KeyEvent.VK_E;
+					
+	public static final int KEY_SQUARE = KeyEvent.VK_S;
+					
+	public static final int KEY_RECTANGLE = KeyEvent.VK_R;
+
+	public static final int KEY_CIRCLE = KeyEvent.VK_C;
+
+	public static final int KEY_POLYGON = KeyEvent.VK_P;
+
+	public static final int KEY_POLYLINE = KeyEvent.VK_B;
+					
+	public static final int KEY_FREELINE = KeyEvent.VK_F;
+					
+	public static final int KEY_SELECTING = KeyEvent.VK_L;
+					
+	public static final int KEY_MOVING = KeyEvent.VK_M;
+	
+	public static final int KEY_ZOOM_IN = KeyEvent.VK_ADD;
+					
+	public static final int KEY_ZOOM_OUT = KeyEvent.VK_SUBTRACT;
+					
+	public static final int KEY_CANCEL = KeyEvent.VK_ESCAPE;
+					
+	public static final int KEY_DELETE = KeyEvent.VK_DELETE;
+				
+	public static final int KEY_ALIGN_UP = KeyEvent.VK_0;
+					
+	public static final int KEY_ALIGN_DOWN = KeyEvent.VK_9;
+					
+	public static final int KEY_ALIGN_LEFT = KeyEvent.VK_8;
+					
+	public static final int KEY_ALIGN_RIGHT = KeyEvent.VK_7;
+					
+	public static final int KEY_ALIGN_HOR = KeyEvent.VK_6;
+					
+	public static final int KEY_ALIGN_VER = KeyEvent.VK_5;
+
+	
 	// Le mode par défaut est le mode création. C'est le mode qui sera actif à l'ouverture de l'application
 	private static final Mode DEFAULT_MODE = Mode.CREATING;
 	
@@ -305,9 +352,18 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	 */
 	private void setMode(Mode newMode)
 	{
-		if (newMode != Mode.CREATING)
+		// Si mode création
+		if (newMode == Mode.CREATING)
 		{
-			this.endPolygonCreation();
+			// Désélectionne tout
+			for (Shape shape : shapeList)
+			{
+				this.selectShape(shape, false);
+			}
+		}
+		else
+		{
+			this.endPolyCreation();
 		}
 		
 		if (newMode != this.currentMode)
@@ -359,7 +415,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		{
 			if (newShapeType != this.currentShapeType)
 			{
-				this.endPolygonCreation();
+				this.endPolyCreation();
 			}
 		}
 		
@@ -370,7 +426,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	// Si l'on change de type de forme ou de mode et qu'un polygone est en cours de création,
 	// on ajoute ce polygone dans la shapeList et on réinitialise la liste de points utilisée pour 
 	// sa construction . 
-	private void endPolygonCreation()
+	private void endPolyCreation()
 	{
 		if (this.polyPoints != null)
 		{
@@ -467,7 +523,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 				{
 					if (this.currentShapeType == ShapeType.FREELINE)
 					{
-						this.endPolygonCreation();
+						this.endPolyCreation();
 					}
 					else
 					{
@@ -661,108 +717,103 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	{	
 		switch (e.getKeyCode())
 		{
-			case KeyEvent.VK_1:
+			case DrawingPanel.KEY_CURRENT_FILL_AND_STROKE:
 				this.editRefShapeFillAndStroke();
 				break;
 				
-			case KeyEvent.VK_2:
+			case DrawingPanel.KEY_EDIT_FILL_AND_STROKE:
 				this.editSelectedShapeFillAndStroke();
 				break;
 
-			case KeyEvent.VK_G:
+			case DrawingPanel.KEY_GROUP:
 				this.groupSelectedShapes();
 				break;
 
-			case KeyEvent.VK_U:
+			case DrawingPanel.KEY_UNGROUP:
 				this.ungroupSelectedShape();
 				break;
 
-			case KeyEvent.VK_E:
+			case DrawingPanel.KEY_ELLIPSE:
 				this.setShapeType(ShapeType.ELLIPSE);
 				break;
 				
-			case KeyEvent.VK_S:
+			case DrawingPanel.KEY_SQUARE:
 				this.setShapeType(ShapeType.SQUARE);
 				break;
 				
-			case KeyEvent.VK_R:
+			case DrawingPanel.KEY_RECTANGLE:
 				this.setShapeType(ShapeType.RECTANGLE);
 				break;
 				
-			case KeyEvent.VK_C:
-//				if ((e.getModifiers() & ActionEvent.CTRL_MASK) != 0)
-//				{
-//					this.copySelectedShapes();
-//				}
-//				else
+			case DrawingPanel.KEY_CIRCLE:
 				{
 					this.setShapeType(ShapeType.CIRCLE);
 				}
 				break;
 
-			case KeyEvent.VK_P:
+			case DrawingPanel.KEY_POLYGON:
 				this.setShapeType(ShapeType.POLYGON);
 				break;
 				
-			case KeyEvent.VK_B:
+			case DrawingPanel.KEY_POLYLINE:
 				this.setShapeType(ShapeType.POLYLINE);
 				break;
 				
-			case KeyEvent.VK_F:
+			case DrawingPanel.KEY_FREELINE:
 				this.setShapeType(ShapeType.FREELINE);
 				break;
 				
-			case KeyEvent.VK_L:
+			case DrawingPanel.KEY_SELECTING:
 				this.setMode(Mode.SELECTING);
 				break;
 				
-			case KeyEvent.VK_ADD:
+			case DrawingPanel.KEY_ZOOM_IN:
 				this.zoom(1);
 				break;
 				
-			case KeyEvent.VK_SUBTRACT:
+			case DrawingPanel.KEY_ZOOM_OUT:
 				this.zoom(-1);
 				break;
 				
-			case KeyEvent.VK_ESCAPE:
+			case DrawingPanel.KEY_CANCEL:
 				// Annule ou termine une opération impliquant un drag
 				// ou la création d'un polygone
 				this.startDragPoint = null;
 				this.currentDragPoint = null;
 				this.repaint();
-				this.endPolygonCreation();
+				this.endPolyCreation();
 				break;
 				
-			case KeyEvent.VK_DELETE:
+			case DrawingPanel.KEY_DELETE:
 				this.deleteSelectedShapes();
 				break;
 			
-			case KeyEvent.VK_M:
+			case DrawingPanel.KEY_MOVING:
 			case KeyEvent.VK_SHIFT:
 				this.setMode(Mode.MOVING);
 				break;
 			
-			case KeyEvent.VK_0:
+			case DrawingPanel.KEY_ALIGN_UP:
 				this.align(Alignment.UP);
 				break;
 				
-			case KeyEvent.VK_9:
+			case DrawingPanel.KEY_ALIGN_DOWN:
 				this.align(Alignment.DOWN);
 				break;
 				
-			case KeyEvent.VK_8:
+			case DrawingPanel.KEY_ALIGN_LEFT:
 				this.align(Alignment.LEFT);
 				break;
 				
-			case KeyEvent.VK_7:
+			case DrawingPanel.KEY_ALIGN_RIGHT:
 				this.align(Alignment.RIGHT);
 				break;
 				
-			case KeyEvent.VK_6:
+			case DrawingPanel.KEY_ALIGN_HOR:
 				this.align(Alignment.HORIZONTAL);
 				break;
 				
-			case KeyEvent.VK_5:
+			case DrawingPanel.KEY_ALIGN_VER:
 				this.align(Alignment.VERTICAL);
 				break;			
 		}
@@ -1113,6 +1164,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		// Supprime toutes les formes sélectionnées 
 		ArrayList<Shape> selection = this.getCurrentSelection();
 		this.shapeList.removeAll(selection);
+		this.synchronizeSelection();
 		this.repaint();
 	}
 	
@@ -1140,20 +1192,6 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		this.setCursorForMode(this.currentMode);
 		this.repaint();
 	}
-	
-//	// Agrandit ou réduit les formes sélectionnées 
-//	// en multipliant leur scaling factor par 1.1 pour chaque unité de scalingAmount.
-//	// Par ex. si 3 est passé, sf = sf * 1.1^3. Si -2 est passé, sf = sf * 1.1^-2. 
-//	private void scaleSelectedShapes(int scalingAmount)
-//	{
-//		float scalingMultiplier = (float) Math.pow(1.1, scalingAmount);
-//
-//		for (Shape shape : this.getCurrentSelection())
-//		{
-//			shape.scale(scalingMultiplier, shape.getPosX() + shape.getWidth(), shape.getPosY() + shape.getHeight());
-//		}
-//		this.repaint();
-//	}
 	
 	/**
 	 * Retourne la liste de formes du dessin.

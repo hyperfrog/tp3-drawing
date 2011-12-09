@@ -33,7 +33,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 /**
- * La classe Board sert de conteneur à : dessin, barre d'outil, ...
+ * La classe Board sert de conteneur au panneau de dessin, 
+ * à la barre d'outils et à la liste de formes.
  *  
  * @author Micaël Lemelin
  * @author Christian Lesage
@@ -41,7 +42,7 @@ import java.util.ArrayList;
  * @author Pascal Turcot
  * 
  */
-public class Board extends JPanel implements ActionListener //, MouseListener
+public class Board extends JPanel implements ActionListener
 {
 	
 	private static final String FILE_EXT = "ser";
@@ -84,7 +85,7 @@ public class Board extends JPanel implements ActionListener //, MouseListener
 		this.add(this.appToolBar, BorderLayout.NORTH);
 		this.add(this.appShapeListBar, BorderLayout.EAST);
 
-//		this.appShapeListBar.setPreferredSize(new Dimension(150, this.drawingPanel.getHeight()));
+		this.appShapeListBar.setPreferredSize(new Dimension(125, this.drawingPanel.getHeight()));
 		
 		// Passe-passe pour envoyer les évènements du clavier au DrawingPanel 
 		// peu importe la composante qui a le focus (p. ex. barre d'outils).
@@ -346,38 +347,4 @@ public class Board extends JPanel implements ActionListener //, MouseListener
 		this.add(this.appShapeListBar, BorderLayout.EAST);
 		this.validate();
 	}
-	
-	
-//	/**
-//	 * Reçoit et traite les événements relatifs aux clics de la souris.
-//	 * Cette méthode doit être publique mais ne devrait pas être appelée directement.
-//	 * 
-//	 * @see java.awt.event.MouseListener#mouseClicked(java.awt.event.MouseEvent)
-//	 * 
-//	 * @param evt événement déclencheur
-//	 */
-//	@Override
-//	public void mouseReleased(MouseEvent evt)
-//	{
-//	}
-//	
-//	@Override
-//	public void mouseEntered(MouseEvent e)
-//	{
-//	}
-//	
-//	@Override
-//	public void mouseExited(MouseEvent e)
-//	{
-//	}
-//	
-//	@Override
-//	public void mousePressed(MouseEvent e)
-//	{
-//	}
-//	
-//	@Override
-//	public void mouseClicked(MouseEvent e)
-//	{
-//	}
 }

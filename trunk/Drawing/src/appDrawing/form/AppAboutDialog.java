@@ -30,10 +30,10 @@ import javax.swing.JPanel;
 public class AppAboutDialog extends JDialog implements ActionListener, WindowListener
 {
 	// Nom de l'application
-	private static final String APP_NAME = "Travail pratique 3 : Outils de dessin vectoriel";
+	private static final String APP_NAME = "Logiciel de dessin vectoriel";
 	
 	// Version de l'application
-	private static final String APP_VERSION = "v 1.0";
+	private static final String APP_VERSION = "Version 0.9 (alpha)";
 	
 	// Auteurs de l'application
 	private static final String APP_AUTHOR_ONE = "Micaël Lemelin";
@@ -135,7 +135,7 @@ public class AppAboutDialog extends JDialog implements ActionListener, WindowLis
 		this.version.setText(AppAboutDialog.APP_VERSION);
 		this.version.setFont(new Font(null, Font.ITALIC, 10));
 		
-		this.authors.setText(String.format("Auteurs : %s, %s, %s et %s", AppAboutDialog.APP_AUTHOR_ONE, AppAboutDialog.APP_AUTHOR_TWO, AppAboutDialog.APP_AUTHOR_THREE, AppAboutDialog.APP_AUTHOR_FOUR));
+		this.authors.setText(String.format("<html>Auteurs : <br/>%s, %s, %s et %s</html>", AppAboutDialog.APP_AUTHOR_ONE, AppAboutDialog.APP_AUTHOR_TWO, AppAboutDialog.APP_AUTHOR_THREE, AppAboutDialog.APP_AUTHOR_FOUR));
 		this.authors.setFont(new Font(null, Font.PLAIN, 14));
 		
 		this.infoPanel.add(this.title);
