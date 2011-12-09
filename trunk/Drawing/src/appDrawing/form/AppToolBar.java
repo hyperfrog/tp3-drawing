@@ -367,8 +367,8 @@ public class AppToolBar extends JToolBar implements ActionListener
 		this.add(this.creatingTool);
 		this.add(this.movingTool);
 		this.add(this.selectingTool);
-		this.addSeparator();
 		this.add(this.fillStrokeButton);
+		this.addSeparator();
 		this.add(this.ellipseButton);
 		this.add(this.circleButton);
 		this.add(this.rectangleButton);
@@ -436,7 +436,6 @@ public class AppToolBar extends JToolBar implements ActionListener
 					this.movingTool.setSelected(true);
 					this.hideCreationMode();
 					this.hideSelectionMode();
-					this.fillStrokeButton.setVisible(false);
 					break;
 				case SELECTING:
 					this.selectingTool.setSelected(true);
@@ -490,9 +489,6 @@ public class AppToolBar extends JToolBar implements ActionListener
 		this.polygonButton.setVisible(true);
 		this.lineButton.setVisible(true);
 		this.penButton.setVisible(true);
-		
-		this.fillStrokeButton.setVisible(true);
-		this.fillStrokeButton.setToolTipText("Remplissage et trait par défaut");
 	}
 	
 	// Cache les boutons en lien avec le mode création
@@ -518,9 +514,6 @@ public class AppToolBar extends JToolBar implements ActionListener
 		this.rightButton.setVisible(true);
 		this.horizontalButton.setVisible(true);
 		this.verticalButton.setVisible(true);
-		
-		this.fillStrokeButton.setVisible(true);
-		this.fillStrokeButton.setToolTipText("Remplissage et trait de la forme sélectionnée");
 	}
 	
 	// Cache les boutons en lien avec le mode sélection
@@ -584,6 +577,11 @@ public class AppToolBar extends JToolBar implements ActionListener
 			// Créer un évènement pour déclencher le mode sélection
 			keyCode = DrawingPanel.KEY_SELECTING;
 		}
+		else if (evt.getActionCommand().equals("FILL_STROKE_DIALOG"))
+		{
+			// Créer un évènement pour afficher la boîte de dialogue «Remplissage et trait»
+			keyCode = DrawingPanel.KEY_EDIT_FILL_AND_STROKE;
+		}
 		
 		if (this.creatingTool.isSelected())
 		{
@@ -621,11 +619,6 @@ public class AppToolBar extends JToolBar implements ActionListener
 			{
 				// Créer un évènement pour changer le type de forme à «Crayon»
 				keyCode = DrawingPanel.KEY_FREELINE;
-			}
-			else if (evt.getActionCommand().equals("FILL_STROKE_DIALOG"))
-			{
-				// Créer un évènement pour afficher la boîte de dialogue «Remplissage et trait»
-				keyCode = DrawingPanel.KEY_CURRENT_FILL_AND_STROKE;
 			}
 		}
 		else if (this.selectingTool.isSelected())
@@ -669,11 +662,6 @@ public class AppToolBar extends JToolBar implements ActionListener
 			{
 				// Créer un évènement pour aligner les formes sélectionnées verticalement
 				keyCode = DrawingPanel.KEY_ALIGN_VER;
-			}
-			else if (evt.getActionCommand().equals("FILL_STROKE_DIALOG"))
-			{
-				// Créer un évènement pour afficher la boîte de dialogue «Remplissage et trait»
-				keyCode = DrawingPanel.KEY_EDIT_FILL_AND_STROKE;
 			}
 		}
 		
