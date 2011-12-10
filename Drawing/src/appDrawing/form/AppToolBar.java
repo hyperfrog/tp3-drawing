@@ -18,7 +18,7 @@ import appDrawing.form.DrawingPanel.Mode;
 import appDrawing.form.DrawingPanel.ShapeType;
 
 /**
- * La classe AppToolBar créer une barre d'outils permettant d'intéragir
+ * La classe AppToolBar crée une barre d'outils permettant d'interagir
  * avec le programme de dessin vectoriel.
  * 
  * @author Micaël Lemelin
@@ -174,7 +174,7 @@ public class AppToolBar extends JToolBar implements ActionListener
 	private JButton verticalButton;
 	
 	/**
-	 * Créer une nouvelle barre d'outils.
+	 * Crée une nouvelle barre d'outils.
 	 * 
 	 * @param parent le Board qui contient la barre d'outils
 	 */
@@ -530,12 +530,12 @@ public class AppToolBar extends JToolBar implements ActionListener
 		}
 		else if (evt.getActionCommand().equals("SAVE"))
 		{
-			// Ouvre la boîte de dialogue «Sauvegarder»
+			// Ouvre la boîte de dialogue «Enregistrer»
 			this.parent.actionPerformed(evt);
 		}
 		else if (evt.getActionCommand().equals("SAVE_AS"))
 		{
-			// Ouvre la boîte de dialogue «Sauvegarder sous...»
+			// Ouvre la boîte de dialogue «Enregistrer sous...»
 			this.parent.actionPerformed(evt);
 		}
 		else if (evt.getActionCommand().equals("LOAD"))
@@ -641,6 +641,7 @@ public class AppToolBar extends JToolBar implements ActionListener
 			}
 		}
 		
+		// Si un évènement doit être envoyé à la composante du dessin
 		if (keyCode != -1)
 		{
 			char keyChar = KeyEvent.getKeyText(keyCode).charAt(0);

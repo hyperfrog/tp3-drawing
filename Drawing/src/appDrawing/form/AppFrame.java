@@ -21,9 +21,6 @@ import javax.swing.UIManager;
  */
 public class AppFrame extends JFrame implements ComponentListener, WindowListener
 {
-	// Titre de la fenêtre
-	public static final String APP_TITLE = "Draw me a shape ®";
-	
 	// Dimension initiale de la fenêtre
 	private static final Dimension INIT_SIZE = new Dimension(800, 600);
 	
@@ -59,7 +56,7 @@ public class AppFrame extends JFrame implements ComponentListener, WindowListene
 		
 		this.setJMenuBar(this.appMenu);
 		
-		this.setTitle(AppFrame.APP_TITLE);
+		this.setTitle(AppAboutDialog.APP_NAME);
 		this.setSize(AppFrame.INIT_SIZE);
 		this.setLocationRelativeTo(null);
 		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -86,6 +83,7 @@ public class AppFrame extends JFrame implements ComponentListener, WindowListene
 		}
 	}	
 	
+	// Change le look and feel pour celui de la plateforme
 	private void setNativeLookAndFeel()
 	{
 		try

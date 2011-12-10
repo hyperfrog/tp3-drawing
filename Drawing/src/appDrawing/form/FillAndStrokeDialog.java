@@ -39,41 +39,74 @@ import appDrawing.util.DeepCopy;
  */
 public class FillAndStrokeDialog extends JDialog implements ActionListener, WindowListener, ChangeListener
 {
-    private MiniDrawingPanel shapePanel;
+    // Panneau contenant la forme affichée
+	private MiniDrawingPanel shapePanel;
+
+	// Panneau contenant les contrôles
     private javax.swing.JPanel buttonPanel;
+    
+    // Bouton pour fermer la boîte en annulant l'opération 
     private javax.swing.JButton cancelButton;
+    
+    // Bouton pour changer la couleur 1 du dégradé
     private javax.swing.JButton gradColor1Button;
-    private javax.swing.JSlider gradColor1Slider;
+    
+    // Bouton pour changer la couleur 2 du dégradé
     private javax.swing.JButton gradColor2Button;
-    private javax.swing.JCheckBox gradColor2CheckBox;
+
+    // Slider pour changer la transparence de la couleur 1 du dégradé
+    private javax.swing.JSlider gradColor1Slider;
+    
+    // Slider pour changer la transparence de la couleur 1 du dégradé
     private javax.swing.JSlider gradColor2Slider;
+    
+    // Case à cocher pour désactiver le dégradé en utilisant une seule couleur 
+    private javax.swing.JCheckBox gradColor2CheckBox;
+
+    // Libellé «Remplissage»
     private javax.swing.JLabel gradLabel;
+    
+    // Panneau des contrôles du remplissage
     private javax.swing.JPanel gradPanel;
+
+    // Panneau des contrôles du trait
     private javax.swing.JPanel strokePanel;
+    
+    // Slider pour changer la transparence de la couleur du trait
     private javax.swing.JSlider strokeSlider;
+    
+    // Bouton pour fermer la boîte en acceptant les valeurs courantes 
     private javax.swing.JButton okButton;
+    
+    // Bouton pour réinitialiser les valeurs des contrôles
     private javax.swing.JButton resetButton;
+    
+    // Bouton pour changer la couleur du trait
     private javax.swing.JButton strokeColorButton;
+    
+    // Libellé «Trait»
     private javax.swing.JLabel strokeLabel;
+    
+    // Spinner pour contrôler l'épaisseur du trait
     private javax.swing.JSpinner strokeSpinner;
+    
+    // Libellé «Épaisseur :»
     private javax.swing.JLabel strokeWidthLabel;
     
-    // La forme de référence, utilisée pour restaurer les propriétés
+    // Forme originale, utilisée pour restaurer les propriétés
 	private Shape originalShape = null;
 
-	// Copie de la forme de référence, affichée dans la partie du haut
+	// Copie de la forme originale, affichée dans la partie du haut
     private Shape shape = null;
     
 	// Facteur d'agrandissement/réduction du dessin
 	private float scalingFactor = 1;
 	
-	// Déplacement actuel du dessin en coordonnées virtuelles
+	// Déplacement actuel du mini-dessin (celui dans cette boîte) en coordonnées virtuelles
 	private float virtualDeltaX;
 	private float virtualDeltaY;
 	
-	private AppFrame parent;
-	
-	// Code de résultat 
+	// Code indiquant le résultat à la fermeture de la boîte 
 	private int result = JOptionPane.CLOSED_OPTION;
 	
 	/**
@@ -88,8 +121,6 @@ public class FillAndStrokeDialog extends JDialog implements ActionListener, Wind
 	public FillAndStrokeDialog(AppFrame parent, Shape shape, String title)
 	{
 		super(parent);
-		
-		this.parent = parent;
 		
 		this.setTitle(title);
 		this.setResizable(false);
@@ -142,19 +173,13 @@ public class FillAndStrokeDialog extends JDialog implements ActionListener, Wind
 		
         // Écouteurs
         okButton.addActionListener(this);
-        okButton.setActionCommand("OK");
         cancelButton.addActionListener(this);
-        cancelButton.setActionCommand("CANCEL");
         resetButton.addActionListener(this);
-        resetButton.setActionCommand("REVERT");
         gradColor1Button.addActionListener(this);
-        gradColor1Button.setActionCommand("GRAD_COLOR_1");
         gradColor2Button.addActionListener(this);
-        gradColor2Button.setActionCommand("GRAD_COLOR_2");
         gradColor1Slider.addChangeListener(this);
         gradColor2Slider.addChangeListener(this);
         strokeColorButton.addActionListener(this);
-        strokeColorButton.setActionCommand("STROKE_COLOR");
         strokeSpinner.addChangeListener(this);
         strokeSlider.addChangeListener(this);
         gradColor2CheckBox.addChangeListener(this);
@@ -173,7 +198,8 @@ public class FillAndStrokeDialog extends JDialog implements ActionListener, Wind
 	/**
 	 * Retourne le code correspondant à l'action ayant mené à la fermeture du dialogue.
 	 * 
-	 * @return code correspondant à l'action ayant mené à la fermeture du dialogue
+	 * @return code correspondant à l'action ayant mené à la fermeture du dialogue. Les valeurs possibles sont : 
+	 * JOptionPane.CLOSED_OPTION, JOptionPane.OK_OPTION et JOptionPane.CANCEL_OPTION
 	 */
 	public int getResult()
 	{
@@ -181,15 +207,18 @@ public class FillAndStrokeDialog extends JDialog implements ActionListener, Wind
 	}
 	
 	/**
-	 * Retourne la forme modifiée ou non selon l'action ayant mené à la fermeture du dialogue.
+	 * Retourne la forme de départ, dont les propriétées ont été modifiées ou non 
+	 * selon l'action ayant mené à la fermeture du dialogue.
 	 * 
-	 * @return
+	 * @return la forme de départ, dont les propriétées ont été modifiées ou non 
+	 * selon l'action ayant mené à la fermeture du dialogue.
 	 */
 	public Shape getRefShape()
 	{
 		return this.shape;
 	}
 	
+	// Change les valeurs des contrôles pour refléter les propriétés de la forme 
 	private void readShapeValues()
 	{
         strokeSpinner.setValue((double) this.shape.getStrokeWidth());
@@ -199,6 +228,8 @@ public class FillAndStrokeDialog extends JDialog implements ActionListener, Wind
         gradColor2CheckBox.setSelected(false);
 	}
 	
+	// Cette classe privée implémente un panneau dans lequel il est possible d'afficher une forme 
+	// et de définir les points déterminant son dégradé par un clic gauche suivi d'un drag.
 	private class MiniDrawingPanel extends JPanel implements MouseListener, MouseMotionListener
 	{
 		// Point de départ d'un drag en coordonnées réelles
@@ -207,23 +238,20 @@ public class FillAndStrokeDialog extends JDialog implements ActionListener, Wind
 		// Point actuel d'un drag en coordonnées réelles
 		private Point currentDragPoint = null;
 
-
 		/**
-		 * Construit un mini panneau dans lequel il est possible de dessiner.
-		 * 
-		 * @param parent Objet parent du panneau, doit être du type Board
+		 * Construit un panneau dans lequel il est possible de d'affiche une forme.
 		 */
-		public MiniDrawingPanel(FillAndStrokeDialog parent)
+		public MiniDrawingPanel()
 		{
 			this.addMouseListener(this);
 			this.addMouseMotionListener(this);
 		}
 		
 		/**
-		 * Redessine le panneau. Vous ne devriez pas avoir à appeler cette méthode directement.
+		 * Redessine le panneau. 
+		 * Cette méthode doit être publique mais ne devrait pas être appelée directement.
 		 * 
 		 * @param g2d Graphics dans lequel le panneau doit se dessiner
-		 * 
 		 */
 		public void paintComponent(Graphics g)
 		{
@@ -251,12 +279,28 @@ public class FillAndStrokeDialog extends JDialog implements ActionListener, Wind
 		@Override
 		public void mouseExited(MouseEvent e) { }
 
+		/** 
+		 * Initialise le point de départ du drag.
+		 * Cette méthode doit être publique mais ne devrait pas être appelée directement.
+		 * 
+		 * @see java.awt.event.MouseListener#mousePressed(java.awt.event.MouseEvent)
+		 * 
+		 * @param e événement déclencheur
+		 */
 		@Override
 		public void mousePressed(MouseEvent e)
 		{
 			startDragPoint = e.getPoint();
 		}
 
+		/** 
+		 * Réinitialise les points définissant le drag.
+		 * Cette méthode doit être publique mais ne devrait pas être appelée directement.
+		 * 
+		 * @see java.awt.event.MouseListener#mouseReleased(java.awt.event.MouseEvent)
+		 * 
+		 * @param e événement déclencheur
+		 */
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
@@ -265,6 +309,14 @@ public class FillAndStrokeDialog extends JDialog implements ActionListener, Wind
 			currentDragPoint = null;
 		}
 
+		/** 
+		 * Définit les points déterminant le dégradé de la forme.
+		 * Cette méthode doit être publique mais ne devrait pas être appelée directement.
+		 * 
+		 * @see java.awt.event.MouseMotionListener#mouseDragged(java.awt.event.MouseEvent)
+		 * 
+		 * @param e événement déclencheur
+		 */
 		@Override
 		public void mouseDragged(MouseEvent e)
 		{
@@ -293,47 +345,47 @@ public class FillAndStrokeDialog extends JDialog implements ActionListener, Wind
 	}
 	
 	/**
-	 * Reçoit et traite les événements relatifs aux boutons
+	 * Reçoit et traite les événements relatifs aux boutons.
 	 * Cette méthode doit être publique mais ne devrait pas être appelée directement.
 	 * 
 	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 	 * 
-	 * @param evt événement déclencheur
+	 * @param e événement déclencheur
 	 */
 	@Override
-	public void actionPerformed(ActionEvent evt)
+	public void actionPerformed(ActionEvent e)
 	{
-		if (evt.getActionCommand().equals("OK"))
+		if (e.getSource() == this.okButton)
 		{
 			this.result = JOptionPane.OK_OPTION;
 			this.close();
 		}
-		else if (evt.getActionCommand().equals("GRAD_COLOR_1"))
+		else if (e.getSource() == this.gradColor1Button)
 		{
 			Color c = JColorChooser.showDialog(this, "Choix de la couleur 1", this.shape.getGradColor1());
 			
 			if (c != null)
 			{
-				this.shape.setGradColor1(this.getSameColorWithNewAlpha(c, gradColor1Slider.getValue()));
+				this.shape.setGradColor1(this.getSameColorWithNewAlpha(c, this.gradColor1Slider.getValue()));
 				if (this.gradColor2CheckBox.isSelected())
 				{
-					this.shape.setGradColor2(this.getSameColorWithNewAlpha(c, gradColor2Slider.getValue()));
+					this.shape.setGradColor2(this.getSameColorWithNewAlpha(c, this.gradColor2Slider.getValue()));
 				}
 
 				this.shapePanel.repaint();
 			}
 		}
-		else if (evt.getActionCommand().equals("GRAD_COLOR_2"))
+		else if (e.getSource() == this.gradColor2Button) 
 		{
 			Color c = JColorChooser.showDialog(this, "Choix de la couleur 2", this.shape.getGradColor2());
 			
 			if (c != null)
 			{
-				this.shape.setGradColor2(this.getSameColorWithNewAlpha(c, gradColor2Slider.getValue()));
+				this.shape.setGradColor2(this.getSameColorWithNewAlpha(c, this.gradColor2Slider.getValue()));
 				this.shapePanel.repaint();
 			}
 		}
-		else if (evt.getActionCommand().equals("STROKE_COLOR"))
+		else if (e.getSource() == this.strokeColorButton) 
 		{
 			Color c = JColorChooser.showDialog(this, "Choix de la couleur du trait", this.shape.getStrokeColor());
 			if (c != null)
@@ -342,14 +394,14 @@ public class FillAndStrokeDialog extends JDialog implements ActionListener, Wind
 				this.shapePanel.repaint();
 			}
 		}
-		else if (evt.getActionCommand().equals("REVERT"))
+		else if (e.getSource() == this.resetButton) 
 		{
 			this.shape = (Shape) DeepCopy.copy(this.originalShape);
 			this.shape.setSelected(false);
 			this.readShapeValues();
 			this.repaint();
 		}
-		else if (evt.getActionCommand().equals("CANCEL"))
+		else if (e.getSource() == this.cancelButton) 
 		{
 			this.shape = this.originalShape;
 			this.result = JOptionPane.CANCEL_OPTION;
@@ -388,34 +440,42 @@ public class FillAndStrokeDialog extends JDialog implements ActionListener, Wind
 	@Override
 	public void windowOpened(WindowEvent evt) { }
 
+	/**
+	 * Méthode appelée quand change la valeur d'un slider contrôlant la transparence d'une couleur 
+	 * ou celle du spinner contrôlant l'épaisseur du trait.
+	 *    
+	 * @see javax.swing.event.ChangeListener#stateChanged(javax.swing.event.ChangeEvent)
+	 * 
+	 * @param e événement déclencheur
+	 */
 	@Override
 	public void stateChanged(ChangeEvent e)
 	{
-		if (e.getSource() == strokeSpinner)
+		if (e.getSource() == this.strokeSpinner)
 		{
 			this.shape.setStrokeWidth(((Double)this.strokeSpinner.getValue()).floatValue());
 		}
-		else if (e.getSource() == strokeSlider)
+		else if (e.getSource() == this.strokeSlider)
 		{
-			this.shape.setStrokeColor(this.getSameColorWithNewAlpha(this.shape.getStrokeColor(), strokeSlider.getValue()));
+			this.shape.setStrokeColor(this.getSameColorWithNewAlpha(this.shape.getStrokeColor(), this.strokeSlider.getValue()));
 		}
-		else if (e.getSource() == gradColor1Slider)
+		else if (e.getSource() == this.gradColor1Slider)
 		{
-			this.shape.setGradColor1(this.getSameColorWithNewAlpha(this.shape.getGradColor1(), gradColor1Slider.getValue()));
+			this.shape.setGradColor1(this.getSameColorWithNewAlpha(this.shape.getGradColor1(), this.gradColor1Slider.getValue()));
 
 			if (this.gradColor2CheckBox.isSelected())
 			{
 				this.gradColor2Slider.setValue(this.gradColor1Slider.getValue());
 			}
 		}
-		else if (e.getSource() == gradColor2Slider)
+		else if (e.getSource() == this.gradColor2Slider)
 		{
-			this.shape.setGradColor2(this.getSameColorWithNewAlpha(this.shape.getGradColor2(), gradColor2Slider.getValue()));
+			this.shape.setGradColor2(this.getSameColorWithNewAlpha(this.shape.getGradColor2(), this.gradColor2Slider.getValue()));
 		}
-		else if (e.getSource() == gradColor2CheckBox)
+		else if (e.getSource() == this.gradColor2CheckBox)
 		{
-			gradColor2Button.setEnabled(!gradColor2CheckBox.isSelected());
-			gradColor2Slider.setEnabled(!gradColor2CheckBox.isSelected());
+			this.gradColor2Button.setEnabled(!this.gradColor2CheckBox.isSelected());
+			this.gradColor2Slider.setEnabled(!this.gradColor2CheckBox.isSelected());
 			
 			if (this.gradColor2CheckBox.isSelected())
 			{
@@ -428,6 +488,7 @@ public class FillAndStrokeDialog extends JDialog implements ActionListener, Wind
 		this.shapePanel.repaint();
 	}
 
+	// Retourne la même couleur que celle spécifiée, mais avec la valeur alpha spécifiée  
 	private Color getSameColorWithNewAlpha(Color color, int alpha)
 	{
 		int rgbaColor = color.getRGB();
@@ -439,10 +500,11 @@ public class FillAndStrokeDialog extends JDialog implements ActionListener, Wind
 		return new Color(rgbaColor, true);
 	}
 	
-	// Initialise les composantes de la boîte de dialogue
+	// Initialise les composantes de la boîte de dialogue.
+	// Code généré automatiquement par NetBeans.
 	private void initComponents()
 	{
-        shapePanel = new MiniDrawingPanel(this);
+        shapePanel = new MiniDrawingPanel();
         buttonPanel = new javax.swing.JPanel();
         okButton = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
