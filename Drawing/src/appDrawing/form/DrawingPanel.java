@@ -331,10 +331,22 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	 */
 	private void setMode(Mode newMode)
 	{
-		this.setCursorForMode(newMode);
-
 		if (newMode != this.currentMode)
 		{
+			// Si mode création
+			if (newMode == Mode.CREATING)
+			{
+				// Désélectionne tout
+				for (Shape shape : shapeList)
+				{
+					this.selectShape(shape, false);
+				}
+			}
+			else
+			{
+				this.endPolyCreation();
+			}
+
 			this.parent.getToolBar().toggleMode(newMode);
 
 			// Mémorise les modes non «transitoires»
@@ -342,23 +354,11 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 			{
 				this.lastMode = this.currentMode;
 			}
-		}
-		
-		this.currentMode = newMode;
 
-		// Si mode création
-		if (newMode == Mode.CREATING)
-		{
-			// Désélectionne tout
-			for (Shape shape : shapeList)
-			{
-				this.selectShape(shape, false);
-			}
+			this.currentMode = newMode;
 		}
-		else
-		{
-			this.endPolyCreation();
-		}
+
+		this.setCursorForMode(newMode);
 	}
 	
 	/*
@@ -552,7 +552,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 			else 
 			{
 				Handle handle = this.getContainingHandle(this.currentMousePos);
-
+				// Le pointeur est-il sur une poignée? 
 				if (handle != null)
 				{
 					this.setMode(Mode.RESIZING);
@@ -623,11 +623,6 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 					{
 						// Inverse la sélection de cette forme 
 						this.selectShape(shapeToSelect, !shapeToSelect.isSelected());
-						
-						if (shapeToSelect.isSelected() && ((e.getModifiers() & ActionEvent.CTRL_MASK) == 0))
-						{
-							this.setMode(Mode.MOVING);
-						}
 					}
 					
 					// Si Ctrl pas enfoncé, désélectionne tout sauf la forme trouvée 
@@ -657,6 +652,9 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		{
 			this.setMode(this.lastMode);
 		}
+		
+		// Vérifie si le curseur ou le mode doivent être changés selon le mode courant et la position du pointeur
+		this.checkIfOverHandleOrShape(e.getModifiers());
 	}
 	
 	@Override
@@ -731,7 +729,8 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		{
 			this.repaint();
 		}
-		
+
+		// Vérifie si le curseur ou le mode doivent être changés selon le mode courant et la position du pointeur
 		this.checkIfOverHandleOrShape(e.getModifiers());
 	}
 
@@ -867,6 +866,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		switch (e.getKeyCode())
 		{
 			case KeyEvent.VK_CONTROL:
+				// Vérifie si le curseur ou le mode doivent être changés selon le mode courant et la position du pointeur
 				this.checkIfOverHandleOrShape(e.getModifiers());
 				break;
 		}		
@@ -1263,6 +1263,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		this.virtualDeltaX += (newWidth - originalWidth) / 2;
 		this.virtualDeltaY += (newHeight - originalHeight) / 2;
 
+		// Vérifie si le curseur ou le mode doivent être changés selon le mode courant et la position du pointeur
 		this.checkIfOverHandleOrShape(this.currentModifiers);
 		
 		this.repaint();
