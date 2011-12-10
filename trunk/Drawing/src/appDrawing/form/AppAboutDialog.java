@@ -31,7 +31,7 @@ import javax.swing.JPanel;
 public class AppAboutDialog extends JDialog implements ActionListener, WindowListener
 {
 	// Nom de l'application
-//	private static final String APP_NAME = "Dessine-moi un mouton";
+	public static final String APP_NAME = "Draw me a shape ®";
 	
 	// Version de l'application
 	private static final String APP_VERSION = "Version 0.9 (alpha) - 9 décembre 2011";
@@ -95,7 +95,7 @@ public class AppAboutDialog extends JDialog implements ActionListener, WindowLis
 	{
 		super(parent);
 		
-		this.setTitle("À propos de " + AppFrame.APP_TITLE);
+		this.setTitle("À propos de " + AppAboutDialog.APP_NAME);
 		this.setResizable(false);
 		this.setModal(true);
 		
@@ -133,7 +133,7 @@ public class AppAboutDialog extends JDialog implements ActionListener, WindowLis
 		this.logo.setIcon(AppAboutDialog.aboutLogo != null ? new ImageIcon(AppAboutDialog.aboutLogo) : null);
 		this.logo.setPreferredSize(new Dimension(256, 256));
 		
-		this.title.setText(AppFrame.APP_TITLE);
+		this.title.setText(AppAboutDialog.APP_NAME);
 		this.title.setFont(new Font(null, Font.BOLD, 24));
 		
 		this.version.setText(AppAboutDialog.APP_VERSION);

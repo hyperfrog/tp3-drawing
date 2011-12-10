@@ -149,12 +149,12 @@ public class AppMenu extends JMenuBar implements ActionListener
 		}
 		else if (evt.getActionCommand().equals("SAVE_AS"))
 		{
-			// Demande au Board de sauvergarder sous un dessin
+			// Demande au Board d'enregistrer sous 
 			this.parent.getBoard().actionPerformed(evt);
 		}
 		else if (evt.getActionCommand().equals("SAVE"))
 		{
-			// Demande au Board de sauvergarder un dessin
+			// Demande au Board d'enregistrer
 			this.parent.getBoard().actionPerformed(evt);
 		}
 		else if (evt.getActionCommand().equals("LOAD"))

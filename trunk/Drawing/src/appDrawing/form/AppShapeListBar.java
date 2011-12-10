@@ -20,26 +20,46 @@ import ca.odell.glazedlists.swing.EventListModel;
 import appDrawing.form.DrawingPanel.Mode;
 import appDrawing.model.Shape;
 
+/**
+ * La classe AppShapeListBar implémente une composante affichant la liste des formes du dessin
+ * et des boutons pour changer l'ordre de la forme sélectionnée.
+ * 
+ * @author Micaël Lemelin
+ * @author Christian Lesage
+ * @author Alexandre Tremblay
+ * @author Pascal Turcot
+ */
 public class AppShapeListBar extends JPanel implements ListSelectionListener, ActionListener
 {
+	// JList utilisé par la composante pour l'affichage
 	private JList visualShapeList;
+
+	// Liste de formes sous-jacente à la liste affichée
 	private EventList<Shape> shapeList;
-	private EventListModel<Shape> shapeListModel;
+	
+	// Conteneur de la composante
 	private Board parent = null;
+	
+	// Bouton pour faire remonter une forme dans la liste
 	private JButton upButton;
+	
+	// Bouton pour faire descendre une forme dans la liste
 	private JButton downButton;
-	private JScrollPane scrollPane;
 	
-	
+	/**
+	 * Construit une composante AppShapeListBar.
+	 * 
+	 * @param parent conteneur de la composante
+	 * @param shapeList liste de formes sous-jacente à la liste affichée 
+	 */
 	public AppShapeListBar(Board parent, EventList<Shape> shapeList)
 	{
 		this.parent = parent;
 
 		this.shapeList = shapeList;
-		this.shapeListModel = new EventListModel<Shape>(this.shapeList);
-		this.visualShapeList = new JList(this.shapeListModel);
-//		this.visualShapeList.setPrototypeCellValue("Index 1234567890");
-		this.scrollPane = new JScrollPane(this.visualShapeList);
+		EventListModel<Shape> shapeListModel = new EventListModel<Shape>(this.shapeList);
+		this.visualShapeList = new JList(shapeListModel);
+		JScrollPane scrollPane = new JScrollPane(this.visualShapeList);
 		
 		this.setLayout(new BorderLayout());
 		this.add(scrollPane, BorderLayout.CENTER);
@@ -64,21 +84,25 @@ public class AppShapeListBar extends JPanel implements ListSelectionListener, Ac
 	}
 	
 	/**
-	 * Retourne le JList de la composante.
+	 * Retourne le JList utilisé par la composante.
 	 * 
-	 * @return JList de la composante
+	 * @return JList utilisé par la composante
 	 */
 	public JList getVisualShapeList()
 	{
 		return this.visualShapeList;
 	}
 
+	/* (non-Javadoc)
+	 * @see javax.swing.event.ListSelectionListener#valueChanged(javax.swing.event.ListSelectionEvent)
+	 */
 	@Override
-	// Listener method for list selection changes.
 	public void valueChanged(ListSelectionEvent e)
 	{
 		if (e.getValueIsAdjusting() == false)
 		{
+			// Active ou désactive les boutons selon le nombre de formes sélectionnées
+			// ou la position de la forme sélectionnée
 			this.upButton.setEnabled(false);
 			this.downButton.setEnabled(false);
 
@@ -99,6 +123,7 @@ public class AppShapeListBar extends JPanel implements ListSelectionListener, Ac
 				}
 			}
 
+			// Construit une liste des indices des formes sélectionnées dans la JList
 			List<Integer> selectedIndices = new ArrayList<Integer>();
 
 			for (int index = 0; index < this.visualShapeList.getSelectedIndices().length; index++)
@@ -106,11 +131,13 @@ public class AppShapeListBar extends JPanel implements ListSelectionListener, Ac
 				selectedIndices.add(this.visualShapeList.getSelectedIndices()[index]);
 			}
 
+			// Sélectionne les formes correspondantes dans la liste sous-jacente
 			for (int i = 0; i < this.shapeList.size(); i++)
 			{
 				this.shapeList.get(i).setSelected(selectedIndices.contains(i));
 			}
 			
+			// Change le mode d'opération du dessin au besoin 
 			Mode currentMode = this.parent.getDrawingPanel().getCurrentMode();
 			
 			if (currentMode != Mode.SELECTING && currentMode != Mode.MOVING)
@@ -122,6 +149,9 @@ public class AppShapeListBar extends JPanel implements ListSelectionListener, Ac
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+	 */
 	@Override
 	public void actionPerformed(ActionEvent e)
 	{

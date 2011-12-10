@@ -33,8 +33,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 /**
- * La classe Board sert de conteneur au panneau de dessin, 
- * à la barre d'outils et à la liste de formes.
+ * La composante Board sert de conteneur aux composantes suivantes :
+ * panneau de dessin, barre d'outils et liste de formes.
  * 
  * @author Micaël Lemelin
  * @author Christian Lesage
@@ -48,23 +48,25 @@ public class Board extends JPanel implements ActionListener
 	private static final String FILE_EXT = "ser";
 	private static final String FILE_DESCRIPTION = "Fichiers de dessin (*.ser)";
 	
-	// Objet parent
+	// JFrame parent
 	private AppFrame parent = null;
 	
-	// Panneau dans lequel la partie est dessinée
+	// Composante du dessin
 	private DrawingPanel drawingPanel;
 	
-	// Barre d'outils
+	// Composante de la barre d'outils
 	private AppToolBar appToolBar;
 	
+	// Composante de la liste de formes
 	private AppShapeListBar appShapeListBar;
 	
+	// Chemin absolu du fichier courant 
 	private String filePath = null;
 	
 	/**
-	 * Construit un plateau.
+	 * Construit une composante Board.
 	 * 
-	 * @param parent Objet parent du plateau
+	 * @param parent JFrame contenant la composante.
 	 * 
 	 */
 	public Board(AppFrame parent)
@@ -87,7 +89,7 @@ public class Board extends JPanel implements ActionListener
 		
 		// Passe-passe pour envoyer les évènements du clavier au DrawingPanel 
 		// peu importe la composante qui a le focus (p. ex. barre d'outils).
-		// Peut-être temporaire... en attendant de trouver mieux.
+		// Sans doute temporaire... en attendant de trouver mieux.
 		this.drawingPanel.setFocusable(false);
 		final DrawingPanel dp = this.drawingPanel;
 
@@ -137,6 +139,7 @@ public class Board extends JPanel implements ActionListener
 	    boolean doSave = true;
 	    String filePath = null;
 	    
+	    // S'il faut demander un nouveau path ou si le path n'a jamais été demandé
 	    if (askFileName || this.filePath == null)
 	    {
 	    	if (fc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) 
@@ -158,11 +161,12 @@ public class Board extends JPanel implements ActionListener
 	    					"Remplacer ?", 
 	    					JOptionPane.YES_NO_OPTION, 
 	    					JOptionPane.QUESTION_MESSAGE);
-
+	    			
+	    			// Sauvegarde seulement si l'utilisateur veut écraser
 	    			doSave = (result == JOptionPane.YES_OPTION);
 	    		}
 	    	}
-	    	else 
+	    	else // Opération annulée
 	    	{
 	    		doSave = false;
 	    	}
@@ -170,6 +174,7 @@ public class Board extends JPanel implements ActionListener
 	    
 	    if (doSave)
 	    {
+	    	// Si aucun nouveau path choisi, prend l'ancien; sinon, mémorise le nouveau.
 	    	if (filePath == null)
     		{
     			filePath = this.filePath;
@@ -262,8 +267,9 @@ public class Board extends JPanel implements ActionListener
 	}
 	
 	/**
+	 * Retourne la composante de la barre d'outils.
 	 * 
-	 * @return
+	 * @return composante de la barre d'outils
 	 */
 	public AppToolBar getToolBar()
 	{
@@ -271,8 +277,9 @@ public class Board extends JPanel implements ActionListener
 	}
 	
 	/**
+	 * Retourne la composante affichant la liste de formes.
 	 * 
-	 * @return
+	 * @return composante affichant la liste de formes
 	 */
 	public AppShapeListBar getShapeListBar()
 	{
@@ -280,8 +287,9 @@ public class Board extends JPanel implements ActionListener
 	}
 	
 	/**
+	 * Retourne la composante du dessin.
 	 * 
-	 * @return
+	 * @return composante du dessin
 	 */
 	public DrawingPanel getDrawingPanel()
 	{
@@ -289,7 +297,9 @@ public class Board extends JPanel implements ActionListener
 	}
 	
 	/**
-	 * @return the parent
+	 * Retourne le JFrame contenant la composante.
+	 * 
+	 * @return JFrame contenant la composante
 	 */
 	public AppFrame getFrame()
 	{
@@ -297,7 +307,9 @@ public class Board extends JPanel implements ActionListener
 	}
 
 	/**
-	 * @return the appShapeListBar
+	 * Retourne la composante de la liste de formes.
+	 * 
+	 * @return composante de la liste de formes
 	 */
 	public AppShapeListBar getAppShapeListBar()
 	{
@@ -305,8 +317,8 @@ public class Board extends JPanel implements ActionListener
 	}
 
 	/**
-	 * Reçoit et traite les événements relatifs à ...
-	 * Cette méthode doit être publique mais ne devrait pas être appelée directement.
+	 * Reçoit et traite des événements relatifs aux menus. 
+	 * Ces événements sont redirigés depuis AppMenu.
 	 * 
 	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 	 * 
@@ -338,6 +350,7 @@ public class Board extends JPanel implements ActionListener
 		}
 	}
 	
+	// Remplace la composante de la liste de formes par une nouvelle.
 	private void resetShapeListBar()
 	{
 		if (this.appShapeListBar != null)
