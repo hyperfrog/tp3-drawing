@@ -61,32 +61,32 @@ public class AppToolBar extends JToolBar implements ActionListener
     {
     	try
     	{
-    		AppToolBar.newImage = ImageIO.read(AppToolBar.class.getResource("../../res/new_file.png"));
-    		AppToolBar.saveImage = ImageIO.read(AppToolBar.class.getResource("../../res/save.png"));
-    		AppToolBar.saveAsImage = ImageIO.read(AppToolBar.class.getResource("../../res/save_as.png"));
-    		AppToolBar.loadImage = ImageIO.read(AppToolBar.class.getResource("../../res/open.png"));
+    		AppToolBar.newImage = ImageIO.read(AppToolBar.class.getResource("/res/new_file.png"));
+    		AppToolBar.saveImage = ImageIO.read(AppToolBar.class.getResource("/res/save.png"));
+    		AppToolBar.saveAsImage = ImageIO.read(AppToolBar.class.getResource("/res/save_as.png"));
+    		AppToolBar.loadImage = ImageIO.read(AppToolBar.class.getResource("/res/open.png"));
 
-    		AppToolBar.creatingImage = ImageIO.read(AppToolBar.class.getResource("../../res/creating_mode.png"));
-    		AppToolBar.selectingImage = ImageIO.read(AppToolBar.class.getResource("../../res/selecting_mode.png"));
-    		AppToolBar.fillStrokeImage = ImageIO.read(AppToolBar.class.getResource("../../res/fill_stroke.png"));
+    		AppToolBar.creatingImage = ImageIO.read(AppToolBar.class.getResource("/res/creating_mode.png"));
+    		AppToolBar.selectingImage = ImageIO.read(AppToolBar.class.getResource("/res/selecting_mode.png"));
+    		AppToolBar.fillStrokeImage = ImageIO.read(AppToolBar.class.getResource("/res/fill_stroke.png"));
     		
-    		AppToolBar.circleImage = ImageIO.read(AppToolBar.class.getResource("../../res/circle.png"));
-    		AppToolBar.ellipseImage = ImageIO.read(AppToolBar.class.getResource("../../res/ellipse.png"));
-    		AppToolBar.rectangleImage = ImageIO.read(AppToolBar.class.getResource("../../res/rectangle.png"));
-    		AppToolBar.squareImage = ImageIO.read(AppToolBar.class.getResource("../../res/square.png"));
-    		AppToolBar.polygonImage = ImageIO.read(AppToolBar.class.getResource("../../res/polygon.png"));
-    		AppToolBar.lineImage = ImageIO.read(AppToolBar.class.getResource("../../res/line.png"));
-    		AppToolBar.penImage = ImageIO.read(AppToolBar.class.getResource("../../res/pen.png"));
+    		AppToolBar.circleImage = ImageIO.read(AppToolBar.class.getResource("/res/circle.png"));
+    		AppToolBar.ellipseImage = ImageIO.read(AppToolBar.class.getResource("/res/ellipse.png"));
+    		AppToolBar.rectangleImage = ImageIO.read(AppToolBar.class.getResource("/res/rectangle.png"));
+    		AppToolBar.squareImage = ImageIO.read(AppToolBar.class.getResource("/res/square.png"));
+    		AppToolBar.polygonImage = ImageIO.read(AppToolBar.class.getResource("/res/polygon.png"));
+    		AppToolBar.lineImage = ImageIO.read(AppToolBar.class.getResource("/res/line.png"));
+    		AppToolBar.penImage = ImageIO.read(AppToolBar.class.getResource("/res/pen.png"));
 
-    		AppToolBar.groupImage = ImageIO.read(AppToolBar.class.getResource("../../res/group.png"));
-    		AppToolBar.ungroupImage = ImageIO.read(AppToolBar.class.getResource("../../res/ungroup.png"));
+    		AppToolBar.groupImage = ImageIO.read(AppToolBar.class.getResource("/res/group.png"));
+    		AppToolBar.ungroupImage = ImageIO.read(AppToolBar.class.getResource("/res/ungroup.png"));
 
-    		AppToolBar.upImage = ImageIO.read(AppToolBar.class.getResource("../../res/up.png"));
-    		AppToolBar.downImage = ImageIO.read(AppToolBar.class.getResource("../../res/down.png"));
-    		AppToolBar.leftImage = ImageIO.read(AppToolBar.class.getResource("../../res/left.png"));
-    		AppToolBar.rightImage = ImageIO.read(AppToolBar.class.getResource("../../res/right.png"));
-    		AppToolBar.horizontalImage = ImageIO.read(AppToolBar.class.getResource("../../res/horizontal.png"));
-    		AppToolBar.verticalImage = ImageIO.read(AppToolBar.class.getResource("../../res/vertical.png"));
+    		AppToolBar.upImage = ImageIO.read(AppToolBar.class.getResource("/res/up.png"));
+    		AppToolBar.downImage = ImageIO.read(AppToolBar.class.getResource("/res/down.png"));
+    		AppToolBar.leftImage = ImageIO.read(AppToolBar.class.getResource("/res/left.png"));
+    		AppToolBar.rightImage = ImageIO.read(AppToolBar.class.getResource("/res/right.png"));
+    		AppToolBar.horizontalImage = ImageIO.read(AppToolBar.class.getResource("/res/horizontal.png"));
+    		AppToolBar.verticalImage = ImageIO.read(AppToolBar.class.getResource("/res/vertical.png"));
     	}
     	catch (IOException e)
     	{
