@@ -50,7 +50,7 @@ public class AppAboutDialog extends JDialog implements ActionListener, WindowLis
 	{
 		try
 		{
-			AppAboutDialog.aboutLogo = ImageIO.read(AppAboutDialog.class.getResource("../../res/logo.png"));
+			AppAboutDialog.aboutLogo = ImageIO.read(AppAboutDialog.class.getResource("/res/logo.png"));
 		}
 		catch (IOException e)
 		{
