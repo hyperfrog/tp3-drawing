@@ -1,6 +1,3 @@
-/**
- * 
- */
 package appDrawing.model;
 
 import java.awt.Graphics2D;
@@ -9,6 +6,8 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
 /**
+ * La classe Group modélise un groupe de formes. 
+ * 
  * @author Micaël Lemelin
  * @author Christian Lesage
  * @author Alexandre Tremblay
@@ -19,7 +18,7 @@ public class Group extends Shape
 {
 	private static final long serialVersionUID = 5306986414553087239L;
 	
-	// Liste de formes du groupe
+	// Liste des formes faisant partie du groupe
 	private ArrayList<Shape> shapeList = new ArrayList<Shape>();
 	
 	/**

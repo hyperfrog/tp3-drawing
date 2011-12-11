@@ -1,9 +1,8 @@
-/**
- * 
- */
 package appDrawing.model;
 
 /**
+ * La classe Circle sert à créer des cercles dans un dessin.
+ * 
  * @author Micaël Lemelin
  * @author Christian Lesage
  * @author Alexandre Tremblay

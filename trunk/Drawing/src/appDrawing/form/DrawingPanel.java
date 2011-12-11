@@ -238,9 +238,14 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	// Dessine un rectangle pointillé 
 	private void drawDashedBox(Graphics2D g2d, java.awt.Rectangle rect)
 	{
-		g2d.setColor(Color.GRAY);
+		g2d.setXORMode(Color.WHITE);
+		g2d.setColor(Color.BLACK);
+		
+//		g2d.setColor(Color.GRAY);
 		g2d.setStroke(DrawingPanel.DASHED_STROKE);
 		g2d.drawRect(rect.x, rect.y, rect.width, rect.height);
+
+		g2d.setPaintMode();
 	}
 	
 	/*
@@ -537,15 +542,13 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	@Override
 	public void mousePressed(MouseEvent e)
 	{
-		this.repaint();
-		
 		this.startDragPoint = e.getPoint();
 
 		// Si bouton de gauche et mode sélection actif
 		if (e.getButton() == MouseEvent.BUTTON1 && (this.currentMode == Mode.SELECTING || this.currentMode == Mode.MOVING))
 		{
-			// Si Ctrl enfoncé
-			if (this.currentMode == Mode.SELECTING && (e.getModifiers() & ActionEvent.CTRL_MASK) != 0)
+			// Si Ctrl enfoncé (alors nécessairement en mode sélection)
+			if ((e.getModifiers() & ActionEvent.CTRL_MASK) != 0)
 			{
 				this.alreadySelectedShapes = this.getCurrentSelection();
 			}
@@ -568,6 +571,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		{
 			// Début du mode panning
 			this.setMode(Mode.PANNING);
+			this.repaint();
 		}
 	}
 	
@@ -647,7 +651,6 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		this.alreadySelectedShapes.clear();
 		
 		// Si mode «transitoire» actif, rappelle le mode précédent
-//		if (this.currentMode == Mode.PANNING  || this.currentMode == Mode.MOVING || this.currentMode == Mode.RESIZING)
 		if (this.currentMode == Mode.PANNING || this.currentMode == Mode.RESIZING)
 		{
 			this.setMode(this.lastMode);
@@ -744,7 +747,6 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	public void keyPressed(KeyEvent e)
 	{	
 		this.currentModifiers = e.getModifiers();
-//		System.out.println(e.getModifiers());
 		
 		switch (e.getKeyCode())
 		{
@@ -801,8 +803,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 				break;
 				
 			case DrawingPanel.KEY_CANCEL:
-				// Annule ou termine une opération impliquant un drag
-				// ou la création d'un polygone
+				// Annule ou termine une opération impliquant un drag ou la création d'un polygone
 				this.startDragPoint = null;
 				this.currentDragPoint = null;
 				this.repaint();
@@ -861,7 +862,6 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	public void keyReleased(KeyEvent e)
 	{
 		this.currentModifiers = e.getModifiers();
-//		System.out.println(e.getModifiers());
 
 		switch (e.getKeyCode())
 		{
@@ -902,7 +902,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 			int index = this.shapeList.indexOf(selection.get(i));
 			indices[i] = index;
 		}
-
+		
 		this.parent.getAppShapeListBar().getVisualShapeList().setSelectedIndices(indices);
 	}
 	

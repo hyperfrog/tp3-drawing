@@ -1,6 +1,3 @@
-/**
- * 
- */
 package appDrawing.model;
 
 import java.awt.BasicStroke;
@@ -20,6 +17,10 @@ import java.util.Arrays;
 import appDrawing.model.Handle.HandleType;
 
 /**
+ * La classe abstraite Shape modélise ce qu'il y a de commun à toutes les formes pouvant être dessinées.
+ * Toutes les classes dérivées doivent avoir une méthode draw(), qui est appelée quand la forme courante 
+ * doit être dessinée.
+ * 
  * @author Micaël Lemelin
  * @author Christian Lesage
  * @author Alexandre Tremblay
@@ -28,35 +29,72 @@ import appDrawing.model.Handle.HandleType;
  */
 public abstract class Shape implements Serializable
 {
+	// Nombre de poignées d'une forme
 	protected static final int NUM_OF_HANDLES = 8;
+	
+	// Largeur par défaut du trait de la forme 
 	protected static final float DEFAULT_STROKE_WIDTH = 3.0f;
+	
+	// Couleur par défaut du trait de la forme
 	protected static final Color DEFAULT_STROKE_COLOR = Color.BLACK;
+	
+	// Valeur par défaut de la première couleur du dégradé de la forme
 	protected static final Color DEFAULT_GRAD_COLOR1 = Color.RED;
+
+	// Valeur par défaut de la deuxième couleur du dégradé de la forme
 	protected static final Color DEFAULT_GRAD_COLOR2 = Color.DARK_GRAY;
+	
+	// Valeur par défaut du premier point définissant le dégradé de la forme
 	protected static final Point2D.Float DEFAULT_GRAD_POINT1 = new Point2D.Float(0, 0);
+
+	// Valeur par défaut du deuxième point définissant le dégradé de la forme
 	protected static final Point2D.Float DEFAULT_GRAD_POINT2 = new Point2D.Float(1, 1);
 
+	// Compteur servant à donner un nom unique aux formes au besoin
 	protected static int SHAPE_COUNT = 0;
 	
+	// Position de la forme sur l'axe des x
 	protected float posX = 0;
-	protected float posY = 0;
-	protected float width = 0;
-	protected float height = 0;
 
+	// Position de la forme sur l'axe des y
+	protected float posY = 0;
+	
+	// Largeur de la forme
+	protected float width = Float.MIN_VALUE;
+
+	// Hauteur de la forme
+	protected float height = Float.MIN_VALUE;
+
+	// Indique si la forme est sélectionnée
 	protected boolean selected = false;
 	
+	// Couleur du trait de la forme
 	protected Color strokeColor = Shape.DEFAULT_STROKE_COLOR;
+	
+	// Largeur du trait de la forme
 	protected float strokeWidth = Shape.DEFAULT_STROKE_WIDTH;
 
+	// Premier point définissant le dégradé de la forme
 	protected Point2D.Float gradPoint1 = Shape.DEFAULT_GRAD_POINT1;
+
+	// Deuxième point définissant le dégradé de la forme
 	protected Point2D.Float gradPoint2 = Shape.DEFAULT_GRAD_POINT2;
+	
+	// Première couleur du dégradé de la forme
 	protected Color gradColor1 = Shape.DEFAULT_GRAD_COLOR1;
+
+	// Deuxième couleur du dégradé de la forme
 	protected Color gradColor2 = Shape.DEFAULT_GRAD_COLOR2;
 	
+	// Poignées de la forme
 	protected Handle[] handles = null;
 	
+	// Nom de la forme
 	protected String name = null;
 	
+	/**
+	 * Construit une forme sans spécifier sa position ni ses dimensions.
+	 */
 	public Shape()
 	{
 		super();
@@ -644,10 +682,10 @@ public abstract class Shape implements Serializable
 			g.setPaint(this.getGradientPaint(drawingScalingFactor, drawingDeltaX, drawingDeltaY));
 			g.fill(shape);
 		}
-		g.setColor(this.strokeColor);
 		
 		if (this.strokeWidth > 0)
 		{
+			g.setColor(this.strokeColor);
 			g.setStroke(new BasicStroke(
 					this.strokeWidth * drawingScalingFactor, 
 					BasicStroke.CAP_ROUND, 

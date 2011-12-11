@@ -44,8 +44,10 @@ import java.util.ArrayList;
  */
 public class Board extends JPanel implements ActionListener
 {
-	
+	// Extension des fichiers sauvegardés
 	private static final String FILE_EXT = "ser";
+	
+	// Description du type de fichiers
 	private static final String FILE_DESCRIPTION = "Fichiers de dessin (*.ser)";
 	
 	// JFrame parent
@@ -185,13 +187,11 @@ public class Board extends JPanel implements ActionListener
     		}
 
 	    	EventList<Shape> shapeList = this.drawingPanel.getShapeList();
-	    	FileOutputStream fos;
 	    	ObjectOutputStream oos = null;
 
 	    	try
 	    	{
-	    		fos = new FileOutputStream(filePath);
-	    		oos = new ObjectOutputStream(fos);
+	    		oos = new ObjectOutputStream(new FileOutputStream(filePath));
 	    		oos.writeObject(shapeList);
 	    		oos.close();
 	    	}
@@ -228,12 +228,10 @@ public class Board extends JPanel implements ActionListener
 
 	    if (fc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) 
 	    {
-	    	FileInputStream fis = null;
 	    	ObjectInputStream ois = null;
 			try
 			{
-			    fis = new FileInputStream(fc.getSelectedFile());
-			    ois = new ObjectInputStream(fis);
+			    ois = new ObjectInputStream(new FileInputStream(fc.getSelectedFile()));
 			    
 			    @SuppressWarnings("unchecked")
 				EventList<Shape> shapeList = (EventList<Shape>) ois.readObject();
@@ -241,6 +239,7 @@ public class Board extends JPanel implements ActionListener
 			    ois.close();
 			    
 			    this.drawingPanel.setShapeList(shapeList);
+			    this.filePath = fc.getSelectedFile().getAbsolutePath();
 			}
 			catch (FileNotFoundException e)
 			{

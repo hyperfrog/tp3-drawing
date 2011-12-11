@@ -5,6 +5,8 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
 /**
+ * La classe Handle modélise les poignées d'une forme.
+ * 
  * @author Micaël Lemelin
  * @author Christian Lesage
  * @author Alexandre Tremblay
@@ -13,13 +15,17 @@ import java.awt.Rectangle;
  */
 public class Handle extends Shape
 {
-	private static final int HANDLE_SIZE = 10; // En pixels
+	// Taille en pixels d'une poignée
+	private static final int HANDLE_SIZE = 10;
+
+	// Couleur des poignées 
 	protected static final Color SELECTION_COLOR = Color.BLUE;
 
 	/**
-	 * Enum des positions des poignées. Chaque Type contient des données xModifier et yModifier.
-	 * Ces données représentent les valeurs par lesquelles il faudra multiplier la largeur et la hauteur
-	 * de la forme.
+	 * Énumération des positions des poignées. À chaque type sont associées des données 
+	 * xModifier et yModifier. Ce sont les valeurs par lesquelles il faut multiplier 
+	 * la largeur et la hauteur de la forme pour obtenir la position de la poignée 
+	 * ayant le type en question.
 	 * 
 	 *<p>
 	 * par exemple:
@@ -42,7 +48,9 @@ public class Handle extends Shape
 		BOTTOM_MIDDLE	(0.5f, 1   ),//v
 		BOTTOM_RIGHT	(1,    1   );//point en bas à droite
 		
+		// Position relative de la poignée en x 
 		public final float xModifier;
+		// Position relative de la poignée en y 
 		public final float yModifier;
 		
 		private HandleType(float xModif, float yModif)
@@ -52,9 +60,18 @@ public class Handle extends Shape
 		}
 	};
 
+	// Forme à laquelle  appartient la poignée 
 	private Shape parent = null;
+	
+	// Type de la poignée
 	private HandleType type;
 	
+	/**
+	 * Construit une poignée du type spécifié pour la forme spécifiée.
+	 * 
+	 * @param type type de la poignée à construire
+	 * @param shape forme à laquelle  appartient la poignée
+	 */
 	public Handle(HandleType type, Shape shape)
 	{	
 		super();
@@ -106,16 +123,20 @@ public class Handle extends Shape
 	
 	
 	/**
-	 * Retourne la forme à qui appartient la poignée.
+	 * Retourne la forme à laquelle  appartient la poignée.
 	 * 
-	 * @return forme à qui appartient la poignée
+	 * @return forme à laquelle appartient la poignée
 	 */
 	public Shape getParent()
 	{
 		return parent;
 	}
 
-	// Par sécurité, on empêche la sélection d'une poignée
+	/** 
+	 * Cette méthode ne fait rien du tout dans le but d'empêcher qu'une poignée soit sélectionnée.
+	 * 
+	 * @see appDrawing.model.Shape#setSelected(boolean)
+	 */
 	@Override
 	public void setSelected(boolean selected)
 	{

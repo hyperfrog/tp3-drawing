@@ -158,7 +158,7 @@ public class Polygon extends Shape
 	}
 	
 	/**
-	 * Obtient la liste des points du polygone.
+	 * Retourne la liste des points du polygone.
 	 * 
 	 * @return liste des points du polygone
 	 */
