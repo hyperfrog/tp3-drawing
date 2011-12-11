@@ -101,6 +101,9 @@ public class AppShapeListBar extends JPanel implements ListSelectionListener, Ac
 	{
 		if (e.getValueIsAdjusting() == false)
 		{
+			System.out.println(e.getFirstIndex() + ", " + e.getLastIndex());
+			System.out.println(this.visualShapeList.getSelectedIndex());
+			
 			// Active ou désactive les boutons selon le nombre de formes sélectionnées
 			// ou la position de la forme sélectionnée
 			this.upButton.setEnabled(false);
@@ -140,7 +143,7 @@ public class AppShapeListBar extends JPanel implements ListSelectionListener, Ac
 			// Change le mode d'opération du dessin au besoin 
 			Mode currentMode = this.parent.getDrawingPanel().getCurrentMode();
 			
-			if (currentMode != Mode.SELECTING && currentMode != Mode.MOVING)
+			if (currentMode != Mode.SELECTING && currentMode != Mode.MOVING && this.visualShapeList.getSelectedIndex() > -1)
 			{
 				this.parent.getToolBar().actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "SELECTING"));
 			}

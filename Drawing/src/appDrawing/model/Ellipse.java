@@ -1,6 +1,3 @@
-/**
- * 
- */
 package appDrawing.model;
 
 import java.awt.Graphics2D;
@@ -8,6 +5,8 @@ import java.awt.Rectangle;
 import java.awt.geom.Ellipse2D;
 
 /**
+ * La classe Ellipse sert à créer des ellipses dans un dessin.
+ * 
  * @author Micaël Lemelin
  * @author Christian Lesage
  * @author Alexandre Tremblay

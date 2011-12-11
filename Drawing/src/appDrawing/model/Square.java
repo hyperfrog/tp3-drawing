@@ -1,9 +1,8 @@
-/**
- * 
- */
 package appDrawing.model;
 
 /**
+ * La classe Square sert à créer des carrés dans un dessin.
+ * 
  * @author Micaël Lemelin
  * @author Christian Lesage
  * @author Alexandre Tremblay

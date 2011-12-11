@@ -1,11 +1,10 @@
-/**
- * 
- */
 package appDrawing.model;
 
 import java.awt.Graphics2D;
 
 /**
+ * La classe Rectangle sert à créer des rectangles dans un dessin.
+ * 
  * @author Micaël Lemelin
  * @author Christian Lesage
  * @author Alexandre Tremblay

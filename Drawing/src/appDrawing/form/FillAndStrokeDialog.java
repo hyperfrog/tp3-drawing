@@ -265,8 +265,10 @@ public class FillAndStrokeDialog extends JDialog implements ActionListener, Wind
 				if (startDragPoint != null && currentDragPoint != null)
 				{
 					g2d.setColor(Color.BLACK);
+					g2d.setXORMode(Color.WHITE);
 					g2d.setStroke(DrawingPanel.DASHED_STROKE);
 					g2d.drawLine(startDragPoint.x, startDragPoint.y, currentDragPoint.x, currentDragPoint.y);
+					g2d.setPaintMode();
 				}
 			}
 		}
