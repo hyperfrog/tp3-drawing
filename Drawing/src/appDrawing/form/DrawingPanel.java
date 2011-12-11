@@ -241,7 +241,6 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		g2d.setXORMode(Color.WHITE);
 		g2d.setColor(Color.BLACK);
 		
-//		g2d.setColor(Color.GRAY);
 		g2d.setStroke(DrawingPanel.DASHED_STROKE);
 		g2d.drawRect(rect.x, rect.y, rect.width, rect.height);
 
@@ -525,20 +524,19 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	}
 	
 	@Override
-	public void mouseClicked(MouseEvent e)
-	{
-	}
+	public void mouseClicked(MouseEvent e) { }
 
 	@Override
-	public void mouseEntered(MouseEvent e)
-	{
-	}
+	public void mouseEntered(MouseEvent e) { }
 
 	@Override
-	public void mouseExited(MouseEvent e)
-	{
-	}
+	public void mouseExited(MouseEvent e) { }
 
+	/**
+	 * Reçoit et traite les évènements de bouton enfoncé.
+	 * 
+	 * @see java.awt.event.MouseListener#mousePressed(java.awt.event.MouseEvent)
+	 */
 	@Override
 	public void mousePressed(MouseEvent e)
 	{
@@ -547,22 +545,23 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		// Si bouton de gauche et mode sélection actif
 		if (e.getButton() == MouseEvent.BUTTON1 && (this.currentMode == Mode.SELECTING || this.currentMode == Mode.MOVING))
 		{
-			// Si Ctrl enfoncé (alors nécessairement en mode sélection)
+			// Si Ctrl enfoncé (alors nécessairement en mode sélection) -> sélection additive
 			if ((e.getModifiers() & ActionEvent.CTRL_MASK) != 0)
 			{
+				// Mémorise la sélection actuelle pour la restaurer au besoin  
 				this.alreadySelectedShapes = this.getCurrentSelection();
 			}
-			else 
+			else // Sinon, pointeur au-dessus d'une poignée?
 			{
 				Handle handle = this.getContainingHandle(this.currentMousePos);
-				// Le pointeur est-il sur une poignée? 
 				if (handle != null)
 				{
+					// Passe en mode redimensionnement
 					this.setMode(Mode.RESIZING);
 					this.resizingHandle = handle;
 					// Considère que le drag commence à partir du centre de la poignée
 					// pour éviter l'amplification de la distance entre le point de référence
-					// et le centre de la poignée en agrandissant la forme
+					// et le centre de la poignée quand la forme est agrandie
 					this.startDragPoint = handle.getRealPos(this.scalingFactor, this.virtualDeltaX, this.virtualDeltaY);
 				}
 			}
@@ -575,6 +574,11 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		}
 	}
 	
+	/**
+	 * Reçoit et traite les évènements de bouton relâché.
+	 * 
+	 * @see java.awt.event.MouseListener#mouseReleased(java.awt.event.MouseEvent)
+	 */
 	@Override
 	public void mouseReleased(MouseEvent e)
 	{
@@ -660,6 +664,11 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		this.checkIfOverHandleOrShape(e.getModifiers());
 	}
 	
+	/**
+	 * Reçoit et traite les évènements de drag (glisser-déposer).
+	 * 
+	 * @see java.awt.event.MouseMotionListener#mouseDragged(java.awt.event.MouseEvent)
+	 */
 	@Override
 	public void mouseDragged(MouseEvent e)
 	{
@@ -668,11 +677,13 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		{
 			this.currentDragPoint = e.getPoint();
 			
-			// mouseMoved() n'est pas appelé pendant un drag, alors on fait comme si...
+			// mouseMoved() n'est pas appelé pendant un drag, alors on fait comme si
+			// et on mémorise la position du pointeur
 			this.currentMousePos = e.getPoint();
 
 			if (this.currentMode == Mode.CREATING) // Si mode création
 			{
+				// Les «freelines» se crééent dynamiquement à chaque mouvement du pointeur en mode drag
 				if (this.currentShapeType == ShapeType.FREELINE)
 				{
 					if (this.polyPoints == null)
@@ -688,11 +699,11 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 			{
 				this.doPan();
 			}
-			else if (this.currentMode == Mode.MOVING) // Déplacement des formes sélectionnées
+			else if (this.currentMode == Mode.MOVING) // Si mode déplacement 
 			{
 				this.doMove();
 			}
-			else if (this.currentMode == Mode.SELECTING)
+			else if (this.currentMode == Mode.SELECTING) // Si mode sélection
 			{
 				// Vérifie chacune des formes
 				for (Shape shape : this.shapeList)
@@ -715,7 +726,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 					}
 				}
 			}
-			else if (this.currentMode == Mode.RESIZING)
+			else if (this.currentMode == Mode.RESIZING) // Si mode redimensionnement
 			{
 				this.doResize();
 			}
@@ -723,13 +734,22 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		}
 	}
 
+	/**
+	 * Reçoit et traite les évènements de déplacement du pointeur.
+	 * Il est à noter que ces évènements ne sont pas générés s'il y a un drag.
+	 * 
+	 * @see java.awt.event.MouseMotionListener#mouseMoved(java.awt.event.MouseEvent)
+	 */
 	@Override
 	public void mouseMoved(MouseEvent e)
 	{
+		// Mémorise la position du pointeur
 		this.currentMousePos = e.getPoint();
 		
+		// Si un polygone est en cours de création
 		if (this.polyPoints != null)
 		{
+			// Affichage dynamique du point correspondant à la position du pointeur 
 			this.repaint();
 		}
 
@@ -737,68 +757,94 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		this.checkIfOverHandleOrShape(e.getModifiers());
 	}
 
+	/**
+	 * Reçoit et traite les évènements de déplacement de la roulette.
+	 * 
+	 * @see java.awt.event.MouseWheelListener#mouseWheelMoved(java.awt.event.MouseWheelEvent)
+	 */
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e)
 	{
+		// Zoom proportionnel au déplacement de la roulette
 		this.zoom(-e.getWheelRotation());
 	}
 
+	/** 
+	 * Reçoit et traite les évènements de touche enfoncée. Ceux-ci proviennent de l'utilisateur
+	 * ou sont générés automatiquement par l'interface.
+	 * 
+	 * @see java.awt.event.KeyListener#keyPressed(java.awt.event.KeyEvent)
+	 */
 	@Override
 	public void keyPressed(KeyEvent e)
 	{	
+		// Mémorise les modificateurs
 		this.currentModifiers = e.getModifiers();
 		
 		switch (e.getKeyCode())
 		{
 			case DrawingPanel.KEY_EDIT_FILL_AND_STROKE:
+				// Affiche le dialogue de remplissage et trait
 				this.editFillAndStroke();
 				break;
 
 			case DrawingPanel.KEY_GROUP:
+				// Groupe les formes sélectionnées
 				this.groupSelectedShapes();
 				break;
 
 			case DrawingPanel.KEY_UNGROUP:
+				// Dégroupe les formes sélectionnées
 				this.ungroupSelectedShape();
 				break;
 
 			case DrawingPanel.KEY_ELLIPSE:
+				// Change la forme courante pour ELLIPSE
 				this.setShapeType(ShapeType.ELLIPSE);
 				break;
 				
 			case DrawingPanel.KEY_SQUARE:
+				// Change la forme courante pour SQUARE
 				this.setShapeType(ShapeType.SQUARE);
 				break;
 				
 			case DrawingPanel.KEY_RECTANGLE:
+				// Change la forme courante pour RECTANGLE
 				this.setShapeType(ShapeType.RECTANGLE);
 				break;
 				
 			case DrawingPanel.KEY_CIRCLE:
+				// Change la forme courante pour CIRCLE
 				this.setShapeType(ShapeType.CIRCLE);
 				break;
 
 			case DrawingPanel.KEY_POLYGON:
+				// Change la forme courante pour POLYGON
 				this.setShapeType(ShapeType.POLYGON);
 				break;
 				
 			case DrawingPanel.KEY_POLYLINE:
+				// Change la forme courante pour POLYLINE
 				this.setShapeType(ShapeType.POLYLINE);
 				break;
 				
 			case DrawingPanel.KEY_FREELINE:
+				// Change la forme courante pour FREELINE
 				this.setShapeType(ShapeType.FREELINE);
 				break;
 				
 			case DrawingPanel.KEY_SELECTING:
+				// Met le dessin en mode SELECTING
 				this.setMode(Mode.SELECTING);
 				break;
 				
 			case DrawingPanel.KEY_ZOOM_IN:
+				// Effectue un zoom-in
 				this.zoom(1);
 				break;
 				
 			case DrawingPanel.KEY_ZOOM_OUT:
+				// Effectue un zoom-out
 				this.zoom(-1);
 				break;
 				
@@ -811,34 +857,42 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 				break;
 				
 			case DrawingPanel.KEY_DELETE:
+				// Supprime la ou les formes sélectionnées
 				this.deleteSelectedShapes();
 				break;
 			
 			case DrawingPanel.KEY_ALIGN_UP:
+				// Aligne les formes sélectionnées par le haut
 				this.align(Alignment.UP);
 				break;
 				
 			case DrawingPanel.KEY_ALIGN_DOWN:
+				// Aligne les formes sélectionnées par le bas
 				this.align(Alignment.DOWN);
 				break;
 				
 			case DrawingPanel.KEY_ALIGN_LEFT:
+				// Aligne les formes sélectionnées par la gauche
 				this.align(Alignment.LEFT);
 				break;
 				
 			case DrawingPanel.KEY_ALIGN_RIGHT:
+				// Aligne les formes sélectionnées par la droite
 				this.align(Alignment.RIGHT);
 				break;
 				
 			case DrawingPanel.KEY_ALIGN_HOR:
+				// Aligne les formes sélectionnées par le centre horizontalement
 				this.align(Alignment.HORIZONTAL);
 				break;
 				
 			case DrawingPanel.KEY_ALIGN_VER:
+				// Aligne les formes sélectionnées par le centre verticalement
 				this.align(Alignment.VERTICAL);
 				break;
 				
 			case DrawingPanel.KEY_SELECT_ALL:
+				// Sélectionne toutes les formes 
 				if ((e.getModifiers() & ActionEvent.CTRL_MASK) != 0)
 				{
 					this.selectAll();
@@ -846,6 +900,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 				break;
 				
 			case KeyEvent.VK_CONTROL:
+				// Force le mode SELECTING si MOVING est actif (parce pointeur au-dessus d'une forme sélectionnée) 
 				if (this.currentMode == Mode.MOVING)
 				{
 					this.setMode(Mode.SELECTING);
@@ -858,9 +913,15 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		}
 	}
 
+	/** 
+	 * Reçoit et traite les évènements de touche relâchée. 
+	 * 
+	 * @see java.awt.event.KeyListener#keyReleased(java.awt.event.KeyEvent)
+	 */
 	@Override
 	public void keyReleased(KeyEvent e)
 	{
+		// Mémorise les modificateurs
 		this.currentModifiers = e.getModifiers();
 
 		switch (e.getKeyCode())
@@ -873,9 +934,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	}
 
 	@Override
-	public void keyTyped(KeyEvent arg0)
-	{
-	}
+	public void keyTyped(KeyEvent e) { }
 	
 	/*
 	 * Sélectione ou désélectionne une forme et synchronise la sélection de la liste affichée 
