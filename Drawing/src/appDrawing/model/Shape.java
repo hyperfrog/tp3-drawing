@@ -102,43 +102,60 @@ public abstract class Shape implements Serializable
 	/**
 	 * Convertit en coordonnées virtuelles un point spécifié en coordonnées réelles. 
 	 * 
+	 * Si le facteur d'agrandissement est égal à 0, retourne null. 
+	 * 
 	 * @param realX	Coordonée réelle du point en X 
 	 * @param realY Coordonée réelle du point en Y 
-	 * @param scalingFactor scalingFactor du dessin
-	 * @param virtualDeltaX virtualDeltaX du dessin
-	 * @param virtualDeltaY virtualDeltaY du dessin
+	 * @param scalingFactor facteur d'agrandissement du dessin
+	 * @param virtualDeltaX déplacement du dessin sur l'axe des x
+	 * @param virtualDeltaY déplacement du dessin sur l'axe des y
 	 * @return point converti en coordonnées virtuelles
 	 */
 	public static Point2D makeVirtualPoint(int realX, int realY, float scalingFactor, float virtualDeltaX, float virtualDeltaY)
 	{
-		// Calcule les coordonnées virtuelles
-		float virtualX = (realX / scalingFactor) - virtualDeltaX;
-		float virtualY = (realY / scalingFactor) - virtualDeltaY;
+		Point2D p = null;
+		
+		if (scalingFactor > 0)
+		{
+			// Calcule les coordonnées virtuelles
+			float virtualX = (realX / scalingFactor) - virtualDeltaX;
+			float virtualY = (realY / scalingFactor) - virtualDeltaY;
+			p = new Point2D.Float(virtualX, virtualY);
+		}
 
-		return new Point2D.Float(virtualX, virtualY);
+		return p;
 	}
 
 	/**
-	 * Convertit en coordonnées virtuelles un rectangle spécifié en coordonnées réelles. 
+	 * Convertit en coordonnées virtuelles un rectangle spécifié en coordonnées réelles.
+	 * 
+	 * Si le facteur d'agrandissement est égal à 0, retourne null. 
 	 * 
 	 * @param realX	Coordonée réelle du rectangle en X 
 	 * @param realY Coordonée réelle du rectangle en Y 
 	 * @param realWidth	Largeur réelle du rectangle  
 	 * @param realHeight Hauteur réelle du rectangle  
-	 * @param scalingFactor scalingFactor du dessin
-	 * @param virtualDeltaX virtualDeltaX du dessin
-	 * @param virtualDeltaY virtualDeltaY du dessin
+	 * @param scalingFactor facteur d'agrandissement du dessin
+	 * @param virtualDeltaX déplacement du dessin sur l'axe des x
+	 * @param virtualDeltaY déplacement du dessin sur l'axe des y
 	 * @return rectangle converti en coordonnées virtuelles
 	 */
 	public static Rectangle2D makeVirtualRect(int realX, int realY, int realWidth, int realHeight, 
 			float scalingFactor, float virtualDeltaX, float virtualDeltaY)
 	{
-		Point2D p = Shape.makeVirtualPoint(realX, realY, scalingFactor, virtualDeltaX, virtualDeltaY);
+		Rectangle2D r = null;
 		
-		float virtualWidth = realWidth / scalingFactor;
-		float virtualHeight = realHeight / scalingFactor;
-				
-		return new Rectangle2D.Float((float)p.getX(), (float)p.getY(), virtualWidth, virtualHeight);
+		if (scalingFactor > 0)
+		{
+			Point2D p = Shape.makeVirtualPoint(realX, realY, scalingFactor, virtualDeltaX, virtualDeltaY);
+
+			float virtualWidth = realWidth / scalingFactor;
+			float virtualHeight = realHeight / scalingFactor;
+
+			r = new Rectangle2D.Float((float)p.getX(), (float)p.getY(), virtualWidth, virtualHeight);
+		}
+		
+		return r; 
 	}
 	
 	/**
@@ -167,7 +184,9 @@ public abstract class Shape implements Serializable
 	}
 	
 	/**
-	 * @return
+	 * Retourne le rectangle englobant la forme dans le système de coordonnées virtuelles.
+	 * 
+	 * @return rectangle englobant la forme dans le système de coordonnées virtuelles
 	 */
 	public Rectangle2D getVirtualRect()
 	{
@@ -175,11 +194,22 @@ public abstract class Shape implements Serializable
 	}
 	
 	/**
-	 * @return
+	 * Retourne une liste contenant les poignées de la forme.
+	 * 
+	 * Retourne une liste vide si la forme n'a pas de poignée.
+	 * 
+	 * @return liste contenant les poignées de la forme
 	 */
 	public ArrayList<Handle> getHandles()
 	{
-		return new ArrayList<Handle>(Arrays.asList(this.handles));
+		ArrayList<Handle> handleList = new ArrayList<Handle>();
+		
+		if (this.handles != null)
+		{
+			handleList.addAll(Arrays.asList(this.handles));
+		}
+
+		return handleList;
 	}
 	
 	/**
@@ -189,29 +219,34 @@ public abstract class Shape implements Serializable
 	 */
 	public void copyPropertiesFrom(Shape shape)
 	{
-		this.setStrokeColor(shape.getStrokeColor());
-		this.setStrokeWidth(shape.getStrokeWidth());
-		this.setGradColor1(shape.getGradColor1());
-		this.setGradColor2(shape.getGradColor2());
-		this.setGradPoint1(shape.getGradPoint1());
-		this.setGradPoint2(shape.getGradPoint2());		
+		if (shape != null)
+		{
+			this.setStrokeColor(shape.getStrokeColor());
+			this.setStrokeWidth(shape.getStrokeWidth());
+			this.setGradColor1(shape.getGradColor1());
+			this.setGradColor2(shape.getGradColor2());
+			this.setGradPoint1(shape.getGradPoint1());
+			this.setGradPoint2(shape.getGradPoint2());
+		}
 	}
 	
 	/**
+	 * Retourne le nom donné à la forme.
 	 * 
-	 * @return
+	 * @return nom donné à la forme
 	 */
 	public String getName()
 	{
 		return this.name;
 	}
 	
+	/**
+	 * Donne à la forme un nom par défaut composé du nom de la classe de la forme 
+	 * suivi du caractère '_' et de trois chiffres.
+	 */
 	public void setDefaultName()
 	{
-//		this.name = "shape" + Shape.SHAPE_COUNT;
-		this.name = String.format("%s_%03d", this.getClass().getSimpleName(), Shape.SHAPE_COUNT);
-		
-		Shape.SHAPE_COUNT++;
+		this.name = String.format("%s_%03d", this.getClass().getSimpleName(), Shape.SHAPE_COUNT++);
 	}
 	
 	/* (non-Javadoc)
@@ -222,7 +257,12 @@ public abstract class Shape implements Serializable
 	{
 		return (this.name != null) ? this.name : this.getClass().getSimpleName(); 
 	}
-	
+
+	/**
+	 * Affecte un nouveau nom à la forme.
+	 * 
+	 * @param newName nouveau nom de la forme
+	 */
 	public void setNewName(String newName)
 	{
 		this.name = newName;
@@ -269,7 +309,9 @@ public abstract class Shape implements Serializable
 	}
 
 	/**
-	 * @return the width
+	 * Retourne la largeur de la forme.
+	 * 
+	 * @return largeur de la forme
 	 */
 	public float getWidth()
 	{
@@ -277,7 +319,9 @@ public abstract class Shape implements Serializable
 	}
 
 	/**
-	 * @return the height
+	 * Retourne la hauteur de la forme.
+	 * 
+	 * @return hauteur de la forme
 	 */
 	public float getHeight()
 	{
@@ -285,7 +329,9 @@ public abstract class Shape implements Serializable
 	}
 
 	/**
-	 * @return the strokeColor
+	 * Retourne la couleur du trait de la forme.
+	 * 
+	 * @return couleur du trait de la forme
 	 */
 	public Color getStrokeColor()
 	{
@@ -293,7 +339,9 @@ public abstract class Shape implements Serializable
 	}
 
 	/**
-	 * @param color the strokeColor to set
+	 * Affecte une nouvelle couleur à la forme.
+	 * 
+	 * @param color nouvelle couleur de la forme
 	 */
 	public void setStrokeColor(Color color)
 	{
@@ -304,7 +352,9 @@ public abstract class Shape implements Serializable
 	}
 
 	/**
-	 * @return the strokeWidth
+	 * Retourne l'épaisseur du trait de la forme.
+	 * 
+	 * @return épaisseur du trait de la forme
 	 */
 	public float getStrokeWidth()
 	{
@@ -312,7 +362,9 @@ public abstract class Shape implements Serializable
 	}
 
 	/**
-	 * @param strokeWidth the strokeWidth to set
+	 * Change l'épaisseur du trait de la forme.
+	 * 
+	 * @param strokeWidth nouvelle épaisseur du trait de la forme
 	 */
 	public void setStrokeWidth(float strokeWidth)
 	{
@@ -323,7 +375,9 @@ public abstract class Shape implements Serializable
 	}
 
 	/**
-	 * @return the gradColor1
+	 * Retourne la première couleur du dégradé de la forme.
+	 * 
+	 * @return première couleur du dégradé de la forme
 	 */
 	public Color getGradColor1()
 	{
@@ -331,7 +385,9 @@ public abstract class Shape implements Serializable
 	}
 
 	/**
-	 * @param color the gradColor1 to set
+	 * Change la première couleur du dégradé de la forme.
+	 * 
+	 * @param color première couleur du dégradé de la forme
 	 */
 	public void setGradColor1(Color color)
 	{
@@ -342,7 +398,9 @@ public abstract class Shape implements Serializable
 	}
 
 	/**
-	 * @return the gradColor2
+	 * Retourne la deuxième couleur du dégradé de la forme.
+	 * 
+	 * @return deuxième couleur du dégradé de la forme
 	 */
 	public Color getGradColor2()
 	{
@@ -350,7 +408,9 @@ public abstract class Shape implements Serializable
 	}
 
 	/**
-	 * @param color the gradColor2 to set
+	 * Change la deuxième couleur du dégradé de la forme.
+	 * 
+	 * @param color deuxième couleur du dégradé de la forme
 	 */
 	public void setGradColor2(Color color)
 	{
@@ -361,7 +421,9 @@ public abstract class Shape implements Serializable
 	}
 
 	/**
-	 * @return the gradPoint1
+	 * Retourne le premier point définissant le dégradé de la forme.
+	 * 
+	 * @return premier point définissant le dégradé de la forme
 	 */
 	public Point2D.Float getGradPoint1()
 	{
@@ -369,7 +431,9 @@ public abstract class Shape implements Serializable
 	}
 
 	/**
-	 * @param point the gradPoint1 to set
+	 * Change le premier point définissant le dégradé de la forme.
+	 * 
+	 * @param point premier point définissant le dégradé de la forme
 	 */
 	public void setGradPoint1(Point2D.Float point)
 	{
@@ -380,7 +444,9 @@ public abstract class Shape implements Serializable
 	}
 
 	/**
-	 * @return the gradPoint2
+	 * Retourne le deuxième point définissant le dégradé de la forme.
+	 * 
+	 * @return deuxième point définissant le dégradé de la forme
 	 */
 	public Point2D.Float getGradPoint2()
 	{
@@ -388,7 +454,9 @@ public abstract class Shape implements Serializable
 	}
 
 	/**
-	 * @param point the gradPoint2 to set
+	 * Change le deuxième point définissant le dégradé de la forme.
+	 * 
+	 * @param point deuxième point définissant le dégradé de la forme
 	 */
 	public void setGradPoint2(Point2D.Float point)
 	{
@@ -571,7 +639,7 @@ public abstract class Shape implements Serializable
 	// dans sa méthode draw().
 	protected void drawShape(Graphics2D g, java.awt.Shape shape, float drawingScalingFactor, float drawingDeltaX, float drawingDeltaY, boolean fill)
 	{
-		if(fill)
+		if (fill)
 		{
 			g.setPaint(this.getGradientPaint(drawingScalingFactor, drawingDeltaX, drawingDeltaY));
 			g.fill(shape);
