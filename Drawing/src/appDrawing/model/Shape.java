@@ -119,13 +119,14 @@ public abstract class Shape implements Serializable
 		this.createHandles();
 	}
 	
+	// Crée les poignées de la forme, à moins que la forme soit elle-même une poignée
 	protected void createHandles()
 	{
 		if (!(this instanceof Handle))
 		{
 			this.handles = new Handle[NUM_OF_HANDLES];
 
-			//On assigne les poignées à leurs positions
+			// On assigne les poignées à leurs positions
 			this.handles[0] = new Handle(HandleType.TOP_LEFT, this);
 			this.handles[1] = new Handle(HandleType.TOP_MIDDLE, this);
 			this.handles[2] = new Handle(HandleType.TOP_RIGHT, this);
@@ -176,7 +177,7 @@ public abstract class Shape implements Serializable
 	 * @param scalingFactor facteur d'agrandissement du dessin
 	 * @param virtualDeltaX déplacement du dessin sur l'axe des x
 	 * @param virtualDeltaY déplacement du dessin sur l'axe des y
-	 * @return rectangle converti en coordonnées virtuelles
+	 * @return rectangle d'entrée converti en coordonnées virtuelles
 	 */
 	public static Rectangle2D makeVirtualRect(int realX, int realY, int realWidth, int realHeight, 
 			float scalingFactor, float virtualDeltaX, float virtualDeltaY)

@@ -3,8 +3,10 @@ package appDrawing.form;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -154,7 +156,8 @@ public class AppShapeListBar extends JPanel implements ListSelectionListener, Ac
 			// S'il y a au moins une forme sélectionnée, on s'assure que le mode d'opération est SELECTING 
 			if (this.visualShapeList.getSelectedIndex() > -1)
 			{
-				this.parent.getToolBar().actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "SELECTING"));
+				int keyCode = DrawingPanel.KEY_SELECTING;
+				this.parent.getDrawingPanel().dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, new Date().getTime(), 0, keyCode, '\0'));
 			}
 			
 			this.parent.getDrawingPanel().repaint();
