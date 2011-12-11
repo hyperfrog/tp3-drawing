@@ -8,10 +8,12 @@ import org.junit.runner.Result;
 import appDrawing.form.AppFrame;
 
 /**
- * La classe MainApp est le point d'entrée du programme.
+ * La classe MainApp contient une méthode main(), qui constitue le point d'entrée du programme.
  * 
+ * @author Micaël Lemelin
  * @author Christian Lesage
  * @author Alexandre Tremblay
+ * @author Pascal Turcot
  *
  */
 public class MainApp
@@ -32,13 +34,13 @@ public class MainApp
 		
 		ArrayList<Class<?>> classesToTest = new ArrayList<Class<?>>();
 //		classesToTest.add(util.test.DeepCopyTest.class);
-//		classesToTest.add(appDrawing.model.test.ShapeTest.class);
+		classesToTest.add(appDrawing.model.test.ShapeTest.class);
 //		classesToTest.add(appDrawing.model.test.CircleTest.class);
 //		classesToTest.add(appDrawing.model.test.EllipseTest.class);
-//		classesToTest.add(appDrawing.model.test.GroupTest.class);
-//		classesToTest.add(appDrawing.model.test.HandleTest.class);
-//		classesToTest.add(appDrawing.model.test.PolygonTest.class);
-//		classesToTest.add(appDrawing.model.test.PolyLineTest.class);
+		classesToTest.add(appDrawing.model.test.GroupTest.class);
+		classesToTest.add(appDrawing.model.test.HandleTest.class);
+		classesToTest.add(appDrawing.model.test.PolygonTest.class);
+		classesToTest.add(appDrawing.model.test.PolyLineTest.class);
 //		classesToTest.add(appDrawing.model.test.RectangleTest.class);
 //		classesToTest.add(appDrawing.model.test.SquareTest.class);
 //		classesToTest.add(appDrawing.form.test.DrawingPanelTest.class);

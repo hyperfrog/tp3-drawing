@@ -80,7 +80,7 @@ public class GroupTest
 		float width = g.getWidth();
 		float height = g.getHeight();
 
-		// Translatation de 30 unités sur les deux axes
+		// Redimensionne la largeur par un facteur de 0,5 par rapport à la coordonnée 0 sur l'axe de x
 		float scaling = 0.5f;
 		float refP = 0f;
 		
@@ -143,7 +143,7 @@ public class GroupTest
 		float width = g.getWidth();
 		float height = g.getHeight();
 
-		// Translatation de 30 unités sur les deux axes
+		// Redimensionne la hauteur par un facteur de 0,5 par rapport à la coordonnée 0 sur l'axe de y
 		float scaling = 0.5f;
 		float refP = 0f;
 		
@@ -156,10 +156,10 @@ public class GroupTest
 		assertEquals(refP + newDeltaY, g.getPosY(), 0);
 		assertEquals(posX, g.getPosX(), 0);
 		
-		// Vérifie que la largeur du groupe a changé correctement
-		// et que la hauteur n'a pas changé
-		assertEquals(width, g.getWidth(), 0);
+		// Vérifie que la hauteur du groupe a changé correctement
+		// et que la largeur n'a pas changé
 		assertEquals(height * scaling, g.getHeight(), 0);
+		assertEquals(width, g.getWidth(), 0);
 		
 		 ArrayList<Shape> translatedShapes = g.getShapeList();
 
@@ -173,8 +173,8 @@ public class GroupTest
 			 assertEquals(originalShapes.get(i).getPosX(), translatedShapes.get(i).getPosX(), 0);
 		 }
 
-		 // Vérifie que la largeur de chacune des formes du groupe a changé correctement
-		 // et que la hauteur n'a pas changé
+		 // Vérifie que la hauteur de chacune des formes du groupe a changé correctement
+		 // et que la largeur n'a pas changé
 		 for (int i = 0; i < originalShapes.size(); i++)
 		 {
 			 assertEquals(originalShapes.get(i).getHeight() * scaling, translatedShapes.get(i).getHeight(), 0);

@@ -211,7 +211,7 @@ public class PolygonTest
 	@Test
 	public void testSetPoints()
 	{
-		//Crée un losange
+		// Crée un losange
 		ArrayList<Point2D> polyPoints = new ArrayList<Point2D>();
 
 		polyPoints.add(new Point2D.Float(1f, 0f));
