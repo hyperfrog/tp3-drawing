@@ -34,7 +34,7 @@ public class AppAboutDialog extends JDialog implements ActionListener, WindowLis
 	public static final String APP_NAME = "Draw me a shape ®";
 	
 	// Version de l'application
-	private static final String APP_VERSION = "Version 0.9 (alpha) - 9 décembre 2011";
+	private static final String APP_VERSION = "Version 0.9.1 (alpha) - 12 décembre 2011";
 	
 	// Auteurs de l'application
 	private static final String APP_AUTHOR_ONE = "Micaël Lemelin";

@@ -235,12 +235,12 @@ public class AppToolBar extends JToolBar implements ActionListener
 		this.loadDrawingButton.setIcon(AppToolBar.loadImage != null ? new ImageIcon(AppToolBar.loadImage) : null);
 		
 		this.saveDrawingButton.setText(null);
-		this.saveDrawingButton.setToolTipText("Sauvegarder");
+		this.saveDrawingButton.setToolTipText("Enregistrer");
 		this.saveDrawingButton.setActionCommand("SAVE");
 		this.saveDrawingButton.setIcon(AppToolBar.saveImage != null ? new ImageIcon(AppToolBar.saveImage) : null);
 		
 		this.saveAsDrawingButton.setText(null);
-		this.saveAsDrawingButton.setToolTipText("Sauvegarder sous...");
+		this.saveAsDrawingButton.setToolTipText("Enregistrer sous...");
 		this.saveAsDrawingButton.setActionCommand("SAVE_AS");
 		this.saveAsDrawingButton.setIcon(AppToolBar.saveAsImage != null ? new ImageIcon(AppToolBar.saveAsImage) : null);
 		
@@ -545,17 +545,17 @@ public class AppToolBar extends JToolBar implements ActionListener
 		}
 		else if (evt.getActionCommand().equals("CREATING"))
 		{
-			// Créer un évènement pour déclencher le mode création
+			// Crée un évènement pour déclencher le mode création
 			keyCode = DrawingPanel.KEY_ELLIPSE;
 		}
 		else if (evt.getActionCommand().equals("SELECTING"))
 		{
-			// Créer un évènement pour déclencher le mode sélection
+			// Crée un évènement pour déclencher le mode sélection
 			keyCode = DrawingPanel.KEY_SELECTING;
 		}
 		else if (evt.getActionCommand().equals("FILL_STROKE_DIALOG"))
 		{
-			// Créer un évènement pour afficher la boîte de dialogue «Remplissage et trait»
+			// Crée un évènement pour afficher la boîte de dialogue «Remplissage et trait»
 			keyCode = DrawingPanel.KEY_EDIT_FILL_AND_STROKE;
 		}
 		
@@ -563,37 +563,37 @@ public class AppToolBar extends JToolBar implements ActionListener
 		{
 			if (evt.getActionCommand().equals("CIRCLE"))
 			{
-				// Créer un évènement pour changer le type de forme à «Cercle»
+				// Crée un évènement pour changer le type de forme à «Cercle»
 				keyCode = DrawingPanel.KEY_CIRCLE;
 			}
 			else if (evt.getActionCommand().equals("ELLIPSE"))
 			{
-				// Créer un évènement pour changer le type de forme à «Ellipse»
+				// Crée un évènement pour changer le type de forme à «Ellipse»
 				keyCode = DrawingPanel.KEY_ELLIPSE;
 			}
 			else if (evt.getActionCommand().equals("RECTANGLE"))
 			{
-				// Créer un évènement pour changer le type de forme à «Rectangle»
+				// Crée un évènement pour changer le type de forme à «Rectangle»
 				keyCode = DrawingPanel.KEY_RECTANGLE;
 			}
 			else if (evt.getActionCommand().equals("SQUARE"))
 			{
-				// Créer un évènement pour changer le type de forme à «Carré»
+				// Crée un évènement pour changer le type de forme à «Carré»
 				keyCode = DrawingPanel.KEY_SQUARE;
 			}
 			else if (evt.getActionCommand().equals("POLYGON"))
 			{
-				// Créer un évènement pour changer le type de forme à «Polygon»
+				// Crée un évènement pour changer le type de forme à «Polygon»
 				keyCode = DrawingPanel.KEY_POLYGON;
 			}
 			else if (evt.getActionCommand().equals("LINE"))
 			{
-				// Créer un évènement pour changer le type de forme à «Ligne brisée»
+				// Crée un évènement pour changer le type de forme à «Ligne brisée»
 				keyCode = DrawingPanel.KEY_POLYLINE;
 			}
 			else if (evt.getActionCommand().equals("PEN"))
 			{
-				// Créer un évènement pour changer le type de forme à «Crayon»
+				// Crée un évènement pour changer le type de forme à «Crayon»
 				keyCode = DrawingPanel.KEY_FREELINE;
 			}
 		}
@@ -601,42 +601,42 @@ public class AppToolBar extends JToolBar implements ActionListener
 		{
 			if (evt.getActionCommand().equals("GROUP"))
 			{
-				// Créer un évènement pour grouper les formes sélectionnées
+				// Crée un évènement pour grouper les formes sélectionnées
 				keyCode = DrawingPanel.KEY_GROUP;
 			}
 			else if (evt.getActionCommand().equals("UNGROUP"))
 			{
-				// Créer un évènement pour dégrouper les formes sélectionnées
+				// Crée un évènement pour dégrouper les formes sélectionnées
 				keyCode = DrawingPanel.KEY_UNGROUP;
 			}
 			else if (evt.getActionCommand().equals("ALIGN_UP"))
 			{
-				// Créer un évènement pour aligner les formes sélectionnées vers le haut
+				// Crée un évènement pour aligner les formes sélectionnées vers le haut
 				keyCode = DrawingPanel.KEY_ALIGN_UP;
 			}
 			else if (evt.getActionCommand().equals("ALIGN_DOWN"))
 			{
-				// Créer un évènement pour aligner les formes sélectionnées vers le bas
+				// Crée un évènement pour aligner les formes sélectionnées vers le bas
 				keyCode = DrawingPanel.KEY_ALIGN_DOWN;
 			}
 			else if (evt.getActionCommand().equals("ALIGN_LEFT"))
 			{
-				// Créer un évènement pour aligner les formes sélectionnées vers la gauche
+				// Crée un évènement pour aligner les formes sélectionnées vers la gauche
 				keyCode = DrawingPanel.KEY_ALIGN_LEFT;
 			}
 			else if (evt.getActionCommand().equals("ALIGN_RIGHT"))
 			{
-				// Créer un évènement pour aligner les formes sélectionnées vers la droite
+				// Crée un évènement pour aligner les formes sélectionnées vers la droite
 				keyCode = DrawingPanel.KEY_ALIGN_RIGHT;
 			}
 			else if (evt.getActionCommand().equals("ALIGN_HOR"))
 			{
-				// Créer un évènement pour aligner les formes sélectionnées horizontalement
+				// Crée un évènement pour aligner les formes sélectionnées horizontalement
 				keyCode = DrawingPanel.KEY_ALIGN_HOR;
 			}
 			else if (evt.getActionCommand().equals("ALIGN_VER"))
 			{
-				// Créer un évènement pour aligner les formes sélectionnées verticalement
+				// Crée un évènement pour aligner les formes sélectionnées verticalement
 				keyCode = DrawingPanel.KEY_ALIGN_VER;
 			}
 		}
