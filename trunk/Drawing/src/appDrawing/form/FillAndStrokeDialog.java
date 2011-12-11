@@ -151,24 +151,29 @@ public class FillAndStrokeDialog extends JDialog implements ActionListener, Wind
 		
         this.readShapeValues();
         
-		// Calcule un scalingFactor tel que la forme prend 80% de l'espace disponible
-		float panelAspectRatio = (float) shapePanel.getWidth() / shapePanel.getHeight();
-		float shapeAspectRatio = shape.getWidth() / shape.getHeight();
-		
-		scalingFactor = (panelAspectRatio < shapeAspectRatio) ? 
-				shapePanel.getWidth() / shape.getWidth()
-				: shapePanel.getHeight() / shape.getHeight();
-		
-		scalingFactor *= 0.8;
-		
-		// Calcule les dimensions virtuelles du panneau d'affichage
-		float virtualWidth = shapePanel.getWidth() / this.scalingFactor;
-		float virtualHeight = shapePanel.getHeight() / this.scalingFactor;
-		
-		// Centre la forme (en déplaçant le dessin) 
-		this.virtualDeltaX = ((virtualWidth - shape.getWidth()) / 2) - shape.getPosX();
-		this.virtualDeltaY = ((virtualHeight - shape.getHeight()) / 2) - shape.getPosY();
-		
+//		// Calcule un scalingFactor tel que la forme prend 80% de l'espace disponible
+//        float shapeWidth = this.shape.getWidth() + this.shape.getStrokeWidth();
+//        float shapeHeight = this.shape.getHeight() + this.shape.getStrokeWidth();
+//        
+//		float panelAspectRatio = (float) shapePanel.getWidth() / shapePanel.getHeight();
+//		float shapeAspectRatio = shapeWidth / shapeHeight;
+//		
+//		scalingFactor = (panelAspectRatio < shapeAspectRatio) ? 
+//				shapePanel.getWidth() / shapeWidth
+//				: shapePanel.getHeight() / shapeHeight;
+//		
+//		scalingFactor *= 0.8;
+//		
+//		// Calcule les dimensions virtuelles du panneau d'affichage
+//		float virtualWidth = shapePanel.getWidth() / this.scalingFactor;
+//		float virtualHeight = shapePanel.getHeight() / this.scalingFactor;
+//		
+//		// Centre la forme (en déplaçant le dessin) 
+//		this.virtualDeltaX = ((virtualWidth - this.shape.getWidth()) / 2) - this.shape.getPosX();
+//		this.virtualDeltaY = ((virtualHeight - this.shape.getHeight()) / 2) - this.shape.getPosY();
+
+        this.computeDisplayParameters();
+        
 		this.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 		
         // Écouteurs
@@ -186,6 +191,30 @@ public class FillAndStrokeDialog extends JDialog implements ActionListener, Wind
 
         this.addWindowListener(this);
 	}
+	
+	private void computeDisplayParameters()
+	{
+		// Calcule un scalingFactor tel que la forme prend 80% de l'espace disponible
+        float shapeWidth = this.shape.getWidth() + this.shape.getStrokeWidth();
+        float shapeHeight = this.shape.getHeight() + this.shape.getStrokeWidth();
+        
+		float panelAspectRatio = (float) shapePanel.getWidth() / shapePanel.getHeight();
+		float shapeAspectRatio = shapeWidth / shapeHeight;
+		
+		scalingFactor = (panelAspectRatio < shapeAspectRatio) ? 
+				shapePanel.getWidth() / shapeWidth
+				: shapePanel.getHeight() / shapeHeight;
+		
+		scalingFactor *= 0.8;
+		
+		// Calcule les dimensions virtuelles du panneau d'affichage
+		float virtualWidth = shapePanel.getWidth() / this.scalingFactor;
+		float virtualHeight = shapePanel.getHeight() / this.scalingFactor;		
+
+		// Centre la forme (en déplaçant le dessin) 
+		this.virtualDeltaX = ((virtualWidth - this.shape.getWidth()) / 2) - this.shape.getPosX();
+		this.virtualDeltaY = ((virtualHeight - this.shape.getHeight()) / 2) - this.shape.getPosY();
+}
 	
 	// Ferme la boîte de dialogue
 	private void close()
@@ -456,6 +485,7 @@ public class FillAndStrokeDialog extends JDialog implements ActionListener, Wind
 		if (e.getSource() == this.strokeSpinner)
 		{
 			this.shape.setStrokeWidth(((Double)this.strokeSpinner.getValue()).floatValue());
+			this.computeDisplayParameters();
 		}
 		else if (e.getSource() == this.strokeSlider)
 		{
