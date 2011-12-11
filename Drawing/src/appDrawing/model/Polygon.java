@@ -21,7 +21,7 @@ import java.util.ArrayList;
 public class Polygon extends Shape
 {
 	//liste de points du polygone
-	ArrayList<Point2D> points = new ArrayList<Point2D>();
+	protected ArrayList<Point2D> points = new ArrayList<Point2D>();
 	
 	/**
 	 * Construit un polygone à partir d'un point de départ.
