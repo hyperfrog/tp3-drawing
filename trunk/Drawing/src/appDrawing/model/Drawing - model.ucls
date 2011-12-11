@@ -1,0 +1,172 @@
+<class-diagram version="1.0.4" icons="true" automaticImage="PNG" always-add-relationships="false" generalizations="true" 
+  realizations="true" associations="true" dependencies="false" nesting-relationships="true">  
+  <class id="1" corner="BOTTOM_RIGHT" language="java" name="appDrawing.model.Shape" project="Drawing" 
+    file="/Drawing/src/appDrawing/model/Shape.java" binary="false">    
+    <position height="-1" width="-1" x="284" y="209"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="2" corner="BOTTOM_RIGHT" language="java" name="appDrawing.model.Rectangle" project="Drawing" 
+    file="/Drawing/src/appDrawing/model/Rectangle.java" binary="false">    
+    <position height="-1" width="-1" x="631" y="-243"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="3" corner="BOTTOM_RIGHT" language="java" name="appDrawing.model.Square" project="Drawing" 
+    file="/Drawing/src/appDrawing/model/Square.java" binary="false">    
+    <position height="-1" width="-1" x="890" y="-243"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="4" corner="BOTTOM_RIGHT" language="java" name="appDrawing.model.Polygon" project="Drawing" 
+    file="/Drawing/src/appDrawing/model/Polygon.java" binary="false">    
+    <position height="-1" width="-1" x="631" y="94"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="5" corner="BOTTOM_RIGHT" language="java" name="appDrawing.model.PolyLine" project="Drawing" 
+    file="/Drawing/src/appDrawing/model/PolyLine.java" binary="false">    
+    <position height="-1" width="-1" x="915" y="94"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="6" corner="BOTTOM_RIGHT" language="java" name="appDrawing.model.Ellipse" project="Drawing" 
+    file="/Drawing/src/appDrawing/model/Ellipse.java" binary="false">    
+    <position height="-1" width="-1" x="631" y="-117"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="7" corner="BOTTOM_RIGHT" language="java" name="appDrawing.model.Circle" project="Drawing" 
+    file="/Drawing/src/appDrawing/model/Circle.java" binary="false">    
+    <position height="-1" width="-1" x="886" y="-117"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="8" corner="BOTTOM_RIGHT" language="java" name="appDrawing.model.Group" project="Drawing" 
+    file="/Drawing/src/appDrawing/model/Group.java" binary="false">    
+    <position height="-1" width="-1" x="631" y="351"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="9" corner="BOTTOM_RIGHT" language="java" name="appDrawing.model.Handle" project="Drawing" 
+    file="/Drawing/src/appDrawing/model/Handle.java" binary="false">    
+    <position height="-1" width="-1" x="635" y="626"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <enumeration id="10" corner="BOTTOM_RIGHT" language="java" name="appDrawing.model.Handle.HandleType" project="Drawing" 
+    file="/Drawing/src/appDrawing/model/Handle.java" binary="false">    
+    <position height="-1" width="-1" x="922" y="626"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="false"/>    
+    </display>  
+  </enumeration>  
+  <generalization>    
+    <end type="SOURCE" nodeId="9"/>    
+    <end type="TARGET" nodeId="1"/>  
+  </generalization>  
+  <generalization>    
+    <end type="SOURCE" nodeId="7"/>    
+    <end type="TARGET" nodeId="6"/>  
+  </generalization>  
+  <association>    
+    <bendpoint x="464" y="627"/>    
+    <end type="SOURCE" nodeId="1" navigable="false">      
+      <attribute name="handles">        
+        <position height="14" width="44" x="480" y="600"/>      
+      </attribute>      
+      <multiplicity minimum="0" maximum="2147483647">        
+        <position height="14" width="16" x="502" y="635"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" nodeId="9" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association>    
+    <end type="SOURCE" nodeId="9" navigable="false">      
+      <attribute name="type"/>      
+      <multiplicity minimum="0" maximum="1">        
+        <position height="14" width="18" x="806" y="634"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" nodeId="10" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association>    
+    <bendpoint x="480" y="352"/>    
+    <end type="SOURCE" nodeId="8" navigable="false">      
+      <attribute name="shapeList"/>      
+      <multiplicity minimum="0" maximum="2147483647">        
+        <position height="14" width="16" x="449" y="351"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" nodeId="1" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization>    
+    <end type="SOURCE" nodeId="5"/>    
+    <end type="TARGET" nodeId="4"/>  
+  </generalization>  
+  <generalization>    
+    <bendpoint x="491" y="-38"/>    
+    <end type="SOURCE" nodeId="6"/>    
+    <end type="TARGET" nodeId="1"/>  
+  </generalization>  
+  <association>    
+    <bendpoint x="484" y="528"/>    
+    <end type="SOURCE" nodeId="9" navigable="false">      
+      <attribute name="parent"/>      
+      <multiplicity minimum="0" maximum="1">        
+        <position height="14" width="18" x="466" y="475"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" nodeId="1" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <nesting>    
+    <bendpoint x="788" y="575"/>    
+    <end type="SOURCE" nodeId="9"/>    
+    <end type="TARGET" nodeId="10"/>  
+  </nesting>  
+  <generalization>    
+    <end type="SOURCE" nodeId="3"/>    
+    <end type="TARGET" nodeId="2"/>  
+  </generalization>  
+  <generalization>    
+    <end type="SOURCE" nodeId="4"/>    
+    <end type="TARGET" nodeId="1"/>  
+  </generalization>  
+  <generalization>    
+    <end type="SOURCE" nodeId="8"/>    
+    <end type="TARGET" nodeId="1"/>  
+  </generalization>  
+  <generalization>    
+    <bendpoint x="477" y="-153"/>    
+    <end type="SOURCE" nodeId="2"/>    
+    <end type="TARGET" nodeId="1"/>  
+  </generalization>  
+  <classifier-display autosize="true" package="true" initial-value="false" signature="true" visibility="true">    
+    <attributes public="true" package="true" protected="true" private="true"/>    
+    <operations public="true" package="true" protected="true" private="true"/>  
+  </classifier-display>  
+  <association-display labels="true" multiplicity="true"/>
+</class-diagram>
