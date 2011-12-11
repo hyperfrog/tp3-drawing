@@ -1,0 +1,286 @@
+<class-diagram version="1.0.4" icons="true" automaticImage="PNG" always-add-relationships="false" generalizations="true" 
+  realizations="true" associations="true" dependencies="false" nesting-relationships="true">  
+  <enumeration id="1" corner="BOTTOM_RIGHT" language="java" name="appDrawing.form.DrawingPanel.Mode" project="Drawing" 
+    file="/Drawing/src/appDrawing/form/DrawingPanel.java" binary="false">    
+    <position height="212" width="116" x="685" y="-39"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="false" private="false"/>    
+    </display>  
+  </enumeration>  
+  <enumeration id="2" corner="BOTTOM_RIGHT" language="java" name="appDrawing.form.DrawingPanel.Alignment" 
+    project="Drawing" file="/Drawing/src/appDrawing/form/DrawingPanel.java" binary="false">    
+    <position height="-1" width="-1" x="713" y="367"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="false" private="false"/>    
+    </display>  
+  </enumeration>  
+  <enumeration id="3" corner="BOTTOM_RIGHT" language="java" name="appDrawing.form.DrawingPanel.ShapeType" 
+    project="Drawing" file="/Drawing/src/appDrawing/form/DrawingPanel.java" binary="false">    
+    <position height="-1" width="-1" x="424" y="710"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="false" private="false"/>    
+    </display>  
+  </enumeration>  
+  <class id="5" corner="BOTTOM_RIGHT" language="java" name="appDrawing.form.AppFrame" project="Drawing" 
+    file="/Drawing/src/appDrawing/form/AppFrame.java" binary="false">    
+    <position height="-1" width="-1" x="98" y="-146"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="6" corner="BOTTOM_RIGHT" language="java" name="appDrawing.form.Board" project="Drawing" 
+    file="/Drawing/src/appDrawing/form/Board.java" binary="false">    
+    <position height="-1" width="-1" x="95" y="202"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="7" corner="BOTTOM_RIGHT" language="java" name="appDrawing.form.AppToolBar" project="Drawing" 
+    file="/Drawing/src/appDrawing/form/AppToolBar.java" binary="false">    
+    <position height="-1" width="-1" x="-222" y="254"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="8" corner="BOTTOM_RIGHT" language="java" name="appDrawing.form.AppShapeListBar" project="Drawing" 
+    file="/Drawing/src/appDrawing/form/AppShapeListBar.java" binary="false">    
+    <position height="-1" width="-1" x="103" y="470"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="9" corner="BOTTOM_RIGHT" language="java" name="appDrawing.form.AppMenu" project="Drawing" 
+    file="/Drawing/src/appDrawing/form/AppMenu.java" binary="false">    
+    <position height="-1" width="-1" x="-224" y="-334"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="10" corner="BOTTOM_RIGHT" language="java" name="appDrawing.form.AppAboutDialog" project="Drawing" 
+    file="/Drawing/src/appDrawing/form/AppAboutDialog.java" binary="false">    
+    <position height="-1" width="-1" x="1229" y="-100"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="11" corner="BOTTOM_RIGHT" language="java" name="appDrawing.form.FillAndStrokeDialog" project="Drawing" 
+    file="/Drawing/src/appDrawing/form/FillAndStrokeDialog.java" binary="false">    
+    <position height="-1" width="-1" x="967" y="-14"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="12" corner="BOTTOM_RIGHT" language="java" name="appDrawing.form.FillAndStrokeDialog.MiniDrawingPanel" 
+    project="Drawing" file="/Drawing/src/appDrawing/form/FillAndStrokeDialog.java" binary="false">    
+    <position height="-1" width="-1" x="965" y="496"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="13" corner="BOTTOM_RIGHT" language="java" name="appDrawing.form.DrawingPanel" project="Drawing" 
+    file="/Drawing/src/appDrawing/form/DrawingPanel.java" binary="false">    
+    <position height="-1" width="-1" x="428" y="120"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <association>    
+    <bendpoint x="587" y="28"/>    
+    <bendpoint x="655" y="28"/>    
+    <end type="SOURCE" nodeId="13" navigable="false">      
+      <attribute name="lastMode">        
+        <position height="14" width="47" x="622" y="7"/>      
+      </attribute>      
+      <multiplicity minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" nodeId="1" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association>    
+    <bendpoint x="582" y="133"/>    
+    <bendpoint x="654" y="133"/>    
+    <end type="SOURCE" nodeId="13" navigable="false">      
+      <attribute name="DEFAULT_MODE">        
+        <position height="14" width="83" x="581" y="111"/>      
+      </attribute>      
+      <multiplicity minimum="0" maximum="1">        
+        <position height="14" width="18" x="660" y="133"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" nodeId="1" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association>    
+    <end type="SOURCE" nodeId="5" navigable="false">      
+      <attribute name="instance"/>      
+      <multiplicity minimum="0" maximum="1">        
+        <position height="14" width="18" x="233" y="36"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" nodeId="5" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <nesting>    
+    <end type="SOURCE" nodeId="13"/>    
+    <end type="TARGET" nodeId="3"/>  
+  </nesting>  
+  <association>    
+    <bendpoint x="40" y="71"/>    
+    <end type="SOURCE" nodeId="6" navigable="false">      
+      <attribute name="parent"/>      
+      <multiplicity minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" nodeId="5" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <nesting>    
+    <bendpoint x="605" y="-52"/>    
+    <bendpoint x="743" y="-52"/>    
+    <end type="SOURCE" nodeId="13"/>    
+    <end type="TARGET" nodeId="1"/>  
+  </nesting>  
+  <association>    
+    <end type="SOURCE" nodeId="11" navigable="false">      
+      <attribute name="shapePanel"/>      
+      <multiplicity minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" nodeId="12" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association>    
+    <bendpoint x="136" y="343"/>    
+    <end type="SOURCE" nodeId="8" navigable="false">      
+      <attribute name="parent"/>      
+      <multiplicity minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" nodeId="6" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association>    
+    <bendpoint x="-81" y="202"/>    
+    <end type="SOURCE" nodeId="6" navigable="false">      
+      <attribute name="appToolBar">        
+        <position height="14" width="58" x="-118" y="184"/>      
+      </attribute>      
+      <multiplicity minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" nodeId="7" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association>    
+    <bendpoint x="582" y="67"/>    
+    <end type="SOURCE" nodeId="13" navigable="false">      
+      <attribute name="currentMode">        
+        <position height="14" width="65" x="586" y="51"/>      
+      </attribute>      
+      <multiplicity minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" nodeId="1" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association>    
+    <bendpoint x="-81" y="-146"/>    
+    <end type="SOURCE" nodeId="9" navigable="false">      
+      <attribute name="parent"/>      
+      <multiplicity minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" nodeId="5" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association>    
+    <bendpoint x="282" y="202"/>    
+    <end type="SOURCE" nodeId="6" navigable="false">      
+      <attribute name="drawingPanel">        
+        <position height="14" width="70" x="236" y="210"/>      
+      </attribute>      
+      <multiplicity minimum="0" maximum="1">        
+        <position height="14" width="18" x="277" y="179"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" nodeId="13" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association>    
+    <bendpoint x="-62" y="254"/>    
+    <end type="SOURCE" nodeId="7" navigable="false">      
+      <attribute name="parent"/>      
+      <multiplicity minimum="0" maximum="1">        
+        <position height="14" width="18" x="-44" y="250"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" nodeId="6" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <nesting>    
+    <end type="SOURCE" nodeId="13"/>    
+    <end type="TARGET" nodeId="2"/>  
+  </nesting>  
+  <nesting>    
+    <end type="SOURCE" nodeId="11"/>    
+    <end type="TARGET" nodeId="12"/>  
+  </nesting>  
+  <association>    
+    <end type="SOURCE" nodeId="13" navigable="false">      
+      <attribute name="currentShapeType"/>      
+      <multiplicity minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" nodeId="3" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association>    
+    <bendpoint x="245" y="121"/>    
+    <end type="SOURCE" nodeId="13" navigable="false">      
+      <attribute name="parent">        
+        <position height="14" width="35" x="217" y="107"/>      
+      </attribute>      
+      <multiplicity minimum="0" maximum="1">        
+        <position height="14" width="18" x="224" y="138"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" nodeId="6" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association>    
+    <bendpoint x="66" y="346"/>    
+    <end type="SOURCE" nodeId="6" navigable="false">      
+      <attribute name="appShapeListBar"/>      
+      <multiplicity minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" nodeId="8" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association>    
+    <bendpoint x="-60" y="-334"/>    
+    <end type="SOURCE" nodeId="5" navigable="false">      
+      <attribute name="appMenu"/>      
+      <multiplicity minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" nodeId="9" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association>    
+    <end type="SOURCE" nodeId="5" navigable="false">      
+      <attribute name="board"/>      
+      <multiplicity minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" nodeId="6" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <classifier-display autosize="true" package="true" initial-value="false" signature="true" visibility="true">    
+    <attributes public="true" package="true" protected="true" private="true"/>    
+    <operations public="true" package="true" protected="false" private="false"/>  
+  </classifier-display>  
+  <association-display labels="true" multiplicity="true"/>
+</class-diagram>
