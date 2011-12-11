@@ -96,12 +96,20 @@
       <operations public="true" package="true" protected="false" private="false"/>    
     </display>  
   </class>  
+  <dependency>    
+    <bendpoint x="-135" y="-184"/>    
+    <end type="SOURCE" nodeId="10"/>    
+    <end type="TARGET" nodeId="5"/>  
+  </dependency>  
   <association>    
-    <end type="SOURCE" nodeId="13" navigable="false">      
-      <attribute name="currentShapeType"/>      
-      <multiplicity minimum="0" maximum="1"/>    
+    <bendpoint x="-62" y="254"/>    
+    <end type="SOURCE" nodeId="7" navigable="false">      
+      <attribute name="parent"/>      
+      <multiplicity minimum="0" maximum="1">        
+        <position height="14" width="18" x="-44" y="250"/>      
+      </multiplicity>    
     </end>    
-    <end type="TARGET" nodeId="3" navigable="true"/>    
+    <end type="TARGET" nodeId="6" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
   <association>    
@@ -111,74 +119,6 @@
       <multiplicity minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" nodeId="1" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association>    
-    <bendpoint x="-79" y="-218"/>    
-    <end type="SOURCE" nodeId="9" navigable="false">      
-      <attribute name="parent">        
-        <position height="14" width="35" x="-54" y="-224"/>      
-      </attribute>      
-      <multiplicity minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" nodeId="5" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association>    
-    <bendpoint x="136" y="343"/>    
-    <end type="SOURCE" nodeId="8" navigable="false">      
-      <attribute name="parent"/>      
-      <multiplicity minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" nodeId="6" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <dependency>    
-    <end type="SOURCE" nodeId="11"/>    
-    <end type="TARGET" nodeId="5"/>  
-  </dependency>  
-  <dependency>    
-    <bendpoint x="-20" y="604"/>    
-    <bendpoint x="237" y="604"/>    
-    <end type="SOURCE" nodeId="7"/>    
-    <end type="TARGET" nodeId="1"/>  
-  </dependency>  
-  <association>    
-    <bendpoint x="626" y="-427"/>    
-    <end type="SOURCE" nodeId="11" navigable="false">      
-      <attribute name="shapePanel"/>      
-      <multiplicity minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" nodeId="12" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association>    
-    <bendpoint x="66" y="346"/>    
-    <end type="SOURCE" nodeId="6" navigable="false">      
-      <attribute name="appShapeListBar"/>      
-      <multiplicity minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" nodeId="8" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association>    
-    <bendpoint x="-60" y="-334"/>    
-    <end type="SOURCE" nodeId="5" navigable="false">      
-      <attribute name="appMenu"/>      
-      <multiplicity minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" nodeId="9" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association>    
-    <bendpoint x="-81" y="202"/>    
-    <end type="SOURCE" nodeId="6" navigable="false">      
-      <attribute name="appToolBar">        
-        <position height="14" width="58" x="-118" y="184"/>      
-      </attribute>      
-      <multiplicity minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" nodeId="7" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
   <association>    
@@ -193,41 +133,20 @@
     <display labels="true" multiplicity="true"/>  
   </association>  
   <nesting>    
-    <bendpoint x="624" y="453"/>    
-    <bendpoint x="516" y="453"/>    
-    <end type="SOURCE" nodeId="13"/>    
-    <end type="TARGET" nodeId="1"/>  
-  </nesting>  
-  <association>    
-    <bendpoint x="375" y="202"/>    
-    <end type="SOURCE" nodeId="6" navigable="false">      
-      <attribute name="drawingPanel"/>      
-      <multiplicity minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" nodeId="13" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <dependency>    
-    <end type="SOURCE" nodeId="9"/>    
-    <end type="TARGET" nodeId="10"/>  
-  </dependency>  
-  <nesting>    
     <end type="SOURCE" nodeId="13"/>    
     <end type="TARGET" nodeId="3"/>  
   </nesting>  
   <association>    
-    <bendpoint x="612" y="368"/>    
-    <end type="SOURCE" nodeId="13" navigable="false">      
-      <attribute name="lastMode"/>      
+    <bendpoint x="-79" y="-218"/>    
+    <end type="SOURCE" nodeId="9" navigable="false">      
+      <attribute name="parent">        
+        <position height="14" width="35" x="-54" y="-224"/>      
+      </attribute>      
       <multiplicity minimum="0" maximum="1"/>    
     </end>    
-    <end type="TARGET" nodeId="1" navigable="true"/>    
+    <end type="TARGET" nodeId="5" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <nesting>    
-    <end type="SOURCE" nodeId="11"/>    
-    <end type="TARGET" nodeId="12"/>  
-  </nesting>  
   <association>    
     <bendpoint x="40" y="71"/>    
     <end type="SOURCE" nodeId="6" navigable="false">      
@@ -237,32 +156,13 @@
     <end type="TARGET" nodeId="5" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <dependency>    
-    <bendpoint x="-30" y="716"/>    
-    <end type="SOURCE" nodeId="7"/>    
-    <end type="TARGET" nodeId="3"/>  
-  </dependency>  
-  <dependency>    
-    <end type="SOURCE" nodeId="8"/>    
-    <end type="TARGET" nodeId="1"/>  
-  </dependency>  
-  <dependency>    
-    <bendpoint x="-135" y="-184"/>    
-    <end type="SOURCE" nodeId="10"/>    
-    <end type="TARGET" nodeId="5"/>  
-  </dependency>  
-  <nesting>    
-    <end type="SOURCE" nodeId="13"/>    
-    <end type="TARGET" nodeId="2"/>  
-  </nesting>  
   <association>    
-    <end type="SOURCE" nodeId="13" navigable="false">      
-      <attribute name="currentMode">        
-        <position height="14" width="65" x="486" y="269"/>      
-      </attribute>      
+    <bendpoint x="136" y="343"/>    
+    <end type="SOURCE" nodeId="8" navigable="false">      
+      <attribute name="parent"/>      
       <multiplicity minimum="0" maximum="1"/>    
     </end>    
-    <end type="TARGET" nodeId="1" navigable="true"/>    
+    <end type="TARGET" nodeId="6" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
   <association>    
@@ -273,17 +173,77 @@
     <end type="TARGET" nodeId="6" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
+  <nesting>    
+    <bendpoint x="624" y="453"/>    
+    <bendpoint x="516" y="453"/>    
+    <end type="SOURCE" nodeId="13"/>    
+    <end type="TARGET" nodeId="1"/>  
+  </nesting>  
   <association>    
-    <bendpoint x="-62" y="254"/>    
-    <end type="SOURCE" nodeId="7" navigable="false">      
-      <attribute name="parent"/>      
-      <multiplicity minimum="0" maximum="1">        
-        <position height="14" width="18" x="-44" y="250"/>      
-      </multiplicity>    
+    <end type="SOURCE" nodeId="13" navigable="false">      
+      <attribute name="currentShapeType"/>      
+      <multiplicity minimum="0" maximum="1"/>    
     </end>    
-    <end type="TARGET" nodeId="6" navigable="true"/>    
+    <end type="TARGET" nodeId="3" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
+  <association>    
+    <bendpoint x="612" y="368"/>    
+    <end type="SOURCE" nodeId="13" navigable="false">      
+      <attribute name="lastMode"/>      
+      <multiplicity minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" nodeId="1" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency>    
+    <bendpoint x="-20" y="604"/>    
+    <bendpoint x="237" y="604"/>    
+    <end type="SOURCE" nodeId="7"/>    
+    <end type="TARGET" nodeId="1"/>  
+  </dependency>  
+  <association>    
+    <bendpoint x="-81" y="202"/>    
+    <end type="SOURCE" nodeId="6" navigable="false">      
+      <attribute name="appToolBar">        
+        <position height="14" width="58" x="-118" y="184"/>      
+      </attribute>      
+      <multiplicity minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" nodeId="7" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency>    
+    <end type="SOURCE" nodeId="11"/>    
+    <end type="TARGET" nodeId="5"/>  
+  </dependency>  
+  <association>    
+    <bendpoint x="66" y="346"/>    
+    <end type="SOURCE" nodeId="6" navigable="false">      
+      <attribute name="appShapeListBar"/>      
+      <multiplicity minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" nodeId="8" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association>    
+    <end type="SOURCE" nodeId="13" navigable="false">      
+      <attribute name="currentMode">        
+        <position height="14" width="65" x="486" y="269"/>      
+      </attribute>      
+      <multiplicity minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" nodeId="1" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <nesting>    
+    <end type="SOURCE" nodeId="11"/>    
+    <end type="TARGET" nodeId="12"/>  
+  </nesting>  
+  <dependency>    
+    <end type="SOURCE" nodeId="9"/>    
+    <end type="TARGET" nodeId="10"/>  
+  </dependency>  
   <association>    
     <end type="SOURCE" nodeId="5" navigable="false">      
       <attribute name="instance"/>      
@@ -294,6 +254,42 @@
     <end type="TARGET" nodeId="5" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
+  <dependency>    
+    <bendpoint x="-30" y="716"/>    
+    <end type="SOURCE" nodeId="7"/>    
+    <end type="TARGET" nodeId="3"/>  
+  </dependency>  
+  <association>    
+    <bendpoint x="-60" y="-334"/>    
+    <end type="SOURCE" nodeId="5" navigable="false">      
+      <attribute name="appMenu"/>      
+      <multiplicity minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" nodeId="9" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association>    
+    <bendpoint x="375" y="202"/>    
+    <end type="SOURCE" nodeId="6" navigable="false">      
+      <attribute name="drawingPanel"/>      
+      <multiplicity minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" nodeId="13" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association>    
+    <bendpoint x="626" y="-427"/>    
+    <end type="SOURCE" nodeId="11" navigable="false">      
+      <attribute name="shapePanel"/>      
+      <multiplicity minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" nodeId="12" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <nesting>    
+    <end type="SOURCE" nodeId="13"/>    
+    <end type="TARGET" nodeId="2"/>  
+  </nesting>  
   <dependency>    
     <end type="SOURCE" nodeId="13"/>    
     <end type="TARGET" nodeId="11"/>  

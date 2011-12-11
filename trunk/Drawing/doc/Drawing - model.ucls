@@ -81,30 +81,9 @@
     </display>  
   </enumeration>  
   <generalization>    
-    <end type="SOURCE" nodeId="9"/>    
-    <end type="TARGET" nodeId="1"/>  
+    <end type="SOURCE" nodeId="3"/>    
+    <end type="TARGET" nodeId="2"/>  
   </generalization>  
-  <association>    
-    <end type="SOURCE" nodeId="9" navigable="false">      
-      <attribute name="type"/>      
-      <multiplicity minimum="0" maximum="1">        
-        <position height="14" width="18" x="806" y="634"/>      
-      </multiplicity>    
-    </end>    
-    <end type="TARGET" nodeId="10" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association>    
-    <bendpoint x="480" y="352"/>    
-    <end type="SOURCE" nodeId="8" navigable="false">      
-      <attribute name="shapeList"/>      
-      <multiplicity minimum="0" maximum="2147483647">        
-        <position height="14" width="16" x="449" y="351"/>      
-      </multiplicity>    
-    </end>    
-    <end type="TARGET" nodeId="1" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
   <association>    
     <bendpoint x="484" y="528"/>    
     <end type="SOURCE" nodeId="9" navigable="false">      
@@ -117,31 +96,34 @@
     <display labels="true" multiplicity="true"/>  
   </association>  
   <generalization>    
-    <end type="SOURCE" nodeId="5"/>    
-    <end type="TARGET" nodeId="4"/>  
-  </generalization>  
-  <generalization>    
-    <end type="SOURCE" nodeId="4"/>    
-    <end type="TARGET" nodeId="1"/>  
-  </generalization>  
-  <generalization>    
-    <end type="SOURCE" nodeId="3"/>    
-    <end type="TARGET" nodeId="2"/>  
-  </generalization>  
-  <generalization>    
     <bendpoint x="477" y="-153"/>    
     <end type="SOURCE" nodeId="2"/>    
     <end type="TARGET" nodeId="1"/>  
   </generalization>  
+  <association>    
+    <end type="SOURCE" nodeId="9" navigable="false">      
+      <attribute name="type"/>      
+      <multiplicity minimum="0" maximum="1">        
+        <position height="14" width="18" x="806" y="634"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" nodeId="10" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
   <generalization>    
     <bendpoint x="491" y="-38"/>    
     <end type="SOURCE" nodeId="6"/>    
     <end type="TARGET" nodeId="1"/>  
   </generalization>  
   <generalization>    
-    <end type="SOURCE" nodeId="7"/>    
-    <end type="TARGET" nodeId="6"/>  
+    <end type="SOURCE" nodeId="4"/>    
+    <end type="TARGET" nodeId="1"/>  
   </generalization>  
+  <nesting>    
+    <bendpoint x="788" y="575"/>    
+    <end type="SOURCE" nodeId="9"/>    
+    <end type="TARGET" nodeId="10"/>  
+  </nesting>  
   <association>    
     <bendpoint x="464" y="627"/>    
     <end type="SOURCE" nodeId="1" navigable="false">      
@@ -155,15 +137,33 @@
     <end type="TARGET" nodeId="9" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
+  <association>    
+    <bendpoint x="480" y="352"/>    
+    <end type="SOURCE" nodeId="8" navigable="false">      
+      <attribute name="shapeList"/>      
+      <multiplicity minimum="0" maximum="2147483647">        
+        <position height="14" width="16" x="449" y="351"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" nodeId="1" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization>    
+    <end type="SOURCE" nodeId="9"/>    
+    <end type="TARGET" nodeId="1"/>  
+  </generalization>  
   <generalization>    
     <end type="SOURCE" nodeId="8"/>    
     <end type="TARGET" nodeId="1"/>  
   </generalization>  
-  <nesting>    
-    <bendpoint x="788" y="575"/>    
-    <end type="SOURCE" nodeId="9"/>    
-    <end type="TARGET" nodeId="10"/>  
-  </nesting>  
+  <generalization>    
+    <end type="SOURCE" nodeId="7"/>    
+    <end type="TARGET" nodeId="6"/>  
+  </generalization>  
+  <generalization>    
+    <end type="SOURCE" nodeId="5"/>    
+    <end type="TARGET" nodeId="4"/>  
+  </generalization>  
   <classifier-display autosize="true" package="true" initial-value="false" signature="true" visibility="true">    
     <attributes public="true" package="true" protected="true" private="true"/>    
     <operations public="true" package="true" protected="true" private="true"/>  
