@@ -28,7 +28,10 @@ public class ShapeTest
 {
 	// Nombre de poignées dans une forme
 	private final static int NUM_HANDLES = 8;
-	
+
+	// Valeur minimale d'une dimension 
+	private static final float MIN_SIZE = 1.0E-9f;
+
 	// Classe concrète minimale permettant de tester la classe abstraite Shape
 	private class MinShape extends Shape
 	{
@@ -87,21 +90,21 @@ public class ShapeTest
 		assertEquals(20.0f, s.getHeight(), 0);
 
 		// Cas valide : la largeur est positive et la hauteur est égale à
-		// Float.MIN_VALUE
-		s = new MinShape(-1.0f, 1.0f, 10.0f, Float.MIN_VALUE);
+		// MIN_SIZE
+		s = new MinShape(-1.0f, 1.0f, 10.0f, MIN_SIZE);
 		assertNotNull(s);
 		assertEquals(-1.0f, s.getPosX(), 0);
 		assertEquals(1.0f, s.getPosY(), 0);
 		assertEquals(10.0f, s.getWidth(), 0);
-		assertEquals(Float.MIN_VALUE, s.getHeight(), 0);
+		assertEquals(MIN_SIZE, s.getHeight(), 0);
 
-		// Cas valide : la largeur est égale à Float.MIN_VALUE et la largeur est
+		// Cas valide : la largeur est égale à MIN_SIZE et la largeur est
 		// positive
-		s = new MinShape(-1.0f, 1.0f, Float.MIN_VALUE, 20.0f);
+		s = new MinShape(-1.0f, 1.0f, MIN_SIZE, 20.0f);
 		assertNotNull(s);
 		assertEquals(-1.0f, s.getPosX(), 0);
 		assertEquals(1.0f, s.getPosY(), 0);
-		assertEquals(Float.MIN_VALUE, s.getWidth(), 0);
+		assertEquals(MIN_SIZE, s.getWidth(), 0);
 		assertEquals(20.0f, s.getHeight(), 0);
 
 		// Cas invalide : la largeur est positive et la hauteur est égale à 0
@@ -110,14 +113,14 @@ public class ShapeTest
 		assertEquals(-1.0f, s.getPosX(), 0);
 		assertEquals(1.0f, s.getPosY(), 0);
 		assertEquals(10.0f, s.getWidth(), 0);
-		assertEquals(Float.MIN_VALUE, s.getHeight(), 0);
+		assertEquals(MIN_SIZE, s.getHeight(), 0);
 
 		// Cas invalide : la largeur est égale à 0 et la hauteur est positive
 		s = new MinShape(-1.0f, 1.0f, 0, 20.0f);
 		assertNotNull(s);
 		assertEquals(-1.0f, s.getPosX(), 0);
 		assertEquals(1.0f, s.getPosY(), 0);
-		assertEquals(Float.MIN_VALUE, s.getWidth(), 0);
+		assertEquals(MIN_SIZE, s.getWidth(), 0);
 		assertEquals(20.0f, s.getHeight(), 0);
 
 		// Cas invalide : la largeur est positive et la hauteur est négative
@@ -126,14 +129,14 @@ public class ShapeTest
 		assertEquals(-1.0f, s.getPosX(), 0);
 		assertEquals(1.0f, s.getPosY(), 0);
 		assertEquals(10.0f, s.getWidth(), 0);
-		assertEquals(Float.MIN_VALUE, s.getHeight(), 0);
+		assertEquals(MIN_SIZE, s.getHeight(), 0);
 
 		// Cas invalide : la largeur est négative et la hauteur est positive
 		s = new MinShape(-1.0f, 1.0f, -2.0f, 20.0f);
 		assertNotNull(s);
 		assertEquals(-1.0f, s.getPosX(), 0);
 		assertEquals(1.0f, s.getPosY(), 0);
-		assertEquals(Float.MIN_VALUE, s.getWidth(), 0);
+		assertEquals(MIN_SIZE, s.getWidth(), 0);
 		assertEquals(20.0f, s.getHeight(), 0);
 
 		// Autre cas : même tests que pour Shape()

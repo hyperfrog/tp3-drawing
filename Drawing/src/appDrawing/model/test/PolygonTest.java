@@ -62,6 +62,7 @@ public class PolygonTest
 		polyPoints.add(new Point2D.Float(0f, -1f));
 
 		appDrawing.model.Polygon poly = new Polygon(0, 0);
+		poly.setStrokeWidth(0);
 
 		poly.setPoints(polyPoints);
 
@@ -113,6 +114,7 @@ public class PolygonTest
 		appDrawing.model.Polygon poly = new Polygon(0, 0);
 
 		poly.setPoints(polyPoints);
+		poly.setStrokeWidth(0);
 
 		float width = poly.getWidth();
 		float height = poly.getHeight();

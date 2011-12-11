@@ -49,6 +49,9 @@ public abstract class Shape implements Serializable
 
 	// Valeur par défaut du deuxième point définissant le dégradé de la forme
 	protected static final Point2D.Float DEFAULT_GRAD_POINT2 = new Point2D.Float(1, 1);
+	
+	// Valeur minimale d'une dimension 
+	protected static final float MIN_SIZE = 1.0E-9f;
 
 	// Compteur servant à donner un nom unique aux formes au besoin
 	protected static int SHAPE_COUNT = 0;
@@ -60,10 +63,10 @@ public abstract class Shape implements Serializable
 	protected float posY = 0;
 	
 	// Largeur de la forme
-	protected float width = Float.MIN_VALUE;
+	protected float width = Shape.MIN_SIZE;
 
 	// Hauteur de la forme
-	protected float height = Float.MIN_VALUE;
+	protected float height = Shape.MIN_SIZE;
 
 	// Indique si la forme est sélectionnée
 	protected boolean selected = false;
@@ -106,16 +109,16 @@ public abstract class Shape implements Serializable
 	 * 
 	 * @param posX position du rectangle englobant sur l'axe des x
 	 * @param posY position du rectangle englobant sur l'axe des y
-	 * @param width largeur du rectangle englobant; changée pour Float.MIN_VALUE si nulle ou négative 
-	 * @param height hauteur du rectangle englobant; changée pour Float.MIN_VALUE si nulle ou négative
+	 * @param width largeur du rectangle englobant; changée pour Shape.MIN_SIZE si nulle ou négative 
+	 * @param height hauteur du rectangle englobant; changée pour Shape.MIN_SIZE si nulle ou négative
 	 */
 	public Shape(float posX, float posY, float width, float height)
 	{
 		super();
 		this.posX = posX;
 		this.posY = posY;
-		this.width = Math.max(Float.MIN_VALUE, width);
-		this.height = Math.max(Float.MIN_VALUE, height);
+		this.width = Math.max(Shape.MIN_SIZE, width);
+		this.height = Math.max(Shape.MIN_SIZE, height);
 		this.createHandles();
 	}
 	
@@ -288,6 +291,14 @@ public abstract class Shape implements Serializable
 		this.name = String.format("%s_%03d", this.getClass().getSimpleName(), Shape.SHAPE_COUNT++);
 	}
 	
+	/**
+	 * Réinitialise le compteur de formes.
+	 */
+	public static void resetShapeCount()
+	{
+		Shape.SHAPE_COUNT = 0;
+	}
+	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
@@ -410,6 +421,16 @@ public abstract class Shape implements Serializable
 		if (strokeWidth >= 0)
 		{
 			this.strokeWidth = strokeWidth;
+			
+			if (strokeWidth > this.width)
+			{
+				this.scaleWidth(strokeWidth / this.width, this.posX);
+			}
+			
+			if (strokeWidth > this.height)
+			{
+				this.scaleHeight(strokeWidth / this.height, this.posY);
+			}
 		}
 	}
 
@@ -565,6 +586,7 @@ public abstract class Shape implements Serializable
 	{
 		if (scalingFactor > 0 && scalingFactor != 1)
 		{
+			scalingFactor = Math.max(this.strokeWidth / this.width, scalingFactor);
 			this.width *= scalingFactor;
 			this.posX = refX + scalingFactor * (this.posX - refX);
 
@@ -589,6 +611,8 @@ public abstract class Shape implements Serializable
 	{
 		if (scalingFactor > 0 && scalingFactor != 1)
 		{
+			scalingFactor = Math.max(this.strokeWidth / this.height, scalingFactor);
+
 			this.height *= scalingFactor;
 			this.posY = refY + scalingFactor * (this.posY - refY);
 

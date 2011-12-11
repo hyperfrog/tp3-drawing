@@ -59,8 +59,8 @@ public class Polygon extends Shape
 			}
 
 			// calcul de la largeur et la hauteur
-			this.width = Math.max(Float.MIN_VALUE, (float) (maxX - minX));
-			this.height = Math.max(Float.MIN_VALUE, (float) (maxY - minY));
+			this.width = Math.max(Shape.MIN_SIZE, (float) (maxX - minX));
+			this.height = Math.max(Shape.MIN_SIZE, (float) (maxY - minY));
 			// on définit comme point de départ le point en haut à gauche (comme
 			// dans un rectangle)
 			this.posX = (float) minX;
@@ -68,8 +68,8 @@ public class Polygon extends Shape
 		}
 		else
 		{
-			this.width = Float.MIN_VALUE;
-			this.height = Float.MIN_VALUE;
+			this.width = Shape.MIN_SIZE;
+			this.height = Shape.MIN_SIZE;
 		}
 		this.createHandles();
 	}

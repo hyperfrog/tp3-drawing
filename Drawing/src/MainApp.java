@@ -6,6 +6,7 @@ import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 
 import appDrawing.form.AppFrame;
+import appDrawing.model.Shape;
 
 /**
  * La classe MainApp contient une méthode main(), qui constitue le point d'entrée du programme.
@@ -58,6 +59,9 @@ public class MainApp
 
 		if (!error)
 		{
+			// Réinitialise le compteur de formes.
+			// Nécéssaire à cause des tests qui viennent d'être exécutés... :(
+			Shape.resetShapeCount();
 			AppFrame appFrame = AppFrame.getInstance();
 			appFrame.setVisible(true);
 		}

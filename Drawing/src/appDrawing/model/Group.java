@@ -87,8 +87,8 @@ public class Group extends Shape
 		}
 		else
 		{
-			this.width = Float.MIN_VALUE;
-			this.height = Float.MIN_VALUE;
+			this.width = Shape.MIN_SIZE;
+			this.height = Shape.MIN_SIZE;
 		}
 
 		this.createHandles();
