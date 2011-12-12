@@ -11,7 +11,7 @@ public class EllipseTest {
 	@Test
 	public void testEllipse()
 	{
-		//Pour les tests de validitée des valeurs d'entrées voir appDrawing.model.test.ShapeTest
+		//Pour les tests de validité des valeurs d'entrée, voir appDrawing.model.test.ShapeTest
 		
 		Ellipse e = new Ellipse(0.0f, 0.0f, 10.0f, 15.0f);
 		

@@ -65,6 +65,7 @@ public class ShapeTest
 		// Une Shape qui n'est pas une Handle a des handles
 		ArrayList<Handle> handles1 = s1.getHandles();
 		assertNotNull(handles1);
+		assertEquals(NUM_HANDLES, handles1.size());
 
 		// Une Shape qui est une Handle n'a pas de handles
 		Shape s2 = new Handle(HandleType.BOTTOM_LEFT, s1);
