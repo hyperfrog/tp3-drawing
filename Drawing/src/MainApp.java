@@ -34,16 +34,20 @@ public class MainApp
 		String errMsg = "";
 		
 		ArrayList<Class<?>> classesToTest = new ArrayList<Class<?>>();
-//		classesToTest.add(util.test.DeepCopyTest.class);
+		classesToTest.add(appDrawing.util.test.DeepCopyTest.class);
 		classesToTest.add(appDrawing.model.test.ShapeTest.class);
-//		classesToTest.add(appDrawing.model.test.CircleTest.class);
-//		classesToTest.add(appDrawing.model.test.EllipseTest.class);
+		classesToTest.add(appDrawing.model.test.CircleTest.class);
+		classesToTest.add(appDrawing.model.test.EllipseTest.class);
 		classesToTest.add(appDrawing.model.test.GroupTest.class);
 		classesToTest.add(appDrawing.model.test.HandleTest.class);
 		classesToTest.add(appDrawing.model.test.PolygonTest.class);
 		classesToTest.add(appDrawing.model.test.PolyLineTest.class);
-//		classesToTest.add(appDrawing.model.test.RectangleTest.class);
-//		classesToTest.add(appDrawing.model.test.SquareTest.class);
+		classesToTest.add(appDrawing.model.test.RectangleTest.class);
+		classesToTest.add(appDrawing.model.test.SquareTest.class);
+		
+		// DrawingPanelTest commenté parce que le singleton dans AppFrame crée des problèmes
+		// quand on se sert de AppFrame dans les tests, ce qui est nécessaire 
+		// pour tester le DrawingPanel.
 //		classesToTest.add(appDrawing.form.test.DrawingPanelTest.class);
 		
 		for(Class<?> someClass : classesToTest)
