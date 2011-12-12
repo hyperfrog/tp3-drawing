@@ -612,7 +612,6 @@ public abstract class Shape implements Serializable
 		if (scalingFactor > 0 && scalingFactor != 1)
 		{
 			scalingFactor = Math.max(this.strokeWidth / this.height, scalingFactor);
-
 			this.height *= scalingFactor;
 			this.posY = refY + scalingFactor * (this.posY - refY);
 
