@@ -1310,9 +1310,9 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 		// «coche» de la roulette
 		this.scalingFactor *= Math.pow(1.1, zoomAMount);
 		
-		// Applique un plancher et un plafond au scaling factor (1.1^-150 et 1.1^150)
-		this.scalingFactor = Math.min(this.scalingFactor, (float) Math.pow(1.1, 150));
-		this.scalingFactor = Math.max(this.scalingFactor, (float) Math.pow(1.1, -150));
+		// Applique un plancher et un plafond au scaling factor (1.1^-120 et 1.1^60)
+		this.scalingFactor = Math.min(this.scalingFactor, (float) Math.pow(1.1, 60));
+		this.scalingFactor = Math.max(this.scalingFactor, (float) Math.pow(1.1, -120));
 
 		// Calcule les nouvelles dimensions virtuelles de la portion affichée du dessin
 		float newWidth = this.getWidth() / this.scalingFactor;
