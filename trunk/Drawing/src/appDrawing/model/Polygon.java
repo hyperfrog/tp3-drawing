@@ -126,6 +126,8 @@ public class Polygon extends Shape
 	{
 		if (scalingFactor > 0 && scalingFactor != 1)
 		{
+			scalingFactor = Math.max(this.strokeWidth / this.width, scalingFactor);
+
 			ArrayList<Point2D> newPoints = new ArrayList<Point2D>();
 
 			// Transforme chacun des points
@@ -151,6 +153,8 @@ public class Polygon extends Shape
 	{
 		if (scalingFactor > 0 && scalingFactor != 1)
 		{
+			scalingFactor = Math.max(this.strokeWidth / this.height, scalingFactor);
+
 			ArrayList<Point2D> newPoints = new ArrayList<Point2D>();
 
 			// Transforme chacun des points

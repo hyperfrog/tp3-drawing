@@ -267,7 +267,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 	}
 	
 	/**
-	 * Réinitialise le dessin.putty
+	 * Réinitialise le dessin.
 	 */
 	public void erase()
 	{
