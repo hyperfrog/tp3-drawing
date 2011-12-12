@@ -4,16 +4,47 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-public class CircleTest {
+import appDrawing.model.Circle;
 
+public class CircleTest {
+		
 	@Test
-	public void testCircleFloatFloatFloatFloat() {
-		fail("Not yet implemented");
+	public void testCircleFloatFloatFloatFloat()
+	{
+		//Pour les tests de validitée des valeurs d'entrées voir appDrawing.model.test.ShapeTest
+		
+		//Test du constructeur du cercle, la plus petite valeur de dimension est prise pour le diamètre
+		Circle c = new Circle(0.0f, 0.0f, 10.0f, 2.0f);
+		
+		//D'abord vérifions que le cercle est créé
+		assertNotNull(c);
+		
+		//Ici le cercle doit avoir un diamètre de 2.0f
+		assertEquals(2.0f, c.getWidth(),0);
+		assertEquals(2.0f, c.getHeight(),0);
+		
+		//À l'inverse, si la hauteur est plus grande la largeur doit être le diamètre
+		c = new Circle(0.0f, 0.0f, 2.0f, 10.0f);
+				
+		//Ici le cercle doit avoir un diamètre de 2.0f encore
+		assertEquals(2.0f, c.getWidth(),0);
+		assertEquals(2.0f, c.getHeight(),0);
 	}
 
 	@Test
-	public void testCircleFloatFloatFloat() {
-		fail("Not yet implemented");
+	public void testCircleFloatFloatFloat()
+	{
+		//Pour les tests de validitée des valeurs d'entrées voir appDrawing.model.test.ShapeTest
+		
+		//Test du constructeur du cercle qui prend un diamètre en paramètre
+		Circle c = new Circle(0.0f, 0.0f, 10.0f);
+				
+		//D'abord vérifions que le cercle est créé
+		assertNotNull(c);
+				
+		//Ici le cercle doit avoir une hauteur de 10.0f et une largeur égale
+		assertEquals(10.0f, c.getWidth(),0);
+		assertEquals(10.0f, c.getHeight(),0);
 	}
 
 }
