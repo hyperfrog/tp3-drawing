@@ -16,7 +16,7 @@ import java.awt.Rectangle;
 public class Handle extends Shape
 {
 	// Taille en pixels d'une poignée
-	private static final int HANDLE_SIZE = 10;
+	protected static final int HANDLE_SIZE = 10;
 
 	// Couleur des poignées 
 	protected static final Color SELECTION_COLOR = Color.BLUE;
@@ -39,14 +39,14 @@ public class Handle extends Shape
 	 */
 	public static enum HandleType
 	{
-		TOP_LEFT		(0,    0   ),//point d'origine gauche
-		TOP_MIDDLE		(0.5f, 0   ),//^
-		TOP_RIGHT		(1,    0   ),//|
-		MIDDLE_LEFT		(0,    0.5f),//|
-		MIDDLE_RIGHT	(1,    0.5f),//|
-		BOTTOM_LEFT		(0,    1   ),//|
-		BOTTOM_MIDDLE	(0.5f, 1   ),//v
-		BOTTOM_RIGHT	(1,    1   );//point en bas à droite
+		TOP_LEFT		(0,    0   ), //point d'origine en haut à gauche
+		TOP_MIDDLE		(0.5f, 0   ), //^
+		TOP_RIGHT		(1,    0   ), //|
+		MIDDLE_LEFT		(0,    0.5f), //|
+		MIDDLE_RIGHT	(1,    0.5f), //|
+		BOTTOM_LEFT		(0,    1   ), //|
+		BOTTOM_MIDDLE	(0.5f, 1   ), //v
+		BOTTOM_RIGHT	(1,    1   ); //point en bas à droite
 		
 		// Position relative de la poignée en x 
 		public final float xModifier;
@@ -60,11 +60,11 @@ public class Handle extends Shape
 		}
 	};
 
-	// Forme à laquelle  appartient la poignée 
-	private Shape parent = null;
+	// Forme à laquelle appartient la poignée 
+	protected Shape parent = null;
 	
 	// Type de la poignée
-	private HandleType type;
+	protected HandleType type;
 	
 	/**
 	 * Construit une poignée du type spécifié pour la forme spécifiée.
@@ -123,7 +123,7 @@ public class Handle extends Shape
 	
 	
 	/**
-	 * Retourne la forme à laquelle  appartient la poignée.
+	 * Retourne la forme à laquelle appartient la poignée.
 	 * 
 	 * @return forme à laquelle appartient la poignée
 	 */
