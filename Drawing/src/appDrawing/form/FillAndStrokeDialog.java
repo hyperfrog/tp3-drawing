@@ -268,7 +268,7 @@ public class FillAndStrokeDialog extends JDialog implements ActionListener, Wind
 		private Point currentDragPoint = null;
 
 		/**
-		 * Construit un panneau dans lequel il est possible de d'affiche une forme.
+		 * Construit un panneau dans lequel il est possible d'afficher une forme.
 		 */
 		public MiniDrawingPanel()
 		{
@@ -291,6 +291,8 @@ public class FillAndStrokeDialog extends JDialog implements ActionListener, Wind
 			{
 				shape.draw(g2d, scalingFactor, virtualDeltaX, virtualDeltaY);
 				
+				// Dessine un trait pointillé si l'utilisateur est en train 
+				// de définir les points du dégradé
 				if (startDragPoint != null && currentDragPoint != null)
 				{
 					g2d.setColor(Color.BLACK);

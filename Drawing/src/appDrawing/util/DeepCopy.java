@@ -1,3 +1,5 @@
+// Classe trouvée telle quelle à http://javatechniques.com/blog/faster-deep-copies-of-java-objects/
+
 package appDrawing.util;
 
 import java.io.IOException;
