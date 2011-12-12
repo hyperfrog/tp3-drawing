@@ -1258,9 +1258,6 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 			float xScalingFactor = ((float)vCurrentDragPoint.getX() - refX) / ((float)vStartDragPoint.getX() - refX);
 			float yScalingFactor = ((float)vCurrentDragPoint.getY() - refY) / ((float)vStartDragPoint.getY() - refY);
 			
-//			xScalingFactor = Math.max(shape.getStrokeWidth() / shape.getWidth(), xScalingFactor);
-//			yScalingFactor = Math.max(shape.getStrokeWidth() / shape.getHeight(), yScalingFactor);
-			
 			switch (this.resizingHandle.getType())
 			{
 				case BOTTOM_MIDDLE:
@@ -1277,14 +1274,12 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 			if (xScalingFactor > 0 && xScalingFactor != 1)
 			{
 				shape.scaleWidth(xScalingFactor, refX);
-//				this.startDragPoint.x = this.currentDragPoint.x;
 				this.startDragPoint.x = this.resizingHandle.getRealPos(this.scalingFactor, this.virtualDeltaX, this.virtualDeltaY).x;
 			}
 			
 			if (yScalingFactor > 0 && yScalingFactor != 1)
 			{
 				shape.scaleHeight(yScalingFactor, refY);
-//				this.startDragPoint.y = this.currentDragPoint.y;
 				this.startDragPoint.y = this.resizingHandle.getRealPos(this.scalingFactor, this.virtualDeltaX, this.virtualDeltaY).y;
 			}
 		}

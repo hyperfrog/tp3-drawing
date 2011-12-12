@@ -57,10 +57,10 @@ public class FillAndStrokeDialog extends JDialog implements ActionListener, Wind
     // Slider pour changer la transparence de la couleur 1 du dégradé
     private javax.swing.JSlider gradColor1Slider;
     
-    // Slider pour changer la transparence de la couleur 1 du dégradé
+    // Slider pour changer la transparence de la couleur 2 du dégradé
     private javax.swing.JSlider gradColor2Slider;
     
-    // Case à cocher pour désactiver le dégradé en utilisant une seule couleur 
+    // Case à cocher pour désactiver le dégradé  
     private javax.swing.JCheckBox gradColor2CheckBox;
 
     // Libellé «Remplissage»
@@ -353,18 +353,21 @@ public class FillAndStrokeDialog extends JDialog implements ActionListener, Wind
 		{
 			currentDragPoint = e.getPoint();
 
+			// Trouve les points virtuels correspondant aux points du drag
 			Point2D p1 = Shape.makeVirtualPoint(startDragPoint.x, startDragPoint.y, 
 					scalingFactor, virtualDeltaX, virtualDeltaY);
 
 			Point2D p2 = Shape.makeVirtualPoint(e.getX(), e.getY(), 
 					scalingFactor, virtualDeltaX, virtualDeltaY);
 			
+			// Calcule les points du dégradé, relatifs à la position et les dimensions de la forme
 			float xGradP1 = ((float) p1.getX() - shape.getPosX()) / shape.getWidth();
 			float yGradP1 = ((float) p1.getY() - shape.getPosY()) / shape.getHeight();
 
 			float xGradP2 = ((float) p2.getX() - shape.getPosX()) / shape.getWidth();
 			float yGradP2 = ((float) p2.getY() - shape.getPosY()) / shape.getHeight();
 			
+			// Affecte les points à la forme
 			shape.setGradPoint1(new Point2D.Float(xGradP1, yGradP1));
 			shape.setGradPoint2(new Point2D.Float(xGradP2, yGradP2));
 			
@@ -386,55 +389,65 @@ public class FillAndStrokeDialog extends JDialog implements ActionListener, Wind
 	@Override
 	public void actionPerformed(ActionEvent e)
 	{
-		if (e.getSource() == this.okButton)
+		if (e.getSource() == this.okButton) // Bouton OK
 		{
+			// Met le code de résultat approprié
 			this.result = JOptionPane.OK_OPTION;
 			this.close();
 		}
-		else if (e.getSource() == this.gradColor1Button)
+		else if (e.getSource() == this.gradColor1Button) // Bouton pour changer la couleur 1 du dégradé
 		{
 			Color c = JColorChooser.showDialog(this, "Choix de la couleur 1", this.shape.getGradColor1());
 			
 			if (c != null)
 			{
-				this.shape.setGradColor1(this.getSameColorWithNewAlpha(c, this.gradColor1Slider.getValue()));
+				// Ajuste la transparence
+				this.shape.setGradColor1(this.getSameColorNewAlpha(c, this.gradColor1Slider.getValue()));
+				
+				// Si la case à cocher pour désactiver le dégradé est sélectionnée
 				if (this.gradColor2CheckBox.isSelected())
 				{
-					this.shape.setGradColor2(this.getSameColorWithNewAlpha(c, this.gradColor2Slider.getValue()));
+					// Utilise la même valeur pour la couleur 2
+					this.shape.setGradColor2(this.getSameColorNewAlpha(c, this.gradColor2Slider.getValue()));
 				}
 
 				this.shapePanel.repaint();
 			}
 		}
-		else if (e.getSource() == this.gradColor2Button) 
+		else if (e.getSource() == this.gradColor2Button) // Bouton pour changer la couleur 2 du dégradé
 		{
 			Color c = JColorChooser.showDialog(this, "Choix de la couleur 2", this.shape.getGradColor2());
 			
 			if (c != null)
 			{
-				this.shape.setGradColor2(this.getSameColorWithNewAlpha(c, this.gradColor2Slider.getValue()));
+				// Ajuste la transparence
+				this.shape.setGradColor2(this.getSameColorNewAlpha(c, this.gradColor2Slider.getValue()));
 				this.shapePanel.repaint();
 			}
 		}
-		else if (e.getSource() == this.strokeColorButton) 
+		else if (e.getSource() == this.strokeColorButton) // Bouton pour changer la couleur du tr
 		{
 			Color c = JColorChooser.showDialog(this, "Choix de la couleur du trait", this.shape.getStrokeColor());
 			if (c != null)
 			{
-				this.shape.setStrokeColor(c);
+				// Ajuste la transparence
+				this.shape.setStrokeColor(this.getSameColorNewAlpha(c, this.strokeSlider.getValue()));
 				this.shapePanel.repaint();
 			}
 		}
-		else if (e.getSource() == this.resetButton) 
+		else if (e.getSource() == this.resetButton) // Bouton pour réinitialiser les valeurs des contrôles
 		{
+			// Utilise une nouvelle copie de la forme originale
 			this.shape = (Shape) DeepCopy.copy(this.originalShape);
 			this.shape.setSelected(false);
 			this.readShapeValues();
 			this.repaint();
 		}
-		else if (e.getSource() == this.cancelButton) 
+		else if (e.getSource() == this.cancelButton) // Bouton pour fermer la boîte en annulant l'opération
 		{
+			// Reprend la forme originale
 			this.shape = this.originalShape;
+			// Met le code de résultat approprié
 			this.result = JOptionPane.CANCEL_OPTION;
 			this.close();
 		}
@@ -482,36 +495,45 @@ public class FillAndStrokeDialog extends JDialog implements ActionListener, Wind
 	@Override
 	public void stateChanged(ChangeEvent e)
 	{
-		if (e.getSource() == this.strokeSpinner)
+		if (e.getSource() == this.strokeSpinner) // Spinner pour contrôler l'épaisseur du trait
 		{
 			this.shape.setStrokeWidth(((Double)this.strokeSpinner.getValue()).floatValue());
 			this.computeDisplayParameters();
 		}
-		else if (e.getSource() == this.strokeSlider)
+		else if (e.getSource() == this.strokeSlider) // Slider pour changer la transparence de la couleur du trait
 		{
-			this.shape.setStrokeColor(this.getSameColorWithNewAlpha(this.shape.getStrokeColor(), this.strokeSlider.getValue()));
+			// Ajuste la transparence
+			this.shape.setStrokeColor(this.getSameColorNewAlpha(this.shape.getStrokeColor(), this.strokeSlider.getValue()));
 		}
-		else if (e.getSource() == this.gradColor1Slider)
+		else if (e.getSource() == this.gradColor1Slider) // Slider pour changer la transparence de la couleur 1 du dégradé
 		{
-			this.shape.setGradColor1(this.getSameColorWithNewAlpha(this.shape.getGradColor1(), this.gradColor1Slider.getValue()));
+			// Ajuste la transparence de la couleur 1
+			this.shape.setGradColor1(this.getSameColorNewAlpha(this.shape.getGradColor1(), this.gradColor1Slider.getValue()));
 
+			// Si la case à cocher pour désactiver le dégradé est sélectionnée
 			if (this.gradColor2CheckBox.isSelected())
 			{
+				// Ajuste la transparence de la couleur 2
 				this.gradColor2Slider.setValue(this.gradColor1Slider.getValue());
 			}
 		}
-		else if (e.getSource() == this.gradColor2Slider)
+		else if (e.getSource() == this.gradColor2Slider) // Slider pour changer la transparence de la couleur 2 du dégradé
 		{
-			this.shape.setGradColor2(this.getSameColorWithNewAlpha(this.shape.getGradColor2(), this.gradColor2Slider.getValue()));
+			// Ajuste la transparence de la couleur 2
+			this.shape.setGradColor2(this.getSameColorNewAlpha(this.shape.getGradColor2(), this.gradColor2Slider.getValue()));
 		}
-		else if (e.getSource() == this.gradColor2CheckBox)
+		else if (e.getSource() == this.gradColor2CheckBox) // Case à cocher pour désactiver le dégradé
 		{
+			// Active ou désactive les contrôles relatifs à la couleur 2
 			this.gradColor2Button.setEnabled(!this.gradColor2CheckBox.isSelected());
 			this.gradColor2Slider.setEnabled(!this.gradColor2CheckBox.isSelected());
 			
+			// Si la case est cochée
 			if (this.gradColor2CheckBox.isSelected())
 			{
+				// Affecte la valeur de la couleur couleur 1 à la couleur 2
 				this.shape.setGradColor2(this.shape.getGradColor1());
+				// Asservit le slider de la couleur 2
 				this.gradColor2Slider.setValue(this.gradColor1Slider.getValue());
 				this.shapePanel.repaint();
 			}
@@ -521,7 +543,7 @@ public class FillAndStrokeDialog extends JDialog implements ActionListener, Wind
 	}
 
 	// Retourne la même couleur que celle spécifiée, mais avec la valeur alpha spécifiée  
-	private Color getSameColorWithNewAlpha(Color color, int alpha)
+	private Color getSameColorNewAlpha(Color color, int alpha)
 	{
 		int rgbaColor = color.getRGB();
 		// Enlève les bits alpha de la couleur
