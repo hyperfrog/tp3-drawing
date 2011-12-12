@@ -38,7 +38,7 @@ public class Square extends Rectangle
 	 * 
 	 * @param posX position du carré sur l'axe des x
 	 * @param posY position du carré sur l'axe des y
-	 * @param diameter taille du carré; changée pour 0 si négative 
+	 * @param size taille du carré; changée pour 0 si négative 
 	 */
 	public Square(float posX, float posY, float size)
 	{
