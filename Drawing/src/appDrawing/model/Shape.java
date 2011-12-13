@@ -579,14 +579,25 @@ public abstract class Shape implements Serializable
 	 * Agrandit ou réduit la forme en largeur par le facteur spécifié 
 	 * par rapport à une coordonnée x de référence qui demeure fixe.
 	 *   
+	 * Une valeur plancher est appliquée au facteur s'il s'agit d'une réduction,
+	 * de sorte que la largeur de la forme ne sera jamais réduite à une valeur moindre 
+	 * que l'épaisseur du trait de la forme.
+	 *    
 	 * @param scalingFactor facteur d'agrandissement/réduction
 	 * @param refX point fixe sur l'axe des x  
+	 * @return la valeur du facteur réellement utilisée pour l'agrandissement ou la réduction
 	 */
-	public void scaleWidth(float scalingFactor, float refX)
+	public float scaleWidth(float scalingFactor, float refX)
 	{
 		if (scalingFactor > 0 && scalingFactor != 1)
 		{
-			scalingFactor = Math.max(this.strokeWidth / this.width, scalingFactor);
+			if (scalingFactor < 1) // Réduction?
+			{
+				// Empêche le scaling factor d'être inférieur 
+				// au plus petit scaling factor possible pour cette forme
+				scalingFactor = Math.max(this.getMinXScalingFactor(), scalingFactor);
+			}
+			
 			this.width *= scalingFactor;
 			this.posX = refX + scalingFactor * (this.posX - refX);
 
@@ -598,20 +609,32 @@ public abstract class Shape implements Serializable
 				}
 			}
 		}
+		return scalingFactor;
 	}
-
+	
 	/**
 	 * Agrandit ou réduit la forme en hauteur par le facteur spécifié 
 	 * par rapport à une coordonnée y de référence qui demeure fixe.
+	 * 
+	 * Une valeur plancher est appliquée au facteur s'il s'agit d'une réduction,
+	 * de sorte que la hauteur de la forme ne sera jamais réduite à une valeur moindre 
+	 * que l'épaisseur du trait de la forme.   
 	 *   
 	 * @param scalingFactor facteur d'agrandissement/réduction
 	 * @param refY point fixe sur l'axe des y  
+	 * @return la valeur du facteur réellement utilisée pour l'agrandissement ou la réduction
 	 */
-	public void scaleHeight(float scalingFactor, float refY)
+	public float scaleHeight(float scalingFactor, float refY)
 	{
 		if (scalingFactor > 0 && scalingFactor != 1)
 		{
-			scalingFactor = Math.max(this.strokeWidth / this.height, scalingFactor);
+			if (scalingFactor < 1) // Réduction?
+			{
+				// Empêche le scaling factor d'être inférieur 
+				// au plus petit scaling factor possible pour cette forme
+				scalingFactor = Math.max(this.getMinYScalingFactor(), scalingFactor);
+			}
+			
 			this.height *= scalingFactor;
 			this.posY = refY + scalingFactor * (this.posY - refY);
 
@@ -623,8 +646,31 @@ public abstract class Shape implements Serializable
 				}
 			}
 		}
+		return scalingFactor;
 	}
 	
+	/**
+	 * Calcule et retourne le plus petit facteur de réduction possible sur l'axe des x 
+	 * pour cette forme compte tenu de sa largeur et de la largeur de son trait.
+	 * 
+	 * @return plus petit facteur de réduction possible sur l'axe des x
+	 */
+	public float getMinXScalingFactor()
+	{
+		return this.strokeWidth / this.width;
+	}
+
+	/**
+	 * Calcule et retourne le plus petit facteur de réduction possible sur l'axe des y 
+	 * pour cette forme compte tenu de sa hauteur et de l'épaisseur de son trait.
+	 * 
+	 * @return plus petit facteur de réduction possible sur l'axe des y
+	 */
+	public float getMinYScalingFactor()
+	{
+		return this.strokeWidth / this.height;
+	}
+
 	/**
 	 * Dessine la forme dans le graphics spécifié. Toutes les classes dérivées doivent 
 	 * avoir une méthode draw(), qui est appelée quand la forme courante doit être dessinée.

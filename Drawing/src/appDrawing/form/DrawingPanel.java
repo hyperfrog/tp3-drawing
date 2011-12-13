@@ -105,7 +105,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
     				BasicStroke.CAP_BUTT, 
     				BasicStroke.JOIN_MITER, 
     				10.0f, 
-    				new float[]{10.0f}, 
+    				new float[]{5.0f}, 
     				0.0f);
     
 	// Types de formes pouvant être dessinées

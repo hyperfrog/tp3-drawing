@@ -112,80 +112,80 @@ public class Group extends Shape
 	 * @see appDrawing.model.Shape#scaleWidth(float)
 	 */
 	@Override
-	public void scaleWidth(float scalingFactor, float refX)
+	public float scaleWidth(float scalingFactor, float refX)
 	{
 		if (scalingFactor > 0 && scalingFactor != 1)
 		{
-			if (scalingFactor < 1) // Réduction?
-			{
-				// Trouve la forme qui va cesser de pouvoir se réduire la première
-				float minScalingFactor = 0;
-				Shape s = null;
-
-				for (Shape shape : this.shapeList)
-				{
-					if (shape.getWidth() > 0 && shape.getStrokeWidth() / shape.getWidth() > minScalingFactor)
-					{
-						minScalingFactor = shape.getStrokeWidth() / shape.getWidth();
-						s = shape;
-					}
-
-					if (s != null)
-					{
-						// Détermine le plus petit scaling factor pour cette forme
-						scalingFactor = Math.max(minScalingFactor, scalingFactor);
-					}
-				}
-			}
+			scalingFactor = super.scaleWidth(scalingFactor, refX);
 
 			// Agrandit ou réduit les formes du groupe
 			for (Shape shape : this.shapeList)
 			{
 				shape.scaleWidth(scalingFactor, refX);
 			}
-			super.scaleWidth(scalingFactor, refX);
 		}
+		return scalingFactor;
 	}
 	
 	/* (non-Javadoc)
 	 * @see appDrawing.model.Shape#scaleWidth(float)
 	 */
 	@Override
-	public void scaleHeight(float scalingFactor, float refY)
+	public float scaleHeight(float scalingFactor, float refY)
 	{
 		if (scalingFactor > 0 && scalingFactor != 1)
 		{
-			if (scalingFactor < 1) // Réduction?
-			{
-				// Trouve la forme qui va cesser de pouvoir se réduire la première
-				float minScalingFactor = 0;
-				Shape s = null;
-
-				for (Shape shape : this.shapeList)
-				{
-					if (shape.getHeight() > 0 && shape.getStrokeWidth() / shape.getHeight() > minScalingFactor)
-					{
-						minScalingFactor = shape.getStrokeWidth() / shape.getHeight();
-						s = shape;
-					}
-
-					if (s != null)
-					{
-						// Détermine le plus petit scaling factor pour cette forme
-						scalingFactor = Math.max(minScalingFactor, scalingFactor);
-					}
-				}
-			}
+			scalingFactor = super.scaleHeight(scalingFactor, refY);
 
 			// Agrandit ou réduit les formes du groupe
 			for (Shape shape : this.shapeList)
 			{
 				shape.scaleHeight(scalingFactor, refY);
 			}
-			super.scaleHeight(scalingFactor, refY);
 		}
+		return scalingFactor;
 	}
 	
+	/** 
+	 * Calcule et retourne le plus petit facteur de réduction possible sur l'axe des x 
+	 * pour ce groupe compte tenu des formes qui le composent.
+	 * 
+	 * @see appDrawing.model.Shape#getMinXScalingFactor()
+	 */
+	@Override
+	public float getMinXScalingFactor()
+	{
+		// Trouve la forme qui va cesser de pouvoir se réduire la première
+		float minXScalingFactor = 0;
+
+		for (Shape shape : this.shapeList)
+		{
+			minXScalingFactor = Math.max(shape.getMinXScalingFactor(), minXScalingFactor);
+		}
+
+		return minXScalingFactor;
+	}
+
+	/** 
+	 * Calcule et retourne le plus petit facteur de réduction possible sur l'axe des y 
+	 * pour ce groupe compte tenu des formes qui le composent.
+	 * 
+	 * @see appDrawing.model.Shape#getMinYScalingFactor()
+	 */
+	@Override
+	public float getMinYScalingFactor()
+	{
+		// Trouve la forme qui va cesser de pouvoir se réduire la première
+		float minYScalingFactor = 0;
+
+		for (Shape shape : this.shapeList)
+		{
+			minYScalingFactor = Math.max(shape.getMinYScalingFactor(), minYScalingFactor);
+		}
+
+		return minYScalingFactor;
+	}
+
 	/* (non-Javadoc)
 	 * @see appDrawing.model.Shape#draw(java.awt.Graphics2D, float, float, float)
 	 */

@@ -122,11 +122,11 @@ public class Polygon extends Shape
 	 * @see appDrawing.model.Shape#scaleWidth(float)
 	 */
 	@Override
-	public void scaleWidth(float scalingFactor, float refX)
+	public float scaleWidth(float scalingFactor, float refX)
 	{
 		if (scalingFactor > 0 && scalingFactor != 1)
 		{
-			scalingFactor = Math.max(this.strokeWidth / this.width, scalingFactor);
+			scalingFactor = super.scaleWidth(scalingFactor, refX);
 
 			ArrayList<Point2D> newPoints = new ArrayList<Point2D>();
 
@@ -139,8 +139,8 @@ public class Polygon extends Shape
 			}
 
 			this.points = newPoints;
-			super.scaleWidth(scalingFactor, refX);
 		}
+		return scalingFactor;
 	}
 
 	/*
@@ -149,11 +149,11 @@ public class Polygon extends Shape
 	 * @see appDrawing.model.Shape#scaleHeight(float)
 	 */
 	@Override
-	public void scaleHeight(float scalingFactor, float refY)
+	public float scaleHeight(float scalingFactor, float refY)
 	{
 		if (scalingFactor > 0 && scalingFactor != 1)
 		{
-			scalingFactor = Math.max(this.strokeWidth / this.height, scalingFactor);
+			scalingFactor = super.scaleHeight(scalingFactor, refY);
 
 			ArrayList<Point2D> newPoints = new ArrayList<Point2D>();
 
@@ -166,8 +166,8 @@ public class Polygon extends Shape
 			}
 
 			this.points = newPoints;
-			super.scaleHeight(scalingFactor, refY);
 		}
+		return scalingFactor;
 	}
 
 	/**
