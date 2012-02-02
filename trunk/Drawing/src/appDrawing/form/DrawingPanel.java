@@ -109,7 +109,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
     				0.0f);
     
 	// Types de formes pouvant être dessinées
-    public enum ShapeType {ELLIPSE, CIRCLE, RECTANGLE, SQUARE, POLYGON, POLYLINE, FREELINE};
+    public enum ShapeType {ELLIPSE, CIRCLE, RECTANGLE, SQUARE, POLYGON, POLYLINE, FREELINE}
     
     // Modes exclusifs de fonctionnement
     public enum Mode {CREATING, PANNING, MOVING, SELECTING, RESIZING}
@@ -683,7 +683,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 
 			if (this.currentMode == Mode.CREATING) // Si mode création
 			{
-				// Les «freelines» se crééent dynamiquement à chaque mouvement du pointeur en mode drag
+				// Les «freelines» se créent dynamiquement à chaque mouvement du pointeur en mode drag
 				if (this.currentShapeType == ShapeType.FREELINE)
 				{
 					if (this.polyPoints == null)

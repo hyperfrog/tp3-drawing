@@ -129,7 +129,7 @@ public class Handle extends Shape
 	 */
 	public Shape getParent()
 	{
-		return parent;
+		return this.parent;
 	}
 
 	/** 
